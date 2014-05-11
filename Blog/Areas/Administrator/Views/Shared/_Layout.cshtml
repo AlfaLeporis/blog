@@ -1,0 +1,47 @@
+﻿<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>@ViewBag.Title</title>
+
+    @Styles.Render("~/Content/bootstrap")
+    @Styles.Render("~/Content/admin-css")
+
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/bootstrap")
+
+    @RenderSection("CustomMeta", false)
+    
+</head>
+<body>
+    @if(TempData.Any(p => p.Key == "ErrorMsg"))
+    {
+        <div class="alert alert-danger custom-alert">@TempData.First(p => p.Key == "ErrorMsg").Value</div>
+    }
+    
+    @if (TempData.Any(p => p.Key == "SuccessMsg"))
+    {
+        <div class="alert alert-success custom-alert">@TempData.First(p => p.Key == "SuccessMsg").Value</div>
+    }
+
+    <div id="site">
+        <div id="menu-area">
+            <ul>
+                <li><a href="@Url.Action("Settings", "Home", new { area = "Administrator" })" class=" btn btn-primary">Ustawienia</a></li>
+                <li><a href="@Url.Action("Articles", "Home", new { area = "Administrator" })" class=" btn btn-primary">Wpisy</a></li>
+                <li><a href="@Url.Action("Sites", "Home", new { area = "Administrator" })" class=" btn btn-primary">Strony</a></li>
+                <li><a href="@Url.Action("Comments", "Home", new { area = "Administrator" })" class=" btn btn-primary">Komentarze</a></li>
+                <li><a href="@Url.Action("Users", "Home", new { area = "Administrator" })" class=" btn btn-primary">Użytkownicy</a></li>
+                <li><a href="@Url.Action("Categories", "Home", new { area = "Administrator" })" class=" btn btn-primary">Kategorie</a></li>
+                <li><a href="@Url.Action("Logs", "Home", new { area = "Administrator" })" class=" btn btn-primary">Błędy systemu</a></li>
+                <li><a href="@Url.Action("ServerInfo", "Home", new { area = "Administrator" })" class=" btn btn-primary">Informacje o serwerze</a></li>
+            </ul>
+        </div>
+
+        <div id="content">
+            @RenderBody()
+        </div>
+    </div>
+</body>
+</html>

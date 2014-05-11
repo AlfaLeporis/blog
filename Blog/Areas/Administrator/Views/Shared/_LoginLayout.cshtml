@@ -1,0 +1,26 @@
+﻿<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>@ViewBag.Title</title>
+
+    @Styles.Render("~/Content/bootstrap")
+    @Styles.Render("~/Content/admin-css")
+</head>
+<body>
+    @if (TempData.Any(p => p.Key == "ErrorMsg"))
+    {
+        <div class="alert alert-danger custom-alert">@TempData.First(p => p.Key == "ErrorMsg").Value</div>
+    }
+    
+    @if (TempData.Any(p => p.Key == "SuccessMsg"))
+    {
+        <div class="alert alert-success custom-alert">@TempData.First(p => p.Key == "SuccessMsg").Value</div>
+    }
+
+    <div>
+        @RenderBody()
+    </div>
+</body>
+</html>

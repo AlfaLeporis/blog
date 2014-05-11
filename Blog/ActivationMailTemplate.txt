@@ -1,0 +1,11 @@
+﻿Witaj!\r\n
+\r\n
+Dziękujemy za zarejestrowanie się na blogu AlfaLeporis! Dane które podałes:\r\n
+Nazwa użytkownika: {1}\r\n
+E-Mail: {2}\r\n
+\r\n
+Zanim będziesz mógł się zalogować, musisz aktywować nowo utworzone konto. W tym celu kliknij w poniższy link.\r\n
+{3}\r\n
+\r\n
+Pozdrawiam!\r\n
+AlfaLeporis

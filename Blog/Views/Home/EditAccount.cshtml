@@ -1,0 +1,31 @@
+﻿@model Blog.ViewModels.EditPasswordViewModel
+
+@{
+    ViewBag.Title = "EditAccount";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="article">
+    @using(Html.BeginForm("EditAccount", "Home"))
+    {
+        <div class="form-group">
+            <label for="inputEmail">Stare hasło</label>
+            @Html.TextBoxFor(p => p.OldPassword, new { @class = "form-control", type = "password", placeholder = "Stare hasło" })
+            @Html.ValidationMessageFor(p => p.OldPassword, null, new { @class = "validation-message" })
+        </div>
+        
+        <div class="form-group">
+            <label for="inputEmail">Nowe hasło</label>
+            @Html.TextBoxFor(p => p.NewPassword, new { @class = "form-control", type = "password", placeholder = "Nowe hasło" })
+            @Html.ValidationMessageFor(p => p.NewPassword, null, new { @class = "validation-message" })
+        </div>
+        
+        <div class="form-group">
+            <label for="inputEmail">Potwierdź nowe hasło</label>
+            @Html.TextBoxFor(p => p.ConfirmNewPassword, new { @class = "form-control", type = "password", placeholder = "Potwierdź nowe hasło" })
+            @Html.ValidationMessageFor(p => p.ConfirmNewPassword, null, new { @class = "validation-message" })
+        </div>
+        
+        <button type="submit" class="btn btn-primary register-button">Edytuj dane</button>
+    }
+</div>

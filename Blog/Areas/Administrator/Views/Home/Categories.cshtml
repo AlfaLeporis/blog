@@ -1,0 +1,29 @@
+﻿@model List<Blog.ViewModels.CategoryViewModel>
+
+@{
+    ViewBag.Title = "Categories";
+    Layout = "~/Areas/Administrator/Views/Shared/_Layout.cshtml";
+}
+
+<table class="table table-bordered">
+    <tbody>
+        <tr>
+            <th>ID</th>
+            <th>Nazwa</th>
+            <th>Akcje</th>
+        </tr>
+        @for (int i = 0; i < Model.Count; i++)
+        {
+            <tr>
+                <td style="width: 10%;">@Model[i].ID.Value</td>
+                <td style="width: 70%;">@Model[i].Title</td>
+                <td style="width: 20%;">
+                    @Html.ActionLink("Edytuj", "EditCategory", "Home", new { area = "Administrator", id = Model[i].ID }, new { @class = "btn btn-primary table-button" })
+                    @Html.ActionLink("Usuń", "RemoveCategory", "Home", new { area = "Administrator", id = Model[i].ID }, new { @class = "btn btn-danger table-button" })
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@Html.ActionLink("Dodaj kategorię", "EditCategory", "Home", new { area = "Administrator" }, new { @class = "btn btn-primary btn-settings" })

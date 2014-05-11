@@ -1,0 +1,19 @@
+﻿@model Blog.ViewModels.AuthViewModel
+ 
+@{
+    ViewBag.Title = "Auth";
+    Layout = "~/Areas/Administrator/Views/Shared/_LoginLayout.cshtml";
+}
+
+@using (Html.BeginForm("Auth", "Home", new { area = "Administrator" }, FormMethod.Post, new { @class = "login-form" }))
+{
+    <div class="header">Logowanie</div>
+    
+    @Html.TextBoxFor(Model => Model.Login, new { @class = "form-control login-control", placeholder = "Login" })
+    @Html.ValidationMessageFor(Model => Model.Login, String.Empty, new { @class = "validation-message" })
+    
+    @Html.TextBoxFor(Model => Model.Password, new { @class = "form-control login-control", placeholder = "Hasło", type = "password" })
+    @Html.ValidationMessageFor(Model => Model.Password, String.Empty, new { @class = "validation-message" })
+    
+    <input type="submit" value="Zaloguj!" class="btn btn-primary login-btn"/>
+}

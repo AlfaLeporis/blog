@@ -1,0 +1,8 @@
+﻿@model Blog.ViewModels.AdminServerInfoViewModel
+
+@{
+    ViewBag.Title = "ServerInfo";
+    Layout = "~/Areas/Administrator/Views/Shared/_Layout.cshtml";
+}
+
+@Html.Raw(Model.ServerInfo)

@@ -1,0 +1,220 @@
+﻿body{
+    background-image: url("Images/site-background.png");
+}
+
+a{
+    color: rgb(0, 78, 183)!important;
+}
+
+#site{
+    
+}
+
+#header-area{
+    position: relative;
+    height: 200px;
+    background-image: url("Images/header.png");
+}
+
+#header-area h1{
+    margin: 0;
+    padding: 40px 0 0 40px;
+    color: white;
+}
+
+#header-area h5{
+    margin: 0;
+    padding: 15px 0 0 70px;
+    color: white;
+}
+
+#wrapper{
+    margin: 0 auto;
+    background-color: #E8E4EB;
+}
+
+#content{
+    float: left;
+    width: 75%;
+    padding: 0px;
+}
+
+#right-col{
+    float:right;
+    padding: 5px;
+    width: 25%;
+}
+
+#menu-area{
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 40px;
+}
+
+.btn-menu{
+    background-color: blue;
+}
+
+#menu-area ul{
+    list-style: none;
+    text-align: left;
+    margin-left: 10px;
+    margin-bottom: 0;
+    padding-top: 4px;
+}
+
+#menu-area li{
+    display: inline-block;
+    padding: 5px 30px;
+    margin-left: 20px;
+}
+
+#footer{
+    height: 25px;
+    text-align: center;
+    clear: both;
+    color: white;
+    background-image: url("Images/footer.png");
+}
+
+.article{
+    position: relative;
+    border: 1px solid rgb(142, 133, 217);
+    border-radius: 10px;
+    padding: 10px;
+    margin: 40px 20px 50px 40px;
+    background-color: #E8E4EB;
+
+    -webkit-box-shadow: 0px 0px 7px 0px rgba(50, 50, 50, 0.69);
+    -moz-box-shadow:    0px 0px 7px 0px rgba(50, 50, 50, 0.69);
+    box-shadow:         0px 0px 7px 0px rgba(50, 50, 50, 0.69);
+
+    overflow: hidden;
+}
+
+.article h3{
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.article-strong{
+    font-weight: bold;
+    margin-bottom: 15px;
+}
+
+.article-content{
+
+}
+
+.article-info{
+    border-bottom: 1px solid rgb(207, 207, 207);
+    margin-bottom: 15px;
+    overflow: hidden;
+    height: 22px;
+    background-color: #1a3257;
+}
+
+.btn-login{
+    width: 62%;
+}
+
+.btn-register{
+    width:36%;
+}
+
+.info-left{
+    float: left;
+    margin-left: 10px;
+    color: white;
+}
+
+.info-right{
+    float: right;
+    margin-right: 10px;
+    color: white;
+}
+
+.comments-info{
+    position: absolute;
+    right: 20px;
+    top: 30px;
+}
+
+.read-more{
+    float: right;
+    margin-right: 10px;
+    font-weight: bold;
+}
+
+.article-actions{
+    border-top: 1px solid rgb(207, 207, 207);
+    padding-top: 35px;
+}
+
+#right-col-container{
+    border: 1px solid rgb(142, 133, 217);
+    border-radius: 10px;
+    padding: 10px;
+    margin: 35px 40px 0 0;
+    background-color: rgb(240,240,240);
+
+    -webkit-box-shadow: 0px 0px 7px 0px rgba(50, 50, 50, 0.69);
+    -moz-box-shadow:    0px 0px 7px 0px rgba(50, 50, 50, 0.69);
+    box-shadow:         0px 0px 7px 0px rgba(50, 50, 50, 0.69);
+}
+
+.module{
+    margin-top: 30px;
+}
+
+.module-header{
+    height: 25px;
+    background-color: #1a3257;
+    text-align: center;
+    font-size: 1.2em;
+    color: white;
+}
+
+.module-content{
+    border: 1px solid rgb(207, 207, 207);
+    border-top: 0;
+    padding: 10px;
+}
+
+.module ul{
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.module li{
+    display: block;
+    text-align: left;
+    border-radius: 0;
+}
+
+.module li > a{
+    color: black!important;
+    text-align: left!important;
+}
+
+.module li > a:hover{
+    text-decoration: none;
+}
+
+.custom-alert{
+    text-align: center;
+    font-weight: bold;
+    margin-bottom: 0!important;
+}
+
+.register-button{
+    width: 150px;
+    margin: 0 auto;
+}
+
+.validation-message{
+    color: red;
+}

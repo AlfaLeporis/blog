@@ -1,0 +1,116 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <title>@ViewBag.Title</title>
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/jqueryval")
+    @Styles.Render("~/Content/css")
+    @Styles.Render("~/Content/bootstrap")
+</head>
+<body>
+    @if (TempData.Any(p => p.Key == "ErrorMsg"))
+    {
+        <div class="alert alert-danger custom-alert">@TempData.First(p => p.Key == "ErrorMsg").Value</div>
+    }
+
+    @if (TempData.Any(p => p.Key == "SuccessMsg"))
+    {
+        <div class="alert alert-success custom-alert">@TempData.First(p => p.Key == "SuccessMsg").Value</div>
+    }
+
+    <div id="site">
+        <div id="header-area">
+            <h1>Tytuł strony</h1>
+            <h5>Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum</h5>
+            <div id="menu-area">
+                <ul>
+                    <li class="btn btn-primary">pozycja 1</li>
+                    <li class="btn btn-primary">pozycja 2</li>
+                    <li class="btn btn-primary">pozycja 3</li>
+                </ul>
+            </div>
+        </div>
+        <div id="wrapper">
+            <div id="content">
+                @RenderBody()
+            </div>
+            <div id="right-col">
+                <div id="right-col-container">
+                    <div class="input-group">
+                        <input type="text" class="form-control" placeholder="treść, kategoria, tytuł">
+                        <span class="input-group-btn">
+                            <button class="btn btn-primary" type="button">Szukaj!</button>
+                        </span>
+                    </div>
+
+                    <div class="module">
+                        <div class="module-header">
+                            Menu
+                        </div>
+
+                        <ul>
+                            <li class="btn btn-default"><span class="glyphicon glyphicon-search" style="margin: 0 10px 0 0;"></span>Pobierz w formacie ATOM</li>
+                            <li class="btn btn-default"><span class="glyphicon glyphicon-stats" style="margin: 0 10px 0 0;"></span>Lorem Ipsum</li>
+                            <li class="btn btn-default"><span class="glyphicon glyphicon-search" style="margin: 0 10px 0 0;"></span>Lorem Ipsum</li>
+                            <li class="btn btn-default"><span class="glyphicon glyphicon-stats" style="margin: 0 10px 0 0;"></span>Lorem Ipsum</li>
+                            <li class="btn btn-default"><span class="glyphicon glyphicon-search" style="margin: 0 10px 0 0;"></span>Lorem Ipsum</li>
+                        </ul>
+                    </div>
+
+                    <div class="module">
+                        <div class="module-header">
+                            Tagi
+                        </div>
+                        <div class="module-content">
+                            <div style="font-size: 1.4em; display: inline;"><a href="">Programowanie (4)</a></div>,
+                            <div style="font-size: 1.3em; display: inline;"><a href="">C# (3)</a></div>,
+                            <div style="font-size: 1.3em; display: inline;"><a href="">GameDev (3)</a></div>,
+                            <div style="font-size: 1.2em; display: inline;"><a href="">4programmers (3)</a></div>,
+                            <div style="font-size: 1.1em; display: inline;"><a href="">Przemyślenia (1)</a></div>,
+                            <div style="font-size: 1.1em; display: inline;"><a href="">Lorem (1)</a></div>,
+                            <div style="font-size: 1.1em; display: inline;"><a href="">Ipsum (1)</a></div>,
+                            <div style="font-size: 1.1em; display: inline;"><a href="">Dolor (1)</a></div>
+                        </div>
+                    </div>
+
+                    <div class="module">
+                        <div class="module-header">
+                            Strefa użytkownika
+                        </div>
+                        <div class="module-content">
+                            @if (!WebSecurity.IsAuthenticated)
+                            {
+                                using (Html.BeginForm("Login", "Home"))
+                                {
+                                    <p><input name="login" type="text" class="form-control" placeholder="nazwa użytkownika"></p>
+                                    <p><input name="password" type="text" class="form-control" placeholder="hasło"></p>
+
+                                    <p>
+                                        <input type="submit" value="Zaloguj" class="btn btn-primary btn-login" />
+                                        @Html.ActionLink("Zarejestruj", "Register", "Home", null, new { @class = "btn btn-primary btn-register" })
+                                    </p>
+                                }
+                            }
+                            else
+                            {
+                                <ul>
+                                    <li><a href="@Url.Action("EditAccount", "Home")" class="btn btn-default form-control"><span class="glyphicon glyphicon glyphicon-wrench" style="margin: 0 10px 0 0;"></span> Edycja konta</a></li>
+                                    <li><a href="@Url.Action("Logout", "Home")" class="btn btn-default form-control"><span class="glyphicon glyphicon glyphicon-new-window" style="margin: 0 10px 0 0;"></span> Wyloguj</a></li>
+                                </ul>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="footer">
+                asd
+            </div>
+
+            <div style="clear:both;"></div>
+        </div>
+    </div>
+</body>
+</html>
