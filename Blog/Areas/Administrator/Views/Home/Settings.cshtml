@@ -18,7 +18,13 @@
             <legend>SEO</legend>
             <div class="settings-group"><span class="settings-label">Tytuł:</span> @Html.TextBoxFor(p => p.Settings.Title, new { @class = "form-control settings-control" })</div>
             <div class="settings-group"><span class="settings-label">Opis:</span> @Html.TextBoxFor(p => p.Settings.Description, new { @class = "form-control settings-control" })</div>
+            <div class="settings-group"><span class="settings-label">Krótki opis:</span> @Html.TextBoxFor(p => p.Settings.ShortDescription, new { @class = "form-control settings-control" })</div>
             <div class="settings-group"><span class="settings-label">Tagi:</span> @Html.TextBoxFor(p => p.Settings.Tags, new { @class = "form-control settings-control" })</div>
+        </fieldset>
+
+        <fieldset class="settings-fieldset">
+            <legend>Inne</legend>
+            <div class="settings-group"><span class="settings-label">Liczba tagów:</span> @Html.TextBoxFor(p => p.Settings.TagsCount, new { @class = "form-control settings-control" })</div>
         </fieldset>
     </div>
     <div class="right-col">

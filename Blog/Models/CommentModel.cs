@@ -9,7 +9,7 @@ namespace Blog.Models
     {
         public int ID { get; set; }
         public int AuthorID { get; set; }
-        public int NewsID { get; set; }
+        public int ArticleID { get; set; }
         public DateTime PublishDate { get; set; }
         public String Content { get; set; }
     }

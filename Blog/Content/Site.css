@@ -116,6 +116,10 @@ a{
     background-color: #1a3257;
 }
 
+.article-info a{
+    color: white!important;
+}
+
 .btn-login{
     width: 62%;
 }
@@ -146,6 +150,17 @@ a{
     float: right;
     margin-right: 10px;
     font-weight: bold;
+}
+
+.tags{
+    float: left;
+    margin-left: 10px;
+    font-weight: bold;
+}
+
+.single-tag{
+    display: inline-block;
+    margin: 0 10px;
 }
 
 .article-actions{
@@ -217,4 +232,55 @@ a{
 
 .validation-message{
     color: red;
+}
+
+.sub-header{
+    display: block;
+    font-size: 1.7em;
+    margin-top: 35px;
+    margin-bottom: -10px;
+    text-align: center;
+}
+
+.comments-area{
+    
+}
+
+.single-comment-area{
+    position: relative;
+    border: 1px solid rgb(142, 133, 217);
+    border-radius: 10px;
+    padding: 10px;
+    margin: 20px 20px 10px 40px;
+    background-color: #E8E4EB;
+
+    -webkit-box-shadow: 0px 0px 7px 0px rgba(50, 50, 50, 0.69);
+    -moz-box-shadow:    0px 0px 7px 0px rgba(50, 50, 50, 0.69);
+    box-shadow:         0px 0px 7px 0px rgba(50, 50, 50, 0.69);
+
+    overflow: hidden;
+}
+
+.comment-header{
+    overflow: hidden;
+    border-bottom: 1px solid black;
+    margin-bottom: 7px;
+}
+
+.comment-author{
+    float: left;
+}
+
+.comment-date{
+    float: right;
+}
+
+.comment-avatar{
+    float: left;
+    width: 10%;
+}
+
+.comment-content{
+    float: left;
+    width: 90%;
 }

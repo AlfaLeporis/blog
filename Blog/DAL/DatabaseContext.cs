@@ -14,6 +14,7 @@ namespace Blog.DAL
         public DbSet<UserModel> Users { get; set; }
         public DbSet<CategoryModel> Categories { get; set; }
         public DbSet<TagModel> Tags { get; set; }
+        public DbSet<SiteModel> Sites { get; set; }
 
         public DatabaseContext() : base("MainDBConnection")
         {
@@ -38,6 +39,9 @@ namespace Blog.DAL
 
             modelBuilder.Entity<TagModel>().ToTable("Tags");
             modelBuilder.Entity<TagModel>().HasKey(p => p.ID);
+
+            modelBuilder.Entity<SiteModel>().ToTable("Sites");
+            modelBuilder.Entity<SiteModel>().HasKey(p => p.ID);
 
             base.OnModelCreating(modelBuilder);
         }

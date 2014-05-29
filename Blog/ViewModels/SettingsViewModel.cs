@@ -8,6 +8,7 @@ namespace Blog.ViewModels
     public class SettingsViewModel
     {
         public String Title { get; set; }
+        public String ShortDescription { get; set; }
         public String Description { get; set; }
         public String Tags { get; set; }
 
@@ -17,5 +18,7 @@ namespace Blog.ViewModels
         public String SMTPPassword { get; set; }
         public String SMTPUseSSL { get; set; }
         public String SMTPUserAdress { get; set; }
+
+        public String TagsCount { get; set; }
     }
 }

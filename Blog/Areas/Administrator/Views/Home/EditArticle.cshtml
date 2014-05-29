@@ -15,10 +15,10 @@
         <fieldset class="settings-fieldset">
             <legend>Dane artykułu</legend>
             <div><span class="settings-label" style="width: 100%">Kategoria:</span> 
-                <select class="form-control">
+                <select class="form-control" name="CategoryID">
                     @for (int i = 0; i < ViewBag.CategoriesList.Count; i++)
                     {
-                        <option>@ViewBag.CategoriesList[i].Title</option>
+                        <option value="@ViewBag.CategoriesList[i].ID">@ViewBag.CategoriesList[i].Title</option>
                     }
                 </select>
             </div>
@@ -35,7 +35,7 @@
 
             <div>
                 <span class="settings-label" style="width: 100%">Tagi:</span>
-                @Html.TextBoxFor(p => p.Tags, new { @class = "form-control", placeholder = "Tagi" })
+                    @Html.TextBoxFor(p => p.TagsString, new { @class = "form-control", placeholder = "Tagi" })
             </div>
         </fieldset>
     </div>
@@ -72,7 +72,27 @@
     <div style="height: 630px;">@Html.TextAreaFor(p => p.Content, new { id = "editor"})</div>
 
     <script>
-        CKEDITOR.replace('editor', { height: "500px" });
+        CKEDITOR.replace('editor', 
+            {
+                extraPlugins: 'wpmore',
+                toolbar: [['Save', '-', 'Source', 'Preview', '-', 'Templates'],
+                            ['Cut', 'Copy', 'Paste', 'PasteText', 'PasteFromWord', '-', 'Print', 'SpellChecker', 'Scayt'],
+                            ['Undo', 'Redo', '-', 'Find', 'Replace'],
+                            ['Link', 'Unlink', 'Anchor'],
+                            '/',
+                            ['NumberedList', 'BulletedList', '-', 'Outdent', 'Indent', 'Blockquote', 'CreateDiv'],
+                            ['JustifyLeft', 'JustifyCenter', 'JustifyRight', 'JustifyBlock'],
+                            ['NumberedList', 'BulletedList', '-', 'Outdent', 'Indent', 'Blockquote'],
+                            ['Image', 'Flash', 'Table', 'HorizontalRule', 'Smiley', 'SpecialChar', 'PageBreak'],
+                             '/',
+                            ['Styles', 'Format', 'Font', 'FontSize'],
+                            ['Bold', 'Italic', 'Underline', 'Strike', '-', 'Subscript', 'Superscript'],
+                            ['Maximize'],
+                            ['Hello', 'Hello2'],
+                            ['Source', 'WPMore']],
+                height: "500px"
+            }
+        );
     </script>
 
     <div class="clearfix"></div>

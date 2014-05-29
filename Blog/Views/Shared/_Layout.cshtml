@@ -22,8 +22,7 @@
 
     <div id="site">
         <div id="header-area">
-            <h1>Tytuł strony</h1>
-            <h5>Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum Lorem ipsum</h5>
+            @Html.Action("HeaderModule")
             <div id="menu-area">
                 <ul>
                     <li class="btn btn-primary">pozycja 1</li>
@@ -59,21 +58,8 @@
                         </ul>
                     </div>
 
-                    <div class="module">
-                        <div class="module-header">
-                            Tagi
-                        </div>
-                        <div class="module-content">
-                            <div style="font-size: 1.4em; display: inline;"><a href="">Programowanie (4)</a></div>,
-                            <div style="font-size: 1.3em; display: inline;"><a href="">C# (3)</a></div>,
-                            <div style="font-size: 1.3em; display: inline;"><a href="">GameDev (3)</a></div>,
-                            <div style="font-size: 1.2em; display: inline;"><a href="">4programmers (3)</a></div>,
-                            <div style="font-size: 1.1em; display: inline;"><a href="">Przemyślenia (1)</a></div>,
-                            <div style="font-size: 1.1em; display: inline;"><a href="">Lorem (1)</a></div>,
-                            <div style="font-size: 1.1em; display: inline;"><a href="">Ipsum (1)</a></div>,
-                            <div style="font-size: 1.1em; display: inline;"><a href="">Dolor (1)</a></div>
-                        </div>
-                    </div>
+                    @Html.Action("TagsModule")
+                    @Html.Action("CategoriesModule")
 
                     <div class="module">
                         <div class="module-header">

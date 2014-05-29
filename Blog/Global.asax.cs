@@ -36,6 +36,8 @@ namespace Blog
             unityContainer.RegisterType<ICategoriesService, CategoriesService>();
             unityContainer.RegisterType<IArticlesService, ArticlesService>();
             unityContainer.RegisterType<ITagsService, TagsService>();
+            unityContainer.RegisterType<ICommentsService, CommentsService>();
+            unityContainer.RegisterType<ISitesService, SitesService>();
 
             ControllerBuilder.Current.SetControllerFactory(new CustomControllerFactory(unityContainer));
 

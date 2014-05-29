@@ -19,6 +19,8 @@ namespace Blog.Areas.Administrator.Controllers
         private ICategoriesService _categoriesService = null;
         private IArticlesService _articlesService = null;
         private ITagsService _tagsService = null;
+        private ICommentsService _commentsService = null;
+        private ISitesService _sitesService = null;
 
         [InjectionConstructor]
         public HomeController(ISecurityService securityService,
@@ -26,7 +28,9 @@ namespace Blog.Areas.Administrator.Controllers
                               ISettingsService settingsService,
                               ICategoriesService categoriesService,
                               IArticlesService articlesService,
-                              ITagsService tagsService)
+                              ITagsService tagsService,
+                              ICommentsService commentsService,
+                              ISitesService sitesService)
         {
             _securityService = securityService;
             _logService = logService;
@@ -34,6 +38,8 @@ namespace Blog.Areas.Administrator.Controllers
             _categoriesService = categoriesService;
             _articlesService = articlesService;
             _tagsService = tagsService;
+            _commentsService = commentsService;
+            _sitesService = sitesService;
         }
 
         [HttpGet]
@@ -187,7 +193,7 @@ namespace Blog.Areas.Administrator.Controllers
             if(id.HasValue)
             {
                 var article = _articlesService.Get(id.Value);
-                article.Tags = _tagsService.GetByArticleID(id.Value);
+                article.Tags = _tagsService.GetListByArticleID(id.Value);
                 ViewBag.ButtonText = "Edytuj artykuł";
                 return View(article);
             }
@@ -197,7 +203,8 @@ namespace Blog.Areas.Administrator.Controllers
 
                 var viewModel = new ArticleViewModel()
                 {
-                    CreationDate = DateTime.Now
+                    CreationDate = DateTime.Now,
+                    Tags = new List<string>()
                 };
                 return View(viewModel);
             }
@@ -206,7 +213,10 @@ namespace Blog.Areas.Administrator.Controllers
         [HttpPost]
         public ActionResult EditArticle(ArticleViewModel viewModel)
         {
-            ViewBag.CategoriesList = _categoriesService.GetAll();   
+            ViewBag.CategoriesList = _categoriesService.GetAll();
+
+            ModelState.Remove("CategoryName");
+            ModelState.Remove("Tags");
 
             if (ModelState.IsValid)
             {
@@ -222,7 +232,7 @@ namespace Blog.Areas.Administrator.Controllers
                 }
                 else
                 {
-                    TempData.Add("ErrorMsg", "Wystąpił błąd podczas próby dodania artkułu. Spróbuj ponownie.");
+                    TempData.Add("ErrorMsg", "Wystąpił błąd podczas próby edycji artkułu. Spróbuj ponownie.");
                     return View(viewModel);
                 }
             }
@@ -245,5 +255,115 @@ namespace Blog.Areas.Administrator.Controllers
 
             return RedirectToAction("Articles");
         }
-	}
+
+        [HttpGet]
+        public ActionResult Comments()
+        {
+            var comments = _commentsService.GetAll();
+            return View(comments);
+        }
+
+        [HttpGet]
+        public ActionResult RemoveComment(int id)
+        {
+            _commentsService.Remove(id);
+
+            return RedirectToAction("Comments");
+        }
+
+        [HttpGet]
+        public ActionResult EditComment(int id)
+        {
+            var viewModel = _commentsService.Get(id);
+            return View(viewModel);
+        }
+
+        [HttpPost]
+        public ActionResult EditComment(CommentViewModel viewModel)
+        {
+            if (ModelState.IsValid)
+            {
+                bool result;
+                if (viewModel.ID.HasValue)
+                {
+                    var comment = _commentsService.Get(viewModel.ID.Value);
+                    comment.Content = viewModel.Content;
+                    result = _commentsService.Edit(comment);
+                }
+                else
+                    result = _commentsService.Add(viewModel);
+
+                if (result)
+                {
+                    return RedirectToAction("Comments");
+                }
+                else
+                {
+                    TempData.Add("ErrorMsg", "Wystąpił błąd podczas próby edycji komentarza. Spróbuj ponownie.");
+                    return View(viewModel);
+                }
+            }
+
+            return View(viewModel);
+        }
+
+        [HttpGet]
+        public ActionResult Sites()
+        {
+            var viewModel = _sitesService.GetAll();
+            return View(viewModel);
+        }
+
+        [HttpGet]
+        public ActionResult EditSite(int? id)
+        {
+            if (id.HasValue)
+            {
+                var viewModel = _sitesService.Get(id.Value);
+                return View(viewModel);
+            }
+            return View();
+        }
+
+        [HttpPost]
+        public ActionResult EditSite(SiteViewModel viewModel)
+        {
+            if (ModelState.IsValid)
+            {
+                bool result;
+                if (viewModel.ID.HasValue)
+                    result = _sitesService.Edit(viewModel);
+                else
+                    result = _sitesService.Add(viewModel);
+
+                if (result)
+                {
+                    return RedirectToAction("Sites");
+                }
+                else
+                {
+                    TempData.Add("ErrorMsg", "Wystąpił błąd podczas próby edycji strony. Spróbuj ponownie.");
+                    return View(viewModel);
+                }
+            }
+
+            return View(viewModel);
+        }
+
+        [HttpGet]
+        public ActionResult InvertSiteStatus(int id)
+        {
+            var site = _sitesService.Get(id);
+            _sitesService.SetSiteStatus(id, !site.IsPublished);
+
+            return RedirectToAction("Sites");
+        }
+
+        [HttpGet]
+        public ActionResult RemoveSite(int id)
+        {
+            _sitesService.Remove(id);
+            return RedirectToAction("Sites");
+        }
+    }
 }

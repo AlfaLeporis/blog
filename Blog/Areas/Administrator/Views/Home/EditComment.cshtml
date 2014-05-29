@@ -1,0 +1,19 @@
+﻿@model Blog.ViewModels.CommentViewModel
+
+@{
+    ViewBag.Title = "EditComment";
+    Layout = "~/Areas/Administrator/Views/Shared/_Layout.cshtml";
+}
+
+@using (Html.BeginForm("EditComment", "Home", new { area = "Administrator" }))
+{
+    <div class="form-group">
+        <label for="inputEmail">Treść komentarza</label>
+        @Html.HiddenFor(p => p.ID)
+        @Html.TextAreaFor(p => p.Content, new { @class = "form-control", placeholder = "Nazwa kategorii" })
+        @Html.ValidationMessageFor(p => p.Content, null, new { @class = "validation-message" })
+    </div>
+
+    <button type="submit" class="btn btn-primary register-button">Edytuj komentarz</button>
+}
+

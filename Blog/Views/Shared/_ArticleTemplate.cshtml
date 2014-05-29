@@ -1,0 +1,85 @@
+﻿@model Blog.ViewModels.ArticleViewModel
+
+<div class="article">
+    <h3>@Model.Title</h3>
+    <div class="article-info">
+        <div class="info-left">
+            <span class="glyphicon glyphicon-time" style="margin: 2px 5px 0 0;"></span> @Model.PublishDate
+        </div>
+        <div class="info-right">
+            <span class="glyphicon glyphicon-list-alt" style="margin: 2px 5px 0 0;"></span> @Html.ActionLink(Model.CategoryName, "Category", new { id = Model.CategoryName })
+        </div>
+    </div>
+
+    <div class="comments-info">
+        <div style="position: relative;">
+            <span class="glyphicon glyphicon-comment" style="margin: 0px 5px 0 0; font-size: 2.5em; position: relative; color: rgb(35, 49, 71); ">
+            </span>
+        </div>
+        <div style="position: absolute; color: white; top: 0; left: 0; width: 35px; height: 25px; text-align: center; padding: 3px; font-size: 1.2em;">
+            @Model.Comments.Count
+        </div>
+    </div>
+
+    <div class="article-content">
+        @Html.Raw(Model.Content)
+    </div>
+
+    <div class="article-actions">
+        <div class="tags">
+            @for (int x = 0; x < Model.Tags.Count; x++)
+            {
+                <div class="single-tag">@Html.ActionLink("#" + Model.Tags[x], "Tag", new { id ="a"}, new { @class = "single-tag" })</div>
+            }
+        </div>
+
+        @if (Model.IsReadMode)
+        {
+            <div class="read-more">
+                @Html.ActionLink("Czytaj dalej...", "Article", new { id = Model.Alias })
+            </div>
+        }
+    </div>
+</div>
+
+@if (!Model.IsReadMode)
+{
+    <div class="comments-area">
+
+        @for (int i = 0; i < Model.Comments.Count; i++)
+        {
+        <div class="single-comment-area">
+            <div class="comment-header">
+                <div class="comment-author">
+                    @Model.Comments[i].AuthorName
+                </div>
+                <div class="comment-date">  
+                    @Model.Comments[i].PublishDate
+                    @if(Model.Comments[i].AuthorID == WebSecurity.CurrentUserId && WebSecurity.IsAuthenticated)
+                    {
+                        @Html.ActionLink("[Usuń]", "RemoveComment", "Home", new { id = Model.Comments[i].ID, articleID = Model.ID }, null)
+                    }
+                </div>
+            </div>
+            <div class="comment-avatar">
+                <img src="@Model.Comments[i].AvatarSource" alt="avatar"/>
+            </div>
+            <div class="comment-content">
+                @Model.Comments[i].Content
+            </div>
+        </div>
+        }
+
+    </div>
+
+    <div class="single-comment-area">
+        <div class="comments-reply-area">
+            @using (Html.BeginForm("AddComment", "Home"))
+            {
+                <input type="hidden" name="ArticleID" value="@Model.ID" />
+                <textarea class="form-control" name="CommentContent"></textarea>
+                <input type="submit" value="Dodaj komentarz" class="btn btn-default"/>
+            }
+        </div>
+    </div>
+}
