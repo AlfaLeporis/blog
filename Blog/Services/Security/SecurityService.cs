@@ -15,11 +15,8 @@ namespace Blog.Services
     {
         public bool Login(AuthViewModel viewModel)
         {
-            if (viewModel.Login == String.Empty)
-                throw new ArgumentNullException("Login");
-
-            if (viewModel.Password == String.Empty)
-                throw new ArgumentNullException("Password");
+            if (viewModel.Login == String.Empty || viewModel.Password == String.Empty)
+                return false;
 
             return WebSecurity.Login(viewModel.Login, viewModel.Password);
         }
@@ -77,7 +74,11 @@ namespace Blog.Services
 
             using(var db = new DatabaseContext())
             {
-                var user = db.Users.First(p => p.ID == id);
+                var user = db.Users.FirstOrDefault(p => p.ID == id);
+
+                if (user == null)
+                    return "undefined";
+
                 return user.EMail;
             }
         }
@@ -90,7 +91,11 @@ namespace Blog.Services
 
             using(var db = new DatabaseContext())
             {
-                var user = db.Users.First(p => p.ID == id);
+                var user = db.Users.FirstOrDefault(p => p.ID == id);
+
+                if (user == null)
+                    return "Anonim";
+
                 return user.Name;
             }
         }

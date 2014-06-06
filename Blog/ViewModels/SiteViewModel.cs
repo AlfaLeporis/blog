@@ -10,6 +10,8 @@ namespace Blog.ViewModels
     public class SiteViewModel
     {
         public int? ID { get; set; }
+        public List<CommentViewModel> Comments { get; set; }
+        public bool IsReadMore { get; set; }
 
         [Required(ErrorMessage = "Pole jest wymagane!")]
         public String Alias { get; set; }

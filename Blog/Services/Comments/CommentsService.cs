@@ -39,7 +39,11 @@ namespace Blog.Services
         {
             using (var db = new DatabaseContext())
             {
-                var model = db.Comments.First(p => p.ID == viewModel.ID);
+                var model = db.Comments.FirstOrDefault(p => p.ID == viewModel.ID);
+
+                if (model == null)
+                    return false;
+
                 model.InjectFrom(viewModel);
 
                 db.SaveChanges();
@@ -48,28 +52,34 @@ namespace Blog.Services
             return true;
         }
 
-        public void Remove(int id)
+        public bool Remove(int id)
         {
             using (var db = new DatabaseContext())
             {
-                if (!db.Comments.Any(p => p.ID == id))
-                    return;
+                var model = db.Comments.FirstOrDefault(p => p.ID == id);
 
-                var element = db.Comments.First(p => p.ID == id);
-                db.Comments.Remove(element);
+                if (model == null)
+                    return false;
+
+                db.Comments.Remove(model);
 
                 db.SaveChanges();
             }
+
+            return false;
         }
 
         public CommentViewModel Get(int id)
         {
             using (var db = new DatabaseContext())
             {
-                var element = db.Comments.FirstOrDefault(p => p.ID == id);
+                var model = db.Comments.FirstOrDefault(p => p.ID == id);
+
+                if (model == null)
+                    return null;
 
                 var viewModel = new CommentViewModel();
-                viewModel.InjectFrom<CustomInjection>(element);
+                viewModel.InjectFrom<CustomInjection>(model);
                 viewModel.AvatarSource = GetAvatarSourceByEMail(_securityService.GetEMailByID(viewModel.AuthorID));
                 viewModel.AuthorName = _securityService.GetUserNameByID(viewModel.AuthorID);
 
@@ -99,12 +109,12 @@ namespace Blog.Services
         }
 
 
-        public List<CommentViewModel> GetByArticleID(int id)
+        public List<CommentViewModel> GetByTargetID(int id, CommentTarget target)
         {
             using(var db = new DatabaseContext())
             {
                 var viewModels = new List<CommentViewModel>();
-                var comments = db.Comments.Where(p => p.ArticleID == id).ToList();
+                var comments = db.Comments.Where(p => p.ArticleID == id && p.Target == target).ToList();
 
                 for (int i = 0; i < comments.Count; i++)
                 {

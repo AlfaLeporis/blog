@@ -6,6 +6,7 @@
     <title>@ViewBag.Title</title>
     @Scripts.Render("~/bundles/jquery")
     @Scripts.Render("~/bundles/jqueryval")
+    @Scripts.Render("~/bundles/custom-scripts")
     @Styles.Render("~/Content/css")
     @Styles.Render("~/Content/bootstrap")
 </head>
@@ -22,13 +23,9 @@
 
     <div id="site">
         <div id="header-area">
-            @Html.Action("HeaderModule")
+            @Html.Action("HeaderModule", "Modules")
             <div id="menu-area">
-                <ul>
-                    <li class="btn btn-primary">pozycja 1</li>
-                    <li class="btn btn-primary">pozycja 2</li>
-                    <li class="btn btn-primary">pozycja 3</li>
-                </ul>
+                @Html.Action("SitesModule", "Modules")
             </div>
         </div>
         <div id="wrapper">
@@ -37,12 +34,7 @@
             </div>
             <div id="right-col">
                 <div id="right-col-container">
-                    <div class="input-group">
-                        <input type="text" class="form-control" placeholder="treść, kategoria, tytuł">
-                        <span class="input-group-btn">
-                            <button class="btn btn-primary" type="button">Szukaj!</button>
-                        </span>
-                    </div>
+                    @Html.Action("SearchModule", "Modules")
 
                     <div class="module">
                         <div class="module-header">
@@ -58,8 +50,8 @@
                         </ul>
                     </div>
 
-                    @Html.Action("TagsModule")
-                    @Html.Action("CategoriesModule")
+                    @Html.Action("TagsModule", "Modules")
+                    @Html.Action("CategoriesModule", "Modules")
 
                     <div class="module">
                         <div class="module-header">
@@ -68,22 +60,22 @@
                         <div class="module-content">
                             @if (!WebSecurity.IsAuthenticated)
                             {
-                                using (Html.BeginForm("Login", "Home"))
+                                using (Html.BeginForm("Login", "Security", new { returnUrl = ViewBag.ReturnUrl }))
                                 {
                                     <p><input name="login" type="text" class="form-control" placeholder="nazwa użytkownika"></p>
                                     <p><input name="password" type="text" class="form-control" placeholder="hasło"></p>
 
                                     <p>
                                         <input type="submit" value="Zaloguj" class="btn btn-primary btn-login" />
-                                        @Html.ActionLink("Zarejestruj", "Register", "Home", null, new { @class = "btn btn-primary btn-register" })
+                                        @Html.ActionLink("Zarejestruj", "Register", "Security", null, new { @class = "btn btn-primary btn-register" })
                                     </p>
                                 }
                             }
                             else
                             {
                                 <ul>
-                                    <li><a href="@Url.Action("EditAccount", "Home")" class="btn btn-default form-control"><span class="glyphicon glyphicon glyphicon-wrench" style="margin: 0 10px 0 0;"></span> Edycja konta</a></li>
-                                    <li><a href="@Url.Action("Logout", "Home")" class="btn btn-default form-control"><span class="glyphicon glyphicon glyphicon-new-window" style="margin: 0 10px 0 0;"></span> Wyloguj</a></li>
+                                    <li><a href="@Url.Action("EditAccount", "Security")" class="btn btn-default form-control"><span class="glyphicon glyphicon glyphicon-wrench" style="margin: 0 10px 0 0;"></span> Edycja konta</a></li>
+                                    <li><a href="@Url.Action("Logout", "Security")" class="btn btn-default form-control"><span class="glyphicon glyphicon glyphicon-new-window" style="margin: 0 10px 0 0;"></span> Wyloguj</a></li>
                                 </ul>
                             }
                         </div>

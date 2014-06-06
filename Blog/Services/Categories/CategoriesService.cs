@@ -12,6 +12,11 @@ namespace Blog.Services
 {
     public class CategoriesService : ICategoriesService
     {
+        public CategoriesService()
+        {
+
+        }
+
         public bool Add(CategoryViewModel viewModel)
         {
             using(var db = new DatabaseContext())
@@ -36,7 +41,11 @@ namespace Blog.Services
                 if (db.Categories.Any(p => p.Title == viewModel.Title))
                     return false;
 
-                var model = db.Categories.First(p => p.ID == viewModel.ID);
+                var model = db.Categories.FirstOrDefault(p => p.ID == viewModel.ID);
+
+                if (model == null)
+                    return false;
+
                 model.InjectFrom(viewModel);
 
                 db.SaveChanges();
@@ -45,18 +54,24 @@ namespace Blog.Services
             return true;
         }
 
-        public void Remove(int id)
+        public bool Remove(int id)
         {
             using (var db = new DatabaseContext())
             {
                 if (!db.Categories.Any(p => p.ID == id))
-                    return;
+                    return false;
 
-                var element = db.Categories.First(p => p.ID == id);
+                var element = db.Categories.FirstOrDefault(p => p.ID == id);
+
+                if (element == null)
+                    return false;
+
                 db.Categories.Remove(element);
 
                 db.SaveChanges();
             }
+
+            return true;
         }
 
         public CategoryViewModel Get(int id)
@@ -64,6 +79,9 @@ namespace Blog.Services
             using (var db = new DatabaseContext())
             {
                 var element = db.Categories.FirstOrDefault(p => p.ID == id);
+
+                if (element == null)
+                    return null;
 
                 var viewModel = new CategoryViewModel();
                 viewModel.InjectFrom<CustomInjection>(element);
@@ -121,6 +139,9 @@ namespace Blog.Services
         {
             using(var db = new DatabaseContext())
             {
+                if (!db.Categories.Any(p => p.Title == name))
+                    return -1;
+
                 return db.Categories.First(p => p.Title == name).ID;
             }
         }

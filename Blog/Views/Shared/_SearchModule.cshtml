@@ -1,0 +1,9 @@
+﻿<div class="input-group">
+    @using(Html.BeginForm("Search", "Modules"))
+    {
+        <input type="text" class="form-control" name="search-phrase" placeholder="treść, kategoria, tytuł">
+        <span class="input-group-btn">
+            <input class="btn btn-primary" type="submit" value="Szukaj!" />
+        </span>  
+    }
+</div>

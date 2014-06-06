@@ -1,0 +1,43 @@
+﻿@model List<Blog.ViewModels.SiteViewModel>
+
+@{
+    ViewBag.Title = "Sites";
+    Layout = "~/Areas/Administrator/Views/Shared/_Layout.cshtml";
+}
+
+<table class="table table-bordered">
+    <tbody>
+        <tr>
+            <th>ID</th>
+            <th>Nazwa</th>
+            <th>Opis</th>
+            <th>Status</th>
+            <th>Akcje</th>
+        </tr>
+        @for (int i = 0; i < Model.Count; i++)
+        {
+            <tr>
+                <td style="width: 10%;">@Model[i].ID.Value</td>
+                <td style="width: 30%;">@Model[i].Title</td>
+                <td style="width: 30%;">@Model[i].Description</td>
+                <td style="width: 10%;">
+                    @if (Model[i].IsPublished)
+                    {
+                        @Html.ActionLink("Opublikowany", "InvertSiteStatus", "Sites", new { area = "Administrator", id = Model[i].ID }, new { @class = "btn btn-success table-button" })
+                    }
+                    else
+                    {
+                        @Html.ActionLink("Nieopublikowany", "InvertSiteStatus", "Sites", new { area = "Administrator", id = Model[i].ID }, new { @class = "btn btn-danger table-button" })
+                    }
+                </td>
+
+                <td style="width: 20%;">
+                    @Html.ActionLink("Edytuj", "EditSite", "Sites", new { area = "Administrator", id = Model[i].ID }, new { @class = "btn btn-primary table-button" })
+                    @Html.ActionLink("Usuń", "RemoveSite", "Sites", new { area = "Administrator", id = Model[i].ID }, new { @class = "btn btn-danger table-button" })
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@Html.ActionLink("Dodaj stronę", "EditSite", "Sites", new { area = "Administrator" }, new { @class = "btn btn-primary btn-settings" })

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Blog.ViewModels;
+using Blog.Models;
 
 namespace Blog.Services
 {
@@ -11,9 +12,9 @@ namespace Blog.Services
     {
         bool Add(CommentViewModel viewModel);
         bool Edit(CommentViewModel viewModel);
-        void Remove(int id);
+        bool Remove(int id);
         CommentViewModel Get(int id);
         List<CommentViewModel> GetAll();
-        List<CommentViewModel> GetByArticleID(int id);
+        List<CommentViewModel> GetByTargetID(int id, CommentTarget target);
     }
 }

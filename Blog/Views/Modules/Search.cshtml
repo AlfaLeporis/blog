@@ -1,0 +1,17 @@
+﻿@model Blog.ViewModels.SearchViewModel
+
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="sub-header">Lista artykułów zawierających frazę <strong>@Model.Phrase</strong> (@Model.Articles.Count)</div>
+@for(int i=0; i<Model.Articles.Count; i++)
+{
+    Html.RenderPartial("_ArticleTemplate", Model.Articles[i]);
+}
+
+<div class="sub-header">Lista stron zawierających frazę <strong>@Model.Phrase</strong> (@Model.Articles.Count)</div>
+@for (int i = 0; i < Model.Sites.Count; i++)
+{
+    Html.RenderPartial("_SiteTemplate", Model.Sites[i]);
+}

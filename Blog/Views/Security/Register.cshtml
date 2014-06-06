@@ -1,0 +1,49 @@
+﻿@model Blog.ViewModels.RegisterViewModel
+
+@{
+    ViewBag.Title = "Register";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="article">
+    @using (Html.BeginForm("Register", "Security", new { returnUrl = ViewBag.ReturnUrl }))
+    {
+        <div class="form-group">
+            <label for="inputEmail">Nazwa użytkownika</label>
+            @Html.TextBoxFor(p => p.UserName, new { @class = "form-control", placeholder = "Nazwa użytkownika" })
+            @Html.ValidationMessageFor(p => p.UserName, null, new { @class = "validation-message" })
+        </div>
+        
+        <div class="form-group">
+            <label for="inputEmail">Potwierdź nazwę użytkownika</label>
+            @Html.TextBoxFor(p => p.ConfirmUserName, new { @class = "form-control", placeholder = "Nazwa użytkownika" })
+            @Html.ValidationMessageFor(p => p.ConfirmUserName, null, new { @class = "validation-message" })
+        </div>
+        
+        <div class="form-group">
+            <label for="inputEmail">Hasło</label>
+            @Html.TextBoxFor(p => p.Password, new { @class = "form-control", type = "password", placeholder = "Hasło" })
+            @Html.ValidationMessageFor(p => p.Password, null, new { @class = "validation-message" })
+        </div>
+        
+        <div class="form-group">
+            <label for="inputEmail">Potwierdź hasło</label>
+            @Html.TextBoxFor(p => p.ConfirmPassword, new { @class = "form-control", type = "password", placeholder = "Hasło" })
+            @Html.ValidationMessageFor(p => p.ConfirmPassword, null, new { @class = "validation-message" })
+        </div>
+        
+        <div class="form-group">
+            <label for="inputEmail">E-Mail</label>
+            @Html.TextBoxFor(p => p.EMail, new { @class = "form-control", placeholder = "E-Mail" })
+            @Html.ValidationMessageFor(p => p.EMail, null, new { @class = "validation-message" })
+        </div>
+        
+        <div class="form-group">
+            <label for="inputEmail">Potwierdź E-Mail</label>
+            @Html.TextBoxFor(p => p.ConfirmEMail, new { @class = "form-control", placeholder = "E-Mail" })
+            @Html.ValidationMessageFor(p => p.ConfirmEMail, null, new { @class = "validation-message" })
+        </div>
+
+        <button type="submit" class="btn btn-primary register-button">Zarejestruj!</button>
+    }
+</div>

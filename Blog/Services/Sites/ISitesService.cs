@@ -11,9 +11,11 @@ namespace Blog.Services
     {
         bool Add(SiteViewModel viewModel);
         bool Edit(SiteViewModel viewModel);
-        void Remove(int id);
+        bool Remove(int id);
         SiteViewModel Get(int id);
+        SiteViewModel GetShortVersion(int id, int maxlength);
         List<SiteViewModel> GetAll();
-        void SetSiteStatus(int id, bool status);
+        bool SetSiteStatus(int id, bool status);
+        SiteViewModel GetByAlias(String id);
     }
 }

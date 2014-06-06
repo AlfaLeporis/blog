@@ -11,7 +11,7 @@ namespace Blog.Services
     {
         bool Add(CategoryViewModel viewModel);
         bool Edit(CategoryViewModel viewModel);
-        void Remove(int id);
+        bool Remove(int id);
         CategoryViewModel Get(int id);
         List<CategoryViewModel> GetAll();
         List<CategoriesModuleViewModel> GetAllWithDetails();

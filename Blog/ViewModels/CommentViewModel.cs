@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
+using System.ComponentModel.DataAnnotations;
+using Blog.Models;
 
 namespace Blog.ViewModels
 {
@@ -12,7 +14,12 @@ namespace Blog.ViewModels
         public int ArticleID { get; set; }
         public DateTime PublishDate { get; set; }
         public String AvatarSource { get; set; }
+
+        [Required(ErrorMessage = "Pole jest wymagane!")]
         public String Content { get; set; }
+
         public String AuthorName { get; set; }
+
+        public CommentTarget Target { get; set; }
     }
 }

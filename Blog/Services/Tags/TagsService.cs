@@ -67,7 +67,7 @@ namespace Blog.Services
             }
         }
 
-        public void RemoveByArticleID(int articleID)
+        public bool RemoveByArticleID(int articleID)
         {
             using(var db = new DatabaseContext())
             {
@@ -76,6 +76,8 @@ namespace Blog.Services
 
                 db.SaveChanges();
             }
+
+            return true;
         }
 
         public List<int> GetArticlesIDByTagName(String tag)

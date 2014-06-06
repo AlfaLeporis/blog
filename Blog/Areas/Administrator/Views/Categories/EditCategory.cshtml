@@ -1,0 +1,19 @@
+﻿@model Blog.ViewModels.CategoryViewModel
+
+@{
+    ViewBag.Title = "AddCategory";
+    Layout = "~/Areas/Administrator/Views/Shared/_Layout.cshtml";
+}
+
+@using (Html.BeginForm("EditCategory", "Categories", new { area = "Administrator" }))
+{
+    <div class="form-group">
+        <label for="inputEmail">Nazwa kategorii</label>
+        @Html.HiddenFor(p => p.ID)
+        @Html.TextBoxFor(p => p.Title, new { @class = "form-control", placeholder = "Nazwa kategorii" })
+        @Html.ValidationMessageFor(p => p.Title, null, new { @class = "validation-message" })
+    </div>
+        
+    <button type="submit" class="btn btn-primary register-button">Edytuj kategorię</button>
+}
+

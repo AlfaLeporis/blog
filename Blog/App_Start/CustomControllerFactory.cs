@@ -70,16 +70,16 @@ namespace Blog.App_Start
         {
             var constructors = controller.GetConstructors();
 
-            for (int i = 0; i < constructors.Count(); i++)
-            {
-                var attributes = constructors[i].GetCustomAttributes(false);
-                if (attributes.FirstOrDefault(p => p.GetType() == typeof(InjectionConstructorAttribute)) != null)
-                {
-                    return constructors[i];
-                }
-            }
+            //for (int i = 0; i < constructors.Count(); i++)
+            //{
+                //var attributes = constructors[i].GetCustomAttributes(false);
+                //if (attributes.FirstOrDefault(p => p.GetType() == typeof(InjectionConstructorAttribute)) != null)
+                //{
+                //    return constructors[i];
+                //}
+            //}
 
-            return null;
+            return constructors.First();
         }
 
         private String GetAreaName(RequestContext requestContext)

@@ -1,0 +1,56 @@
+﻿@model Blog.ViewModels.AdminSettingsViewModel
+
+@{
+    ViewBag.Title = "Settings";
+    Layout = "~/Areas/Administrator/Views/Shared/_Layout.cshtml";
+}
+
+<script>
+    $(document).ready(function () {
+        $(':input:checked').parent('.btn').addClass('active');
+    });
+</script>
+
+@using (Html.BeginForm("Settings", "Settings", new { area = "Administrator" }))
+{
+    <div class="left-col">
+        <fieldset class="settings-fieldset">
+            <legend>SEO</legend>
+            <div class="settings-group"><span class="settings-label">Tytuł:</span> @Html.TextBoxFor(p => p.Settings.Title, new { @class = "form-control settings-control" })</div>
+            <div class="settings-group"><span class="settings-label">Opis:</span> @Html.TextBoxFor(p => p.Settings.Description, new { @class = "form-control settings-control" })</div>
+            <div class="settings-group"><span class="settings-label">Krótki opis:</span> @Html.TextBoxFor(p => p.Settings.ShortDescription, new { @class = "form-control settings-control" })</div>
+            <div class="settings-group"><span class="settings-label">Tagi:</span> @Html.TextBoxFor(p => p.Settings.Tags, new { @class = "form-control settings-control" })</div>
+        </fieldset>
+
+        <fieldset class="settings-fieldset">
+            <legend>Inne</legend>
+            <div class="settings-group"><span class="settings-label">Liczba tagów:</span> @Html.TextBoxFor(p => p.Settings.TagsCount, new { @class = "form-control settings-control" })</div>
+            <div class="settings-group"><span class="settings-label">Długość krótkiej strony:</span> @Html.TextBoxFor(p => p.Settings.ShortSiteMaxLength, new { @class = "form-control settings-control" })</div>
+        </fieldset>
+    </div>
+    <div class="right-col">
+        <fieldset class="settings-fieldset">
+            <legend>SMTP</legend>
+            <div class="settings-group"><span class="settings-label">Adres:</span> @Html.TextBoxFor(p => p.Settings.SMTPAdress, new { @class = "form-control settings-control" })</div>
+            <div class="settings-group"><span class="settings-label">Port:</span> @Html.TextBoxFor(p => p.Settings.SMTPPort, new { @class = "form-control settings-control" })</div>
+            <div class="settings-group"><span class="settings-label">Nazwa użytkownika:</span> @Html.TextBoxFor(p => p.Settings.SMTPUserName, new { @class = "form-control settings-control" })</div>
+            <div class="settings-group"><span class="settings-label">Hasło:</span> @Html.TextBoxFor(p => p.Settings.SMTPPassword, new { @class = "form-control settings-control" })</div>
+            <div class="settings-group"><span class="settings-label">Nazwa nadawcy:</span> @Html.TextBoxFor(p => p.Settings.SMTPUserAdress, new { @class = "form-control settings-control" })</div>
+            <div class="settings-group"><span class="settings-label">Użyj SSL:</span> 
+                <div class="btn-group" data-toggle="buttons">
+                    <label class="btn btn-success radio-button">
+                        @Html.RadioButtonFor(Model => Model.Settings.SMTPUseSSL, true) Opublikowana
+                    </label>
+                    <label class="btn btn-danger radio-button">
+                        @Html.RadioButtonFor(Model => Model.Settings.SMTPUseSSL, false) Prywatna
+                    </label>
+                </div>
+            </div>
+        </fieldset>
+    </div>
+    
+    <div class="clearfix"></div>
+
+    <input type="submit" class="btn btn-primary btn-settings" value="Zapisz" />
+}
+

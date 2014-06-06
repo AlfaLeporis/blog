@@ -12,7 +12,7 @@ namespace Blog.Services
         void Parse(String tags, int articleID);
         String GetStringByArticleID(int articleID);
         List<String> GetListByArticleID(int articleID);
-        void RemoveByArticleID(int articleID);
+        bool RemoveByArticleID(int articleID);
         List<int> GetArticlesIDByTagName(String tag);
         List<TagsModuleViewModel> GetMostPopularTags(int count);
     }

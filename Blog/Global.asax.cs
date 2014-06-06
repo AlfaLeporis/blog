@@ -29,26 +29,8 @@ namespace Blog
             RouteConfig.RegisterRoutes(RouteTable.Routes);
             BundleConfig.RegisterBundles(BundleTable.Bundles);
 
-            var unityContainer = new UnityContainer();
-            unityContainer.RegisterType<ISecurityService, SecurityService>();
-            unityContainer.RegisterType<ILogService, LogService>();
-            unityContainer.RegisterType<ISettingsService, SettingsService>();
-            unityContainer.RegisterType<ICategoriesService, CategoriesService>();
-            unityContainer.RegisterType<IArticlesService, ArticlesService>();
-            unityContainer.RegisterType<ITagsService, TagsService>();
-            unityContainer.RegisterType<ICommentsService, CommentsService>();
-            unityContainer.RegisterType<ISitesService, SitesService>();
-
-            ControllerBuilder.Current.SetControllerFactory(new CustomControllerFactory(unityContainer));
-
-            var dbContext = new DAL.DatabaseContext();
-            dbContext.Dispose();
-
-            WebSecurity.InitializeDatabaseConnection("MainDBConnection", "Users", "ID", "Name", true);
-            if(!Roles.RoleExists("Administrator"))
-                Roles.CreateRole("Administrator");
-            if(!WebSecurity.UserExists("AlfaLeporis"))
-                WebSecurity.CreateUserAndAccount("AlfaLeporis", "password");
+            var bootstrapper = new Bootstrapper();
+            bootstrapper.Init();
         }
     }
 }

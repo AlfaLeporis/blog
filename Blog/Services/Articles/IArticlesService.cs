@@ -15,9 +15,9 @@ namespace Blog.Services
         ArticleViewModel GetShortVersion(int id);
         List<ArticleViewModel> GetAll();
         List<ArticleViewModel> GetAllShortVersion();
-        void Remove(int id);
+        bool Remove(int id);
         bool Edit(ArticleViewModel viewModel);
-        void SetArticleStatus(int id, bool status);
+        bool SetArticleStatus(int id, bool status);
         List<ViewModels.ArticleViewModel> GetByTagName(String tag);
         List<ViewModels.ArticleViewModel> GetShortByTagName(String tag);
         List<ArticleViewModel> GetByCategoryName(String name);

@@ -1,7 +1,7 @@
 ﻿@model Blog.ViewModels.ArticleViewModel
 
 <div class="article">
-    <h3>@Model.Title</h3>
+    <h3>@Html.ActionLink(Model.Title, "Article", "Articles", new { id = Model.Alias }, null)</h3>
     <div class="article-info">
         <div class="info-left">
             <span class="glyphicon glyphicon-time" style="margin: 2px 5px 0 0;"></span> @Model.PublishDate
@@ -29,20 +29,23 @@
         <div class="tags">
             @for (int x = 0; x < Model.Tags.Count; x++)
             {
-                <div class="single-tag">@Html.ActionLink("#" + Model.Tags[x], "Tag", new { id ="a"}, new { @class = "single-tag" })</div>
+                <div class="single-tag">@Html.ActionLink("#" + Model.Tags[x], "Tag", "Tags", new { id =Model.Tags[x]}, new { @class = "single-tag" })</div>
             }
         </div>
-
-        @if (Model.IsReadMode)
-        {
-            <div class="read-more">
-                @Html.ActionLink("Czytaj dalej...", "Article", new { id = Model.Alias })
-            </div>
-        }
+        <div class="read-more">
+            @if (Model.IsReadMode)
+            {
+                @Html.ActionLink("Czytaj dalej...", "Article", "Articles", new { id = Model.Alias }, null)
+            }
+            else if(!Model.CommentsView)
+            {
+                @Html.ActionLink("Skomentuj wpis", "Article", "Articles", new { id = Model.Alias }, null)
+            }
+        </div>
     </div>
 </div>
 
-@if (!Model.IsReadMode)
+@if(Model.CommentsView)
 {
     <div class="comments-area">
 
@@ -57,7 +60,7 @@
                     @Model.Comments[i].PublishDate
                     @if(Model.Comments[i].AuthorID == WebSecurity.CurrentUserId && WebSecurity.IsAuthenticated)
                     {
-                        @Html.ActionLink("[Usuń]", "RemoveComment", "Home", new { id = Model.Comments[i].ID, articleID = Model.ID }, null)
+                        @Html.ActionLink("[Usuń]", "RemoveComment", "Comments", new { id = Model.Comments[i].ID, articleID = Model.ID }, new { onclick = "return confirmOperation()" })
                     }
                 </div>
             </div>
@@ -74,7 +77,7 @@
 
     <div class="single-comment-area">
         <div class="comments-reply-area">
-            @using (Html.BeginForm("AddComment", "Home"))
+            @using (Html.BeginForm("AddComment", "Comments", new { returnUrl = ViewBag.ReturnUrl, target = Blog.Models.CommentTarget.Article }))
             {
                 <input type="hidden" name="ArticleID" value="@Model.ID" />
                 <textarea class="form-control" name="CommentContent"></textarea>

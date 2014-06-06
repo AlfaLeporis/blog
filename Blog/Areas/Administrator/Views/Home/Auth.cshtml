@@ -5,7 +5,7 @@
     Layout = "~/Areas/Administrator/Views/Shared/_LoginLayout.cshtml";
 }
 
-@using (Html.BeginForm("Auth", "Home", new { area = "Administrator" }, FormMethod.Post, new { @class = "login-form" }))
+@using (Html.BeginForm("Auth", "Security", new { area = "Administrator" }, FormMethod.Post, new { @class = "login-form" }))
 {
     <div class="header">Logowanie</div>
     

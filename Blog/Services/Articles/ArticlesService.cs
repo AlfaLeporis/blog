@@ -14,14 +14,17 @@ namespace Blog.Services
     {
         private ITagsService _tagsService = null;
         private ICategoriesService _categoriesService = null;
+        private ICommentsService _commentsService = null;
 
         private const String _readMoreTag = "<!--more-->";
 
         public ArticlesService(ITagsService tagsService,
-                               ICategoriesService categoriesService)
+                               ICategoriesService categoriesService,
+                               ICommentsService commentsService)
         {
             _tagsService = tagsService;
             _categoriesService = categoriesService;
+            _commentsService = commentsService;
         }
 
         public bool Add(ViewModels.ArticleViewModel viewModel)
@@ -49,12 +52,18 @@ namespace Blog.Services
             {
                 var model = db.Articles.FirstOrDefault(p => p.ID == id);
 
+                if (model == null)
+                    return null;
+
                 var viewModel = new ArticleViewModel();
                 viewModel.InjectFrom<CustomInjection>(model);
                 viewModel.Tags = _tagsService.GetListByArticleID(model.ID);
                 viewModel.TagsString = _tagsService.GetStringByArticleID(model.ID);
                 viewModel.CategoryName = _categoriesService.Get(model.CategoryID).Title;
                 viewModel.IsReadMode = model.Content.Contains(_readMoreTag);
+                viewModel.Comments = _commentsService.GetByTargetID(id, Models.CommentTarget.Article);
+                viewModel.IsReadMode = false;
+                viewModel.CommentsView = false;
                 
                 return viewModel;
             }
@@ -66,12 +75,10 @@ namespace Blog.Services
             {
                 var model = db.Articles.FirstOrDefault(p => p.Alias == alias);
 
-                var viewModel = new ArticleViewModel();
-                viewModel.InjectFrom<CustomInjection>(model);
-                viewModel.Tags = _tagsService.GetListByArticleID(model.ID);
-                viewModel.TagsString = _tagsService.GetStringByArticleID(model.ID);
-                viewModel.CategoryName = _categoriesService.Get(model.CategoryID).Title;
-                viewModel.IsReadMode = model.Content.Contains(_readMoreTag);
+                if (model == null)
+                    return null;
+
+                var viewModel = Get(model.ID);
 
                 return viewModel;
             }
@@ -99,6 +106,9 @@ namespace Blog.Services
         {
             using (var db = new DatabaseContext())
             {
+                if (!db.Tags.Any(p => p.Name == tag))
+                    return null;
+
                 var articlesID = _tagsService.GetArticlesIDByTagName(tag);
                 var articleViewModels = new List<ArticleViewModel>();
 
@@ -115,6 +125,9 @@ namespace Blog.Services
         {
             using (var db = new DatabaseContext())
             {
+                if (!db.Tags.Any(p => p.Name == tag))
+                    return null;
+
                 var articlesID = _tagsService.GetArticlesIDByTagName(tag);
                 var articleViewModels = new List<ArticleViewModel>();
 
@@ -127,51 +140,70 @@ namespace Blog.Services
             }
         }
 
-        public void Remove(int id)
+        public bool Remove(int id)
         {
             using(var db = new DatabaseContext())
             {
-                var viewModel = db.Articles.First(p => p.ID == id);
-                db.Articles.Remove(viewModel);
+                var model = db.Articles.FirstOrDefault(p => p.ID == id);
 
+                if (model == null)
+                    return false;
+
+                db.Articles.Remove(model);
                 _tagsService.RemoveByArticleID(id);
 
                 db.SaveChanges();
             }
+
+            return true;
         }
 
         public bool Edit(ViewModels.ArticleViewModel viewModel)
         {
             using(var db = new DatabaseContext())
             {
-                var element = db.Articles.First(p => p.ID == viewModel.ID);
-                element.InjectFrom(viewModel);
+                var model = db.Articles.FirstOrDefault(p => p.ID == viewModel.ID);
+
+                if (model == null)
+                    return false;
+
+                model.InjectFrom(viewModel);
 
                 db.SaveChanges();
 
-                _tagsService.Parse(viewModel.TagsString, element.ID);
+                _tagsService.Parse(viewModel.TagsString, model.ID);
             }
 
             return true;
         }
 
-        public void SetArticleStatus(int id, bool status)
+        public bool SetArticleStatus(int id, bool status)
         {
             using(var db = new DatabaseContext())
             {
-                var article = db.Articles.First(p => p.ID == id);
-                article.IsPublished = status;
+                var model = db.Articles.FirstOrDefault(p => p.ID == id);
+
+                if (model == null)
+                    return false;
+
+                model.IsPublished = status;
                 db.SaveChanges();
             }
+
+            return true;
         }
 
 
         public ArticleViewModel GetShortVersion(int id)
         {
             var viewModel = Get(id);
-            var isReadMore = viewModel.Content.Contains(_readMoreTag);
 
-            if (isReadMore)
+            if (viewModel == null)
+                return null;
+
+            viewModel.IsReadMode = viewModel.Content.Contains(_readMoreTag);
+
+            if (viewModel.IsReadMode)
             {
                 var readMorePosition = viewModel.Content.LastIndexOf(_readMoreTag);
                 viewModel.Content = viewModel.Content.Remove(readMorePosition);
@@ -204,6 +236,10 @@ namespace Blog.Services
             using (var db = new DatabaseContext())
             {
                 var categoryID = _categoriesService.GetIDByName(name);
+
+                if (categoryID == -1)
+                    return null;
+
                 var articleViewModels = new List<ArticleViewModel>();
                 var articlesID = db.Articles.Where(p => p.CategoryID == categoryID).Select(p => p.ID).ToList();
 
@@ -221,6 +257,10 @@ namespace Blog.Services
             using (var db = new DatabaseContext())
             {
                 var categoryID = _categoriesService.GetIDByName(name);
+
+                if (categoryID == -1)
+                    return null;
+
                 var articleViewModels = new List<ArticleViewModel>();
                 var articlesID = db.Articles.Where(p => p.CategoryID == categoryID).Select(p => p.ID).ToList();
 

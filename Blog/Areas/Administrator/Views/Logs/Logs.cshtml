@@ -1,0 +1,11 @@
+﻿
+@{
+    ViewBag.Title = "Logs";
+    Layout = "~/Areas/Administrator/Views/Shared/_Layout.cshtml";
+}
+
+<textarea class="form-control log-textarea">
+    @Model.Log
+</textarea>
+
+@Html.ActionLink("Wyczyść log", "ClearLog", "Logs", new { area = "Administrator"}, new { @class = "btn btn-primary log-button" })

@@ -25,25 +25,31 @@ namespace Blog.DAL
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<ArticleModel>().ToTable("Articles");
-            modelBuilder.Entity<ArticleModel>().HasKey(p => p.ID);
-
-            modelBuilder.Entity<CommentModel>().ToTable("Comments");
-            modelBuilder.Entity<CommentModel>().HasKey(p => p.ID);
-
-            modelBuilder.Entity<UserModel>().ToTable("Users");
-            modelBuilder.Entity<UserModel>().HasKey(p => p.ID);
-
-            modelBuilder.Entity<CategoryModel>().ToTable("Categories");
-            modelBuilder.Entity<CategoryModel>().HasKey(p => p.ID);
-
-            modelBuilder.Entity<TagModel>().ToTable("Tags");
-            modelBuilder.Entity<TagModel>().HasKey(p => p.ID);
-
-            modelBuilder.Entity<SiteModel>().ToTable("Sites");
-            modelBuilder.Entity<SiteModel>().HasKey(p => p.ID);
+            SetTableNames(modelBuilder);
 
             base.OnModelCreating(modelBuilder);
+        }
+
+        private void SetTableNames(DbModelBuilder modelBuilder)
+        {
+            var dbType = typeof(DatabaseContext);
+            var builderType = typeof(DbModelBuilder);
+            var entities = dbType.GetProperties()
+                .Where(p => p.PropertyType.Name == "DbSet`1")
+                .ToList();
+            
+            for(int i=0; i<entities.Count(); i++)
+            {
+                var configMethod = builderType.GetMethod("Entity");
+
+                var modelType = entities[i].PropertyType.GenericTypeArguments.First();
+                configMethod = configMethod.MakeGenericMethod(modelType);
+                var entityConfig = configMethod.Invoke(modelBuilder, null);
+                var entityConfigType = entityConfig.GetType();           
+
+                var toTableMethod = entityConfigType.GetMethod("ToTable", new[] {typeof(string)});
+                toTableMethod.Invoke(entityConfig, new[] {entities[i].Name});
+            }
         }
     }
 }

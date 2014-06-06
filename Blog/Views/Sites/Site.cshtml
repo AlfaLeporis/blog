@@ -1,0 +1,10 @@
+﻿@model Blog.ViewModels.SiteViewModel
+
+@{
+    ViewBag.Title = "Site";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@{
+    Html.RenderPartial("_SiteTemplate", Model);
+}

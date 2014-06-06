@@ -14,8 +14,9 @@ namespace Blog.ViewModels
 
         public bool IsReadMode { get; set; }
         public String CategoryName { get; set; }
-        public String TagsString { get; set; }
+        public List<String> Tags { get; set; }
         public List<CommentViewModel> Comments { get; set; }
+        public bool CommentsView { get; set; }
 
         [Required(ErrorMessage="Pole jest wymagane!")]
         [RegularExpression("^[a-z0-9\\-]+$", ErrorMessage="Pole nie ma odpowiedniego formatu")]
@@ -43,6 +44,6 @@ namespace Blog.ViewModels
         public bool IsPublished { get; set; }
 
         [Required(ErrorMessage = "Pole jest wymagane!")]
-        public List<String> Tags { get; set; }
+        public String TagsString { get; set; }
     }
 }

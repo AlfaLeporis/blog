@@ -8,10 +8,10 @@ namespace Blog.ViewModels
 {
     public class AuthViewModel
     {
-        [Required]
+        [Required(ErrorMessage = "Pole jest wymagane!")]
         public String Login { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "Pole jest wymagane!")]
         public String Password { get; set; }
     }
 }
