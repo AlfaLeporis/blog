@@ -10,6 +10,11 @@ a{
     
 }
 
+#site-name a{
+    color: white!important;
+    text-decoration: none;
+}
+
 #header-area{
     position: relative;
     height: 200px;
@@ -62,12 +67,12 @@ a{
     text-align: left;
     margin-left: 10px;
     margin-bottom: 0;
-    padding-top: 4px;
+    padding-top: 2px;
 }
 
 #menu-area li{
     display: inline-block;
-    padding: 5px 30px;
+    padding: 0px 30px;
     margin-left: 20px;
 }
 
@@ -85,7 +90,7 @@ a{
     border-radius: 10px;
     padding: 10px;
     margin: 40px 20px 50px 40px;
-    background-color: #E8E4EB;
+    background-color: rgb(240,240,240);
 
     -webkit-box-shadow: 0px 0px 7px 0px rgba(50, 50, 50, 0.69);
     -moz-box-shadow:    0px 0px 7px 0px rgba(50, 50, 50, 0.69);
@@ -283,4 +288,9 @@ a{
 .comment-content{
     float: left;
     width: 90%;
+}
+
+.pagination-area{
+    display: block;
+    text-align: center;
 }

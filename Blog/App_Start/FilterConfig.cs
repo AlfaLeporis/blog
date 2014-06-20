@@ -11,6 +11,7 @@ namespace Blog
             filters.Add(new ErrorFilterAttribute());
             filters.Add(new ReturnUrlAttribute());
             filters.Add(new ValidationModelState());
+            filters.Add(new GlobalInfoAttribute());
         }
     }
 }

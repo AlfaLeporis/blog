@@ -9,6 +9,7 @@ using Microsoft.Practices.Unity;
 
 namespace Blog.Areas.Administrator.Controllers
 {
+    [Authorize(Roles = "Administrator")]
     public class SitesController : Controller
     {
         private ISitesService _sitesService = null;
@@ -30,10 +31,10 @@ namespace Blog.Areas.Administrator.Controllers
         {
             if (id.HasValue)
             {
-                var viewModel = _sitesService.Get(id.Value);
+                var viewModel = _sitesService.Get(id.Value, false);
 
                 if (viewModel == null)
-                    throw new HttpException(404, "Strona (" + id.Value + ") nie istnieje.");
+                    throw new Exception("Strona (" + id.Value + ") nie istnieje.");
 
                 return View(viewModel);
             }
@@ -63,11 +64,11 @@ namespace Blog.Areas.Administrator.Controllers
         [HttpGet]
         public ActionResult InvertSiteStatus(int id)
         {
-            var site = _sitesService.Get(id);
+            var site = _sitesService.Get(id, false);
             bool result = _sitesService.SetSiteStatus(id, !site.IsPublished);
 
             if (!result)
-                throw new HttpException(404, "Zmiana statusu strony (" + id + ") nie powiodła się.");
+                throw new Exception("Zmiana statusu strony (" + id + ") nie powiodła się.");
 
             return RedirectToAction("Sites");
         }
@@ -78,7 +79,7 @@ namespace Blog.Areas.Administrator.Controllers
             bool result = _sitesService.Remove(id);
 
             if (!result)
-                throw new HttpException(404, "Usunięcie komentarza (" + id + ") nie powiodła się.");
+                throw new Exception("Usunięcie komentarza (" + id + ") nie powiodła się.");
 
             return RedirectToAction("Sites");
         }

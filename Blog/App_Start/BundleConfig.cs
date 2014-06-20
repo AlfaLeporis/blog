@@ -27,6 +27,17 @@ namespace Blog
 
             bundles.Add(new ScriptBundle("~/bundles/ckeditor").Include(
                 "~/Scripts/CKEditor/ckeditor.js"));
+
+            bundles.Add(new ScriptBundle("~/bundles/syntax").Include(
+                "~/Scripts/SyntaxHighlighter/shCore.js",
+                "~/Scripts/SyntaxHighlighter/shBrushCSharp.js"));
+
+            bundles.Add(new ScriptBundle("~/bundles/alias-generator").Include(
+                "~/Scripts/alias-generator.js"));
+
+            bundles.Add(new StyleBundle("~/Content/syntax").Include(
+                "~/Content/SyntaxHighlighter/shCore.css",
+                "~/Content/SyntaxHighlighter/shThemeDefault.css"));
         }
     }
 }

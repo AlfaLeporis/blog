@@ -9,6 +9,7 @@ using Microsoft.Practices.Unity;
 
 namespace Blog.Areas.Administrator.Controllers
 {
+    [Authorize(Roles = "Administrator")]
     public class CommentsController : Controller
     {
         private ICommentsService _commentsService = null;
@@ -31,7 +32,7 @@ namespace Blog.Areas.Administrator.Controllers
             bool result = _commentsService.Remove(id);
 
             if (!result)
-                throw new HttpException(404, "Usunięcie komentarza (" + id + ") nie powiodło się.");
+                throw new Exception("Usunięcie komentarza (" + id + ") nie powiodło się.");
 
             return RedirectToAction("Comments");
         }
@@ -42,7 +43,7 @@ namespace Blog.Areas.Administrator.Controllers
             var viewModel = _commentsService.Get(id);
 
             if (viewModel == null)
-                throw new HttpException(404, "Dany komentarz (" + id + ") nie nie istnieje.");
+                throw new Exception("Dany komentarz (" + id + ") nie nie istnieje.");
 
             return View(viewModel);
         }

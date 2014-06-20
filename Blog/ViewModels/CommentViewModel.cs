@@ -14,6 +14,7 @@ namespace Blog.ViewModels
         public int ArticleID { get; set; }
         public DateTime PublishDate { get; set; }
         public String AvatarSource { get; set; }
+        public String AuthorSite { get; set; }
 
         [Required(ErrorMessage = "Pole jest wymagane!")]
         public String Content { get; set; }

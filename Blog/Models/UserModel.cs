@@ -10,5 +10,7 @@ namespace Blog.Models
         public int ID { get; set; }
         public String Name { get; set; }
         public String EMail { get; set; }
+        public String WebSite { get; set; }
+        public DateTime LastVisit { get; set; }
     }
 }

@@ -1,0 +1,32 @@
+﻿@model List<Blog.ViewModels.UserViewModel>
+
+@{
+    ViewBag.Title = "Users";
+    Layout = "~/Areas/Administrator/Views/Shared/_Layout.cshtml";
+}
+
+<table class="table table-bordered">
+    <tbody>
+        <tr>
+            <th>ID</th>
+            <th>Nazwa</th>
+            <th>EMail</th>
+            <th>Ostatnia aktywność</th>
+            <th>Akcje</th>
+        </tr>
+        @for (int i = 0; i < Model.Count; i++)
+        {
+            <tr>
+                <td style="width: 10%;">@Model[i].ID.Value</td>
+                <td style="width: 20%;">@Model[i].Name</td>
+                <td style="width: 20%;">@Model[i].EMail</td>
+                <td style="width: 20%;">@Model[i].LastVisit</td>
+
+                <td style="width: 30%;">
+                    @Html.ActionLink("Edytuj", "EditUser", "Users", new { area = "Administrator", id = Model[i].ID.Value }, new { @class = "btn btn-primary table-button" })
+                    @Html.ActionLink("Usuń", "RemoveUser", "Users", new { area = "Administrator", id = Model[i].ID.Value }, new { @class = "btn btn-danger table-button" })
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

@@ -7,7 +7,7 @@
             <span class="glyphicon glyphicon-time" style="margin: 2px 5px 0 0;"></span> @Model.PublishDate
         </div>
         <div class="info-right">
-            <span class="glyphicon glyphicon-list-alt" style="margin: 2px 5px 0 0;"></span> @Html.ActionLink(Model.CategoryName, "Category", new { id = Model.CategoryName })
+            <span class="glyphicon glyphicon-list-alt" style="margin: 2px 5px 0 0;"></span> @Html.ActionLink(Model.CategoryName, "Category", "Categories", new { id = Model.CategoryName }, null)
         </div>
     </div>
 
@@ -39,7 +39,7 @@
             }
             else if(!Model.CommentsView)
             {
-                @Html.ActionLink("Skomentuj wpis", "Article", "Articles", new { id = Model.Alias }, null)
+                @Html.ActionLink("Skomentuj wpis", "Article", "Articles", null, null, "comments", new { id = Model.Alias }, null)
             }
         </div>
     </div>
@@ -47,14 +47,22 @@
 
 @if(Model.CommentsView)
 {
-    <div class="comments-area">
+    <div class="comments-area" id="comments">
 
         @for (int i = 0; i < Model.Comments.Count; i++)
         {
-        <div class="single-comment-area">
+        <div class="single-comment-area" id="@Model.Comments[i].ID">
             <div class="comment-header">
                 <div class="comment-author">
-                    @Model.Comments[i].AuthorName
+                    @if (Model.Comments[i].AuthorSite == null || Model.Comments[i].AuthorSite == "undefined")
+                    {
+                         @Model.Comments[i].AuthorName
+                    }
+                    else
+                    {
+                         <a href="@Model.Comments[i].AuthorSite">@Model.Comments[i].AuthorName</a>
+                    }
+                   
                 </div>
                 <div class="comment-date">  
                     @Model.Comments[i].PublishDate
@@ -72,7 +80,7 @@
             </div>
         </div>
         }
-
+        
     </div>
 
     <div class="single-comment-area">
@@ -81,7 +89,8 @@
             {
                 <input type="hidden" name="ArticleID" value="@Model.ID" />
                 <textarea class="form-control" name="CommentContent"></textarea>
-                <input type="submit" value="Dodaj komentarz" class="btn btn-default"/>
+                <input type="submit" value="Dodaj komentarz" class="btn btn-default left"/>
+                @Html.ActionLink("Pobierz w formacie ATOM", "GetCommentsATOM", "Home", new { id = Model.ID }, new { @class = "btn btn-default right" })
             }
         </div>
     </div>

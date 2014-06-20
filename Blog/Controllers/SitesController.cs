@@ -23,8 +23,8 @@ namespace Blog.Controllers
         {
             var viewModel = _sitesService.GetByAlias(id);
 
-            if (viewModel == null)
-                throw new HttpException(404, "Strona o podanym id (" + id + ") nie istnieje");
+            if (viewModel == null || !viewModel.IsPublished)
+                throw new Exception("Strona o podanym id (" + id + ") nie istnieje");
 
             return View(viewModel);
         }

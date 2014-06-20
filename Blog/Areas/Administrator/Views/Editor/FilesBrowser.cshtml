@@ -1,0 +1,46 @@
+﻿@model List<Blog.ViewModels.ImageFileViewModel>
+
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Browser</title>
+
+    @Styles.Render("~/Content/bootstrap")
+    @Scripts.Render("~/bundles/bootstrap")
+</head>
+<body>
+    <script>
+        function submitImage(obj)
+        {
+            window.opener.CKEDITOR.tools.callFunction(@ViewBag.CKEditorFuncNum, obj.getAttribute("href"));
+            window.close();
+        }
+    </script>
+
+    <div>
+        <table class="table table-bordered">
+            <tbody>
+                <tr>
+                    <th>Miniatura</th>
+                    <th>Nazwa</th>
+                    <th>Wielkość</th>
+                </tr>
+                @for (int i = 0; i < Model.Count; i++)
+                {
+                <tr>
+                    <td style="width: 10%;"><img style="width: 100px; height:100px;"src="@Model[i].Url" /></td>
+                    <td style="width: 30%;"><a href="@Model[i].Url" onclick="submitImage(this);">@Model[i].Name</a></td>
+                    <td style="width: 30%;">@Model[i].Size</td>
+                </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>

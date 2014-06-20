@@ -17,6 +17,7 @@ namespace Blog.ViewModels
         public List<String> Tags { get; set; }
         public List<CommentViewModel> Comments { get; set; }
         public bool CommentsView { get; set; }
+        public DateTime LastUpdateDate { get; set; }
 
         [Required(ErrorMessage="Pole jest wymagane!")]
         [RegularExpression("^[a-z0-9\\-]+$", ErrorMessage="Pole nie ma odpowiedniego formatu")]

@@ -41,14 +41,15 @@ namespace Blog.Controllers
             else
                 TempData.Add("ErrorMsg", "Nieprawidłowe dane, spróbuj ponownie!");
 
-            return Redirect(HttpContext.Request.UrlReferrer.ToString());
+            return RedirectToAction("Home", "Index");
         }
 
         [HttpGet]
+        [Authorize]
         public ActionResult Logout()
         {
             _securityService.LogOut();
-            return Redirect(HttpContext.Request.UrlReferrer.ToString());
+            return RedirectToAction("Index", "Home");
         }
 
         [HttpGet]
@@ -58,41 +59,66 @@ namespace Blog.Controllers
         }
 
         [HttpPost]
-        public ActionResult Register(RegisterViewModel viewModel, String returnUrl)
+        public ActionResult Register(RegisterViewModel viewModel)
         {
             var result = _securityService.Register(viewModel, _settingsService.GetSettings());
             if (result)
             {
-                TempData.Add("SuccessMsg", "Rejestracja przebiegła pomyślnie! Aby zalogować się na swoje konto, musisz kliknać na link aktywacyjny który znajduje się w wiadomości EMail wysłanej na Twoją skrzynkę pocztową.");
-                return Redirect(returnUrl);
+                TempData.Add("SuccessMsg", "Rejestracja przebiegła pomyślnie!");
+                return RedirectToAction("Index", "Home");
             }
             else
             {
                 TempData.Add("ErrorMsg", "Rejestracja nieudana! Prawdopodobnie wpisana nazwa użytkownika lub EMail są już zarejestrowane. Spróbuj ponownie.");
-                ViewBag.ReturnUrl = returnUrl;
                 return View(viewModel);
             }
         }
 
         [HttpGet]
-        public ActionResult EditAccount()
+        [Authorize]
+        public ActionResult EditPassword()
         {
             return View();
         }
 
         [HttpPost]
-        public ActionResult EditAccount(EditPasswordViewModel viewModel, String returnUrl)
+        [Authorize]
+        public ActionResult EditPassword(EditPasswordViewModel viewModel)
         {
             var result = _securityService.ChangePassword(viewModel);
             if (result)
             {
                 TempData.Add("SuccessMsg", "Edycja hasła zakończona sukcesem!");
-                return Redirect(returnUrl);
+                return View();
             }
             else
             {
                 TempData.Add("ErrorMsg", "Błąd podczas próby zmiany hasła. Prawdopodobnie źle wpisałeś swoje obecne hasło, spróbuj ponownie.");
-                ViewBag.ReturnUrl = returnUrl;
+                return View(viewModel);
+            }
+        }
+
+        [HttpGet]
+        [Authorize]
+        public ActionResult EditAccount()
+        {
+            var user = _securityService.Get(_securityService.GetCurrentID());
+            return View(user);
+        }
+
+        [HttpPost]
+        [Authorize]
+        public ActionResult EditAccount(UserViewModel viewModel)
+        {
+            var result = _securityService.Edit(viewModel);
+            if (result)
+            {
+                TempData.Add("SuccessMsg", "Edycja danych użytkownika zakończona sukcesem!");
+                return RedirectToAction("EditAccount");
+            }
+            else
+            {
+                TempData.Add("ErrorMsg", "Błąd podczas próby zmiany danych profilu.");
                 return View(viewModel);
             }
         }

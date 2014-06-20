@@ -1,0 +1,43 @@
+﻿<div class="pagination-area">
+    @if (ViewBag.PaginationTotal > 1)
+    {
+        <ul class="pagination">
+            @if(ViewBag.PaginationCurrent == 1)
+            {
+                <li class="disabled"><a href="#">&laquo;</a></li>
+            }
+            else 
+            { 
+                <li><a href="@Url.Action(ViewContext.RouteData.Values["Action"].ToString(), new { page = ViewBag.PaginationCurrent - 1 })">&laquo;</a></li>
+            }
+
+            <li><a href="@Url.Action(ViewContext.RouteData.Values["Action"].ToString(), new { page = 1 })">Początek</a></li>
+
+            @for (int i = ViewBag.PaginationCurrent - 5; i < ViewBag.PaginationCurrent + 5; i++)
+            {
+                if(i >= 1 && i <= ViewBag.PaginationTotal)
+                {
+                    if(i == ViewBag.PaginationCurrent)
+                    {
+                        <li class="active"><a href="@Url.Action(ViewContext.RouteData.Values["Action"].ToString(), new { page = i })">@i</a></li>
+                    }
+                    else
+                    {
+                        <li><a href="@Url.Action(ViewContext.RouteData.Values["Action"].ToString(), new { page = i })">@i</a></li>
+                    }
+                }
+            }
+
+            <li><a href="@Url.Action(ViewContext.RouteData.Values["Action"].ToString(), new { page = ViewBag.PaginationTotal })">Koniec</a></li>
+
+            @if (ViewBag.PaginationCurrent == ViewBag.PaginationTotal)
+            {
+                <li class="disabled"><a href="#">&raquo;</a></li>
+            }
+            else
+            {
+                <li><a href="@Url.Action(ViewContext.RouteData.Values["Action"].ToString(), new { page = ViewBag.PaginationCurrent + 1 })">&raquo;</a></li>
+            }
+        </ul>
+    }
+</div>

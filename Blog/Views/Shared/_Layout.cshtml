@@ -9,6 +9,19 @@
     @Scripts.Render("~/bundles/custom-scripts")
     @Styles.Render("~/Content/css")
     @Styles.Render("~/Content/bootstrap")
+    @Scripts.Render("~/bundles/syntax")
+    @Styles.Render("~/Content/syntax")
+
+    <script type="text/javascript">
+        var _gaq = _gaq || [];
+        _gaq.push(['_setAccount', 'UA-34713022-3']);
+        _gaq.push(['_trackPageview']);
+        (function () {
+            var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+            ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+            var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+        })();
+    </script>
 </head>
 <body>
     @if (TempData.Any(p => p.Key == "ErrorMsg"))
@@ -42,15 +55,13 @@
                         </div>
 
                         <ul>
-                            <li class="btn btn-default"><span class="glyphicon glyphicon-search" style="margin: 0 10px 0 0;"></span>Pobierz w formacie ATOM</li>
-                            <li class="btn btn-default"><span class="glyphicon glyphicon-stats" style="margin: 0 10px 0 0;"></span>Lorem Ipsum</li>
-                            <li class="btn btn-default"><span class="glyphicon glyphicon-search" style="margin: 0 10px 0 0;"></span>Lorem Ipsum</li>
-                            <li class="btn btn-default"><span class="glyphicon glyphicon-stats" style="margin: 0 10px 0 0;"></span>Lorem Ipsum</li>
-                            <li class="btn btn-default"><span class="glyphicon glyphicon-search" style="margin: 0 10px 0 0;"></span>Lorem Ipsum</li>
+                            <li class="btn btn-default"><span class="glyphicon glyphicon-search" style="margin: 0 10px 0 0;"></span>@Html.ActionLink("Pobierz w formacie ATOM", "GetArticlesATOM", "Home", null, null)</li>
                         </ul>
                     </div>
 
+                    @Html.Action("RecentCommentsModule", "Modules")
                     @Html.Action("TagsModule", "Modules")
+                    @Html.Action("ArchiveModule", "Modules")
                     @Html.Action("CategoriesModule", "Modules")
 
                     <div class="module">
@@ -63,7 +74,7 @@
                                 using (Html.BeginForm("Login", "Security", new { returnUrl = ViewBag.ReturnUrl }))
                                 {
                                     <p><input name="login" type="text" class="form-control" placeholder="nazwa użytkownika"></p>
-                                    <p><input name="password" type="text" class="form-control" placeholder="hasło"></p>
+                                    <p><input name="password" type="password" class="form-control" placeholder="hasło"></p>
 
                                     <p>
                                         <input type="submit" value="Zaloguj" class="btn btn-primary btn-login" />
@@ -84,11 +95,13 @@
             </div>
 
             <div id="footer">
-                asd
+                @ViewBag.CMSTitle v@{@ViewBag.CMSVersion} - @ViewBag.Copyright
             </div>
 
             <div style="clear:both;"></div>
         </div>
     </div>
+
+    <script>SyntaxHighlighter.all()</script>
 </body>
 </html>

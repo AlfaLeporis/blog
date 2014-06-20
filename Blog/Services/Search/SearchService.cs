@@ -35,19 +35,20 @@ namespace Blog.Services
                 .Select(p => p.ID.Value)
                 .ToList();
 
-            var articlesIDs = _articlesService.GetAll().Where(p =>
+            var articlesIDs = _articlesService.GetAll(false).Where(p =>
                 p.Content.Contains(phrase) ||
                 p.Title.Contains(phrase) ||
                 p.TagsString.Contains(phrase) ||
                 p.Description.Contains(phrase) ||
                 p.Alias.Contains(phrase) ||
                 p.CategoryName.Contains(phrase))
+                .OrderByDescending(p => p.PublishDate)
                 .Select(p => p.ID.Value)
                 .ToList();
 
             for (int i = 0; i < articlesIDs.Count(); i++)
             {
-                var article = _articlesService.GetShortVersion(articlesIDs[i]);
+                var article = _articlesService.Get(articlesIDs[i], false);
                 if (article == null)
                     throw new HttpException(404, "Artykuł o podanym id (" + articlesIDs[i] + ") nie istnieje");
 
@@ -56,7 +57,7 @@ namespace Blog.Services
 
             for (int i = 0; i < sitesIDs.Count(); i++)
             {
-                var site = _sitesService.GetShortVersion(sitesIDs[i], maxLength);
+                var site = _sitesService.Get(sitesIDs[i], true);
                 if (site == null)
                     throw new HttpException(404, "Strona o podanym id (" + sitesIDs[i] + ") nie istnieje");
 

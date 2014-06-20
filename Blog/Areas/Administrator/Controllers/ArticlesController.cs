@@ -9,6 +9,7 @@ using Microsoft.Practices.Unity;
 
 namespace Blog.Areas.Administrator.Controllers
 {
+    [Authorize(Roles="Administrator")]
     public class ArticlesController : Controller
     {
         private IArticlesService _articlesService = null;
@@ -24,18 +25,20 @@ namespace Blog.Areas.Administrator.Controllers
         [HttpGet]
         public ActionResult Articles()
         {
-            var articles = _articlesService.GetAll();
+            var articles = _articlesService.GetAll(false);
             return View(articles);
         }
 
         [HttpGet]
         public ActionResult EditArticle(int? id)
         {
+            ViewData.Add(new KeyValuePair<string, object>("CategoriesList", _categoriesService.GetAll()));
+
             ViewBag.CategoriesList = _categoriesService.GetAll();
 
             if (id.HasValue)
             {
-                var article = _articlesService.Get(id.Value);
+                var article = _articlesService.Get(id.Value, false);
                 return View(article);
             }
             else
@@ -43,6 +46,7 @@ namespace Blog.Areas.Administrator.Controllers
                 var viewModel = new ArticleViewModel()
                 {
                     CreationDate = DateTime.Now,
+                    PublishDate = DateTime.Now,
                     Tags = new List<string>()
                 };
                 return View(viewModel);
@@ -80,7 +84,7 @@ namespace Blog.Areas.Administrator.Controllers
             bool result = _articlesService.Remove(id);
 
             if (!result)
-                throw new HttpException(404, "Usunięcie artykułu (" + id + ") nie powiodło się");
+                throw new Exception("Usunięcie artykułu (" + id + ") nie powiodło się");
 
             return RedirectToAction("Articles");
         }
@@ -88,11 +92,11 @@ namespace Blog.Areas.Administrator.Controllers
         [HttpGet]
         public ActionResult InvertArticleStatus(int id)
         {
-            var article = _articlesService.Get(id);
+            var article = _articlesService.Get(id, false);
             bool result = _articlesService.SetArticleStatus(id, !article.IsPublished);
 
             if (!result)
-                throw new HttpException(404, "Błąd w czasie próby zmiany statusu artykułu (" + id + ")");
+                throw new Exception("Błąd w czasie próby zmiany statusu artykułu (" + id + ")");
 
             return RedirectToAction("Articles");
         }

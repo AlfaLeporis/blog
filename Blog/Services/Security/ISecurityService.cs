@@ -15,5 +15,9 @@ namespace Blog.Services
         int GetCurrentID();
         String GetEMailByID(int id);
         String GetUserNameByID(int id);
+        List<UserViewModel> GetAll();
+        UserViewModel Get(int id);
+        bool Edit(UserViewModel viewModel);
+        bool Remove(int id);
     }
 }

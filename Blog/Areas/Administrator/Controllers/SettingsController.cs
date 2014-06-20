@@ -9,6 +9,7 @@ using Microsoft.Practices.Unity;
 
 namespace Blog.Areas.Administrator.Controllers
 {
+    [Authorize(Roles = "Administrator")]
     public class SettingsController : Controller
     {
         private ISettingsService _settingsService = null;

@@ -8,7 +8,7 @@
     </ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{BEB5DFCD-E253-4B1E-9272-2CAE56DD3B44}</ProjectGuid>
-    <ProjectTypeGuids>{E3E379DF-F4C6-4180-9B81-6769533ABE47};{349c5851-65df-11da-9384-00065b846f21};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
+    <ProjectTypeGuids>{349c5851-65df-11da-9384-00065b846f21};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Blog</RootNamespace>
@@ -29,6 +29,8 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <ExcludeGeneratedDebugSymbol>true</ExcludeGeneratedDebugSymbol>
+    <PublishDatabases>false</PublishDatabases>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -174,12 +176,15 @@
     <Compile Include="Areas\Administrator\Controllers\ArticlesController.cs" />
     <Compile Include="Areas\Administrator\Controllers\CategoriesController.cs" />
     <Compile Include="Areas\Administrator\Controllers\CommentsController.cs" />
+    <Compile Include="Areas\Administrator\Controllers\EditorController.cs" />
     <Compile Include="Areas\Administrator\Controllers\HomeController.cs" />
     <Compile Include="Areas\Administrator\Controllers\LogsController.cs" />
     <Compile Include="Areas\Administrator\Controllers\SecurityController.cs" />
     <Compile Include="Areas\Administrator\Controllers\ServerInfoController.cs" />
     <Compile Include="Areas\Administrator\Controllers\SettingsController.cs" />
     <Compile Include="Areas\Administrator\Controllers\SitesController.cs" />
+    <Compile Include="Areas\Administrator\Controllers\UsersController.cs" />
+    <Compile Include="Controllers\ArchiveController.cs" />
     <Compile Include="Controllers\ArticlesController.cs" />
     <Compile Include="Controllers\CategoriesController.cs" />
     <Compile Include="Controllers\CommentsController.cs" />
@@ -190,6 +195,7 @@
     <Compile Include="Controllers\TagsController.cs" />
     <Compile Include="DAL\DatabaseContext.cs" />
     <Compile Include="Filters\ErrorFilterAttribute.cs" />
+    <Compile Include="Filters\GlobalInfoAttribute.cs" />
     <Compile Include="Filters\ReturnUrlAttribute.cs" />
     <Compile Include="Filters\ValidationModelState.cs" />
     <Compile Include="Global.asax.cs">
@@ -208,7 +214,11 @@
     <Compile Include="Services\Articles\IArticlesService.cs" />
     <Compile Include="Services\Categories\ICategoriesService.cs" />
     <Compile Include="Services\Comments\ICommentsService.cs" />
+    <Compile Include="Services\Feeds\FeedsService.cs" />
+    <Compile Include="Services\Feeds\IFeedsService.cs" />
+    <Compile Include="Services\Pagination\IPaginationService.cs" />
     <Compile Include="Services\Log\ILogService.cs" />
+    <Compile Include="Services\Pagination\PaginationService.cs" />
     <Compile Include="Services\Search\ISearchService.cs" />
     <Compile Include="Services\Search\SearchService.cs" />
     <Compile Include="Services\Security\ISecurityService.cs" />
@@ -220,6 +230,9 @@
     <Compile Include="Services\Security\SecurityService.cs" />
     <Compile Include="Services\Settings\SettingsService.cs" />
     <Compile Include="Services\Tags\TagsService.cs" />
+    <Compile Include="ViewModels\ImageFileViewModel.cs" />
+    <Compile Include="ViewModels\ModulesVM\ArchiveModuleViewModel.cs" />
+    <Compile Include="ViewModels\ModulesVM\RecentCommentsModuleViewModel.cs" />
     <Compile Include="ViewModels\ModulesVM\SitesModuleViewModel.cs" />
     <Compile Include="ViewModels\SearchViewModel.cs" />
     <Compile Include="ViewModels\SitesVM\AdminServerInfoViewModel.cs" />
@@ -239,6 +252,7 @@
     <Compile Include="ViewModels\ModulesVM\TagsModuleViewModel.cs" />
     <Compile Include="ViewModels\SitesVM\TagsSiteViewModel.cs" />
     <Compile Include="ViewModels\TagViewModel.cs" />
+    <Compile Include="ViewModels\UserViewModel.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="ActivationMailTemplate.txt" />
@@ -247,7 +261,26 @@
     <Content Include="Content\bootstrap-theme.min.css" />
     <Content Include="Content\bootstrap.css" />
     <Content Include="Content\bootstrap.min.css" />
+    <Content Include="Content\Images\footer.png" />
+    <Content Include="Content\Images\header.png" />
     <Content Include="Content\Images\site-background.png" />
+    <Content Include="Content\SyntaxHighlighter\shCore.css" />
+    <Content Include="Content\SyntaxHighlighter\shCoreDefault.css" />
+    <Content Include="Content\SyntaxHighlighter\shCoreDjango.css" />
+    <Content Include="Content\SyntaxHighlighter\shCoreEclipse.css" />
+    <Content Include="Content\SyntaxHighlighter\shCoreEmacs.css" />
+    <Content Include="Content\SyntaxHighlighter\shCoreFadeToGrey.css" />
+    <Content Include="Content\SyntaxHighlighter\shCoreMDUltra.css" />
+    <Content Include="Content\SyntaxHighlighter\shCoreMidnight.css" />
+    <Content Include="Content\SyntaxHighlighter\shCoreRDark.css" />
+    <Content Include="Content\SyntaxHighlighter\shThemeDefault.css" />
+    <Content Include="Content\SyntaxHighlighter\shThemeDjango.css" />
+    <Content Include="Content\SyntaxHighlighter\shThemeEclipse.css" />
+    <Content Include="Content\SyntaxHighlighter\shThemeEmacs.css" />
+    <Content Include="Content\SyntaxHighlighter\shThemeFadeToGrey.css" />
+    <Content Include="Content\SyntaxHighlighter\shThemeMDUltra.css" />
+    <Content Include="Content\SyntaxHighlighter\shThemeMidnight.css" />
+    <Content Include="Content\SyntaxHighlighter\shThemeRDark.css" />
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Global.asax" />
     <Content Include="Content\Site.css" />
@@ -258,7 +291,6 @@
     <Content Include="Content\bootstrap.css.map" />
     <Content Include="Areas\Administrator\Views\web.config" />
     <Content Include="Areas\Administrator\Views\Home\Index.cshtml" />
-    <Content Include="Areas\Administrator\Views\Home\Auth.cshtml" />
     <Content Include="Areas\Administrator\Views\Shared\_Layout.cshtml" />
     <Content Include="Areas\Administrator\Views\Settings\Settings.cshtml" />
     <Content Include="Areas\Administrator\Views\Shared\_LoginLayout.cshtml" />
@@ -267,10 +299,27 @@
     <Content Include="config.cfg" />
     <Content Include="Areas\Administrator\Views\Categories\Categories.cshtml" />
     <Content Include="Areas\Administrator\Views\Categories\EditCategory.cshtml" />
+    <Content Include="Scripts\alias-generator.js" />
     <Content Include="Scripts\CKEditor\CHANGES.md" />
     <Content Include="Scripts\CKEditor\LICENSE.md" />
+    <Content Include="Scripts\CKEditor\plugins\dialogui\plugin.js" />
+    <Content Include="Scripts\CKEditor\plugins\dialog\plugin.js" />
+    <Content Include="Scripts\CKEditor\plugins\dialog\samples\assets\my_dialog.js" />
+    <Content Include="Scripts\CKEditor\plugins\dialog\samples\dialog.html" />
     <Content Include="Scripts\CKEditor\plugins\scayt\LICENSE.md" />
     <Content Include="Scripts\CKEditor\plugins\scayt\README.md" />
+    <Content Include="Scripts\CKEditor\plugins\syntaxhighlight\dialogs\syntaxhighlight.js" />
+    <Content Include="Scripts\CKEditor\plugins\syntaxhighlight\icons\syntaxhighlight.png" />
+    <Content Include="Scripts\CKEditor\plugins\syntaxhighlight\lang\de.js" />
+    <Content Include="Scripts\CKEditor\plugins\syntaxhighlight\lang\en.js" />
+    <Content Include="Scripts\CKEditor\plugins\syntaxhighlight\lang\fr.js" />
+    <Content Include="Scripts\CKEditor\plugins\syntaxhighlight\lang\zh-cn.js" />
+    <Content Include="Scripts\CKEditor\plugins\syntaxhighlight\plugin.js" />
+    <Content Include="Scripts\CKEditor\plugins\wpmore\demo.html" />
+    <Content Include="Scripts\CKEditor\plugins\wpmore\images\more.gif" />
+    <Content Include="Scripts\CKEditor\plugins\wpmore\images\more_bug.gif" />
+    <Content Include="Scripts\CKEditor\plugins\wpmore\images\page.gif" />
+    <Content Include="Scripts\CKEditor\plugins\wpmore\plugin.js" />
     <Content Include="Scripts\CKEditor\plugins\wsc\LICENSE.md" />
     <Content Include="Scripts\CKEditor\plugins\wsc\README.md" />
     <Content Include="Scripts\CKEditor\README.md" />
@@ -281,6 +330,11 @@
     <Content Include="Areas\Administrator\Views\Comments\EditComment.cshtml" />
     <Content Include="Areas\Administrator\Views\Sites\Sites.cshtml" />
     <Content Include="Areas\Administrator\Views\Sites\EditSite.cshtml" />
+    <Content Include="Areas\Administrator\Views\Editor\FilesBrowser.cshtml" />
+    <Content Include="Areas\Administrator\Views\Users\Users.cshtml" />
+    <Content Include="Areas\Administrator\Views\Users\EditUser.cshtml" />
+    <Content Include="Areas\Administrator\Views\Security\Auth.cshtml" />
+    <None Include="Properties\PublishProfiles\Default.pubxml" />
     <None Include="Scripts\jquery-2.1.0.intellisense.js" />
     <Content Include="log.txt" />
     <Content Include="Scripts\bootstrap.js" />
@@ -603,6 +657,34 @@
     <Content Include="Scripts\jquery.validate.min.js" />
     <Content Include="Scripts\jquery.validate.unobtrusive.js" />
     <Content Include="Scripts\jquery.validate.unobtrusive.min.js" />
+    <Content Include="Scripts\SyntaxHighlighter\shAutoloader.js" />
+    <Content Include="Scripts\SyntaxHighlighter\shBrushAppleScript.js" />
+    <Content Include="Scripts\SyntaxHighlighter\shBrushAS3.js" />
+    <Content Include="Scripts\SyntaxHighlighter\shBrushBash.js" />
+    <Content Include="Scripts\SyntaxHighlighter\shBrushColdFusion.js" />
+    <Content Include="Scripts\SyntaxHighlighter\shBrushCpp.js" />
+    <Content Include="Scripts\SyntaxHighlighter\shBrushCSharp.js" />
+    <Content Include="Scripts\SyntaxHighlighter\shBrushCss.js" />
+    <Content Include="Scripts\SyntaxHighlighter\shBrushDelphi.js" />
+    <Content Include="Scripts\SyntaxHighlighter\shBrushDiff.js" />
+    <Content Include="Scripts\SyntaxHighlighter\shBrushErlang.js" />
+    <Content Include="Scripts\SyntaxHighlighter\shBrushGroovy.js" />
+    <Content Include="Scripts\SyntaxHighlighter\shBrushJava.js" />
+    <Content Include="Scripts\SyntaxHighlighter\shBrushJavaFX.js" />
+    <Content Include="Scripts\SyntaxHighlighter\shBrushJScript.js" />
+    <Content Include="Scripts\SyntaxHighlighter\shBrushPerl.js" />
+    <Content Include="Scripts\SyntaxHighlighter\shBrushPhp.js" />
+    <Content Include="Scripts\SyntaxHighlighter\shBrushPlain.js" />
+    <Content Include="Scripts\SyntaxHighlighter\shBrushPowerShell.js" />
+    <Content Include="Scripts\SyntaxHighlighter\shBrushPython.js" />
+    <Content Include="Scripts\SyntaxHighlighter\shBrushRuby.js" />
+    <Content Include="Scripts\SyntaxHighlighter\shBrushSass.js" />
+    <Content Include="Scripts\SyntaxHighlighter\shBrushScala.js" />
+    <Content Include="Scripts\SyntaxHighlighter\shBrushSql.js" />
+    <Content Include="Scripts\SyntaxHighlighter\shBrushVb.js" />
+    <Content Include="Scripts\SyntaxHighlighter\shBrushXml.js" />
+    <Content Include="Scripts\SyntaxHighlighter\shCore.js" />
+    <Content Include="Scripts\SyntaxHighlighter\shLegacy.js" />
     <Content Include="Scripts\_references.js" />
     <Content Include="Web.config" />
     <Content Include="Web.Debug.config">
@@ -617,7 +699,7 @@
     <Content Include="Views\Shared\_Layout.cshtml" />
     <Content Include="Views\Home\Index.cshtml" />
     <Content Include="Views\Security\Register.cshtml" />
-    <Content Include="Views\Security\EditAccount.cshtml" />
+    <Content Include="Views\Security\EditPassword.cshtml" />
     <Content Include="Views\Shared\_HeaderModule.cshtml" />
     <Content Include="Views\Articles\Article.cshtml" />
     <Content Include="Views\Tags\Tag.cshtml" />
@@ -630,10 +712,14 @@
     <Content Include="Views\Shared\_SiteTemplate.cshtml" />
     <Content Include="Views\Shared\_SearchModule.cshtml" />
     <Content Include="Views\Modules\Search.cshtml" />
+    <Content Include="Views\Shared\_RecentCommentsModule.cshtml" />
+    <Content Include="Views\Shared\_ArchiveModule.cshtml" />
+    <Content Include="Views\Archive\Archive.cshtml" />
+    <Content Include="Views\Shared\_Pagination.cshtml" />
+    <Content Include="Views\Security\EditAccount.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
-    <Folder Include="Areas\Administrator\Views\Security\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />

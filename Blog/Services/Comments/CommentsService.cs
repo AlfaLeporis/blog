@@ -9,126 +9,123 @@ using Blog.App_Start;
 using Omu.ValueInjecter;
 using System.Security.Cryptography;
 using System.Text;
+using System.Data.Entity;
 
 namespace Blog.Services
 {
     public class CommentsService : ICommentsService
     {
         private ISecurityService _securityService = null;
+        private DbContext _db = null;
 
-        public CommentsService(ISecurityService securityService)
+        public CommentsService(ISecurityService securityService,
+                               DbContext db)
         {
             _securityService = securityService;
+            _db = db;
         }
 
         public bool Add(CommentViewModel viewModel)
         {
-            using (var db = new DatabaseContext())
-            {
-                var model = new CommentModel();
-                model.InjectFrom(viewModel);
+            var model = new CommentModel();
+            model.InjectFrom<CustomInjection>(viewModel);
 
-                db.Comments.Add(model);
-                db.SaveChanges();
-            }
+            _db.Set<CommentModel>().Add(model);
+            _db.SaveChanges();
 
             return true;
         }
 
         public bool Edit(CommentViewModel viewModel)
         {
-            using (var db = new DatabaseContext())
-            {
-                var model = db.Comments.FirstOrDefault(p => p.ID == viewModel.ID);
+            var model = _db.Set<CommentModel>().FirstOrDefault(p => p.ID == viewModel.ID);
 
-                if (model == null)
-                    return false;
+            if (model == null)
+                return false;
 
-                model.InjectFrom(viewModel);
+            model.InjectFrom<CustomInjection>(viewModel);
 
-                db.SaveChanges();
-            }
+            _db.SaveChanges();
 
             return true;
         }
 
         public bool Remove(int id)
         {
-            using (var db = new DatabaseContext())
-            {
-                var model = db.Comments.FirstOrDefault(p => p.ID == id);
+            var model = _db.Set<CommentModel>().FirstOrDefault(p => p.ID == id);
 
-                if (model == null)
-                    return false;
+            if (model == null)
+                return false;
 
-                db.Comments.Remove(model);
+            _db.Set<CommentModel>().Remove(model);
 
-                db.SaveChanges();
-            }
+            _db.SaveChanges();
 
-            return false;
+            return true;
         }
 
         public CommentViewModel Get(int id)
         {
-            using (var db = new DatabaseContext())
+            var model = _db.Set<CommentModel>().FirstOrDefault(p => p.ID == id);
+
+            if (model == null)
+                return null;
+
+            var viewModel = ConvertModel(model);
+
+            return viewModel;
+        }
+
+        private CommentViewModel ConvertModel(CommentModel model)
+        {
+            var viewModel = new CommentViewModel();
+            viewModel.InjectFrom<CustomInjection>(model);
+
+            UserViewModel user = null;
+            if(model.AuthorID != -1)
+                user = _securityService.Get(model.AuthorID);
+
+            if (user != null)
             {
-                var model = db.Comments.FirstOrDefault(p => p.ID == id);
-
-                if (model == null)
-                    return null;
-
-                var viewModel = new CommentViewModel();
-                viewModel.InjectFrom<CustomInjection>(model);
                 viewModel.AvatarSource = GetAvatarSourceByEMail(_securityService.GetEMailByID(viewModel.AuthorID));
+                viewModel.AuthorSite = user.WebSite;
                 viewModel.AuthorName = _securityService.GetUserNameByID(viewModel.AuthorID);
-
-                return viewModel;
             }
+            else
+            {
+                viewModel.AvatarSource = "http://www.gravatar.com/avatar/undefined";
+                viewModel.AuthorSite = "undefined";
+                viewModel.AuthorName = "Anonim";
+            }
+
+            return viewModel;
         }
 
         public List<CommentViewModel> GetAll()
         {
-            using (var db = new DatabaseContext())
+            var comments = _db.Set<CommentModel>().ToList();
+            var viewModels = new List<CommentViewModel>();
+
+            for (int i = 0; i < comments.Count; i++)
             {
-                var comments = db.Comments.ToList();
-                var viewModels = new List<CommentViewModel>();
-
-                for (int i = 0; i < comments.Count; i++)
-                {
-                    var vm = new CommentViewModel();
-                    vm.InjectFrom<CustomInjection>(comments[i]);
-                    vm.AvatarSource = GetAvatarSourceByEMail(_securityService.GetEMailByID(vm.AuthorID));
-                    vm.AuthorName = _securityService.GetUserNameByID(vm.AuthorID);
-
-                    viewModels.Add(vm);
-                }
-
-                return viewModels;
+                viewModels.Add(ConvertModel(comments[i]));
             }
+
+            return viewModels.OrderByDescending(p => p.PublishDate).ToList();
         }
 
 
         public List<CommentViewModel> GetByTargetID(int id, CommentTarget target)
         {
-            using(var db = new DatabaseContext())
+            var viewModels = new List<CommentViewModel>();
+            var comments = _db.Set<CommentModel>().Where(p => p.ArticleID == id && p.Target == target).ToList();
+
+            for (int i = 0; i < comments.Count; i++)
             {
-                var viewModels = new List<CommentViewModel>();
-                var comments = db.Comments.Where(p => p.ArticleID == id && p.Target == target).ToList();
-
-                for (int i = 0; i < comments.Count; i++)
-                {
-                    var vm = new CommentViewModel();
-                    vm.InjectFrom<CustomInjection>(comments[i]);
-
-                    vm.AvatarSource = GetAvatarSourceByEMail(_securityService.GetEMailByID(vm.AuthorID));
-                    vm.AuthorName = _securityService.GetUserNameByID(vm.AuthorID);
-
-                    viewModels.Add(vm);
-                }
-
-                return viewModels;
+                viewModels.Add(ConvertModel(comments[i]));
             }
+
+            return viewModels.OrderByDescending(p => p.PublishDate).ToList();
         }
 
         private String GetAvatarSourceByEMail(String email)
@@ -142,6 +139,38 @@ namespace Blog.Services
             String emailHash = BitConverter.ToString(bytesHash).Replace("-", "").ToLower();
 
             return "http://www.gravatar.com/avatar/" + emailHash;
+        }
+
+
+        public List<CommentViewModel> GetRecentComments(int count)
+        {
+            var recentComments = _db.Set<CommentModel>().
+                OrderByDescending(p => p.PublishDate).
+                Take(count).
+                ToList();
+
+            var viewModel = new List<CommentViewModel>();
+
+            for (int i = 0; i < recentComments.Count; i++)
+            {
+                viewModel.Add(ConvertModel(recentComments[i]));
+            }
+
+            return viewModel;
+        }
+
+
+        public List<CommentViewModel> GetByUserID(int id)
+        {
+            var model = _db.Set<CommentModel>().Where(p => p.AuthorID == id).ToList();
+            var viewModel = new List<CommentViewModel>();
+
+            for(int i=0; i<model.Count; i++)
+            {
+                viewModel.Add(ConvertModel(model[i]));
+            }
+
+            return viewModel.OrderByDescending(p => p.PublishDate).ToList();
         }
     }
 }

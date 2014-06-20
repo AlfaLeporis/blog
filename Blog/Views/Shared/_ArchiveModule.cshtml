@@ -1,0 +1,18 @@
+﻿@model List<Blog.ViewModels.ArchiveModuleViewModel>
+
+<div class="module">
+    <div class="module-header">
+        Archiwum
+    </div>
+    <ul>
+        @for (int i = 0; i < Model.Count; i++)
+        {
+            <li>
+                <a href="@Url.Action("Archive", "Archive", new{id = Model[i].Date.ToString("yyyyMM")})" class="btn btn-default" style="width: 100%">
+                    <div class="pull-left">@Model[i].Date.ToString("MMMM") @Model[i].Date.Year</div>
+                    <span class="badge pull-right">@Model[i].Count</span>
+                </a>
+            </li>
+        }
+    </ul>
+</div>

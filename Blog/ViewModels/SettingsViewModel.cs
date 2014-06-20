@@ -43,5 +43,17 @@ namespace Blog.ViewModels
 
         [Required(ErrorMessage = "Pole jest wymagane!")]
         public String ShortSiteMaxLength { get; set; }
+
+        [Required(ErrorMessage = "Pole jest wymagane!")]
+        public String Author { get; set; }
+
+        [Required(ErrorMessage = "Pole jest wymagane!")]
+        public String ShortCommentMaxLength { get; set; }
+
+        [Required(ErrorMessage = "Pole jest wymagane!")]
+        public String RecentCommentsCount { get; set; }
+
+        [Required(ErrorMessage = "Pole jest wymagane!")]
+        public String ItemsPerPage { get; set; }
     }
 }

@@ -9,6 +9,7 @@ using Microsoft.Practices.Unity;
 
 namespace Blog.Areas.Administrator.Controllers
 {
+    [Authorize(Roles = "Administrator")]
     public class CategoriesController : Controller
     {
         private ICategoriesService _categoriesService = null;
@@ -64,7 +65,7 @@ namespace Blog.Areas.Administrator.Controllers
             bool result = _categoriesService.Remove(id);
 
             if (!result)
-                throw new HttpException(404, "Usunięcie katogorii (" + id + ") nie powiodło się.");
+                throw new Exception("Usunięcie katogorii (" + id + ") nie powiodło się.");
 
             return RedirectToAction("Categories");
         }

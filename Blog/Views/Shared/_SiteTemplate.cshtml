@@ -6,16 +6,6 @@
 
     </div>
 
-    <div class="comments-info">
-        <div style="position: relative;">
-            <span class="glyphicon glyphicon-comment" style="margin: 0px 5px 0 0; font-size: 2.5em; position: relative; color: rgb(35, 49, 71); ">
-            </span>
-        </div>
-        <div style="position: absolute; color: white; top: 0; left: 0; width: 35px; height: 25px; text-align: center; padding: 3px; font-size: 1.2em;">
-            @Model.Comments.Count
-        </div>
-    </div>
-
     <div class="article-content">
         @Html.Raw(Model.Content)
     </div>
@@ -29,46 +19,3 @@
         </div>
     </div>
 </div>
-
-
-@if(!Model.IsReadMore)
-{
-    <div class="comments-area">
-
-        @for (int i = 0; i < Model.Comments.Count; i++)
-        {
-            <div class="single-comment-area">
-                <div class="comment-header">
-                    <div class="comment-author">
-                        @Model.Comments[i].AuthorName
-                    </div>
-                    <div class="comment-date">
-                        @Model.Comments[i].PublishDate
-                        @if (Model.Comments[i].AuthorID == WebSecurity.CurrentUserId && WebSecurity.IsAuthenticated)
-                        {
-                            @Html.ActionLink("[Usuń]", "RemoveComment", "Comments", new { id = Model.Comments[i].ID, articleID = Model.ID }, new { onclick = "return confirmOperation()" })
-                        }
-                    </div>
-                </div>
-                <div class="comment-avatar">
-                    <img src="@Model.Comments[i].AvatarSource" alt="avatar" />
-                </div>
-                <div class="comment-content">
-                    @Model.Comments[i].Content
-                </div>
-            </div>
-        }
-
-    </div>
-
-    <div class="single-comment-area">
-        <div class="comments-reply-area">
-            @using (Html.BeginForm("AddComment", "Comments", new { returnUrl = ViewBag.ReturnUrl, target = Blog.Models.CommentTarget.Site }))
-            {
-                <input type="hidden" name="ArticleID" value="@Model.ID" />
-                <textarea class="form-control" name="CommentContent"></textarea>
-                <input type="submit" value="Dodaj komentarz" class="btn btn-default" />
-            }
-        </div>
-    </div>
-}

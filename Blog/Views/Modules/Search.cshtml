@@ -10,7 +10,7 @@
     Html.RenderPartial("_ArticleTemplate", Model.Articles[i]);
 }
 
-<div class="sub-header">Lista stron zawierających frazę <strong>@Model.Phrase</strong> (@Model.Articles.Count)</div>
+<div class="sub-header">Lista stron zawierających frazę <strong>@Model.Phrase</strong> (@Model.Sites.Count)</div>
 @for (int i = 0; i < Model.Sites.Count; i++)
 {
     Html.RenderPartial("_SiteTemplate", Model.Sites[i]);

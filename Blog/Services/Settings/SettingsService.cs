@@ -4,14 +4,24 @@ using System.Linq;
 using System.Web;
 using System.Reflection;
 using System.IO;
+using Blog.ViewModels;
 
 namespace Blog.Services
 {
     public class SettingsService : ISettingsService
     {
+        private static SettingsViewModel _cachedSettings = null;
+        private static DateTime _lastSettingsChange = DateTime.MinValue;
+        private const String _fileName = "~/config.cfg";
+
+        public SettingsService()
+        {
+            _lastSettingsChange = File.GetLastWriteTime(HttpContext.Current.Server.MapPath(_fileName));
+        }
+
         public void Save(ViewModels.SettingsViewModel viewModel)
         {
-            using(var writer = new StreamWriter(HttpContext.Current.Server.MapPath("~/config.cfg")))
+            using (var writer = new StreamWriter(HttpContext.Current.Server.MapPath(_fileName)))
             {
                 var properties = viewModel.GetType().GetProperties();
                 for(int i=0; i<properties.Count(); i++)
@@ -26,21 +36,41 @@ namespace Blog.Services
 
         public ViewModels.SettingsViewModel GetSettings()
         {
-            var viewModel = new ViewModels.SettingsViewModel();
-            var properties = viewModel.GetType().GetProperties();
+            bool needReload = IsSettingsFileChanged();
 
-            using(var reader = new StreamReader(HttpContext.Current.Server.MapPath("~/config.cfg")))
+            if (_cachedSettings == null || needReload)
             {
-                while(!reader.EndOfStream)
-                {
-                    String line = reader.ReadLine();
-                    var words = line.Split('=');
+                var viewModel = new ViewModels.SettingsViewModel();
+                var properties = viewModel.GetType().GetProperties();
 
-                    properties.First(p => p.Name == words[0]).SetValue(viewModel, words[1]);
+                using (var reader = new StreamReader(HttpContext.Current.Server.MapPath(_fileName)))
+                {
+                    while (!reader.EndOfStream)
+                    {
+                        String line = reader.ReadLine();
+                        var words = line.Split('=');
+
+                        properties.First(p => p.Name == words[0]).SetValue(viewModel, words[1]);
+                    }
                 }
+
+                _cachedSettings = viewModel;
+                return viewModel;
             }
 
-            return viewModel;
+            return _cachedSettings;
+        }
+
+        private bool IsSettingsFileChanged()
+        {
+            var time = File.GetLastWriteTime(HttpContext.Current.Server.MapPath(_fileName));
+            if (time == _lastSettingsChange)
+                return false;
+            else
+            {
+                _lastSettingsChange = time;
+                return true;
+            }
         }
     }
 }

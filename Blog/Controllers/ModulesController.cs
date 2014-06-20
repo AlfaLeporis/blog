@@ -16,6 +16,8 @@ namespace Blog.Controllers
         private ICategoriesService _categoriesService = null;
         private ISitesService _sitesService = null;
         private ISearchService _searchService = null;
+        private ICommentsService _commentsService = null;
+        private IArticlesService _articlesService = null;
 
         private const float _maxTagSize = 1.5f;
         private const float _minTagSize = 1.0f;
@@ -24,13 +26,17 @@ namespace Blog.Controllers
                                  ITagsService tagsService,
                                  ICategoriesService categoriesService,
                                  ISitesService sitesService,
-                                 ISearchService searchService)
+                                 ISearchService searchService,
+                                 ICommentsService commentsService,
+                                 IArticlesService articlesService)
         {
             _settingsService = settingsService;
             _tagsService = tagsService;
             _categoriesService = categoriesService;
             _sitesService = sitesService;
             _searchService = searchService;
+            _commentsService = commentsService;
+            _articlesService = articlesService;
         }
 
         public ActionResult HeaderModule()
@@ -77,10 +83,73 @@ namespace Blog.Controllers
         public ActionResult Search(FormCollection viewModel)
         {
             var phrase = viewModel["search-phrase"];
+            if(phrase.Length == 0)
+            {
+                TempData.Add("ErrorMsg", "Do pola wyszukiwarki musi być wpisana fraza.");
+                return RedirectToAction("Index", "Home");
+            }
+
             int maxSiteLength = Convert.ToInt32(_settingsService.GetSettings().ShortSiteMaxLength);
             var result = _searchService.Search(phrase, maxSiteLength);
 
             return View(result);
+        }
+
+        public ActionResult RecentCommentsModule()
+        {
+            int commentsCount = Convert.ToInt32(_settingsService.GetSettings().RecentCommentsCount);
+            int commentLength = Convert.ToInt32(_settingsService.GetSettings().ShortCommentMaxLength);
+
+            var viewModel = new List<RecentCommentsModuleViewModel>();
+            var recentComments = _commentsService.GetRecentComments(commentsCount);
+
+            for (int i = 0; i < recentComments.Count; i++)
+            {
+                var article = _articlesService.Get(recentComments[i].ArticleID, false);
+                var comment = recentComments[i];
+
+                var length = comment.Content.Length;
+
+                if(comment.Content.Length > commentLength)
+                    comment.Content = comment.Content.Remove(commentLength).Trim();
+
+                comment.Content += "...";
+
+                viewModel.Add(new RecentCommentsModuleViewModel()
+                    {
+                        Comment = recentComments[i],
+                        Article = article
+                    });
+            }
+
+            return PartialView("_RecentCommentsModule", viewModel);
+        }
+
+        public ActionResult ArchiveModule()
+        {
+            var articles = _articlesService.GetAll(false);
+            var viewModel = new List<ArchiveModuleViewModel>();
+
+            for (int i = 0; i < articles.Count; i++)
+            {
+                var singleArchive = viewModel.FirstOrDefault(p => p.Date.ToString("yyyyMM") == articles[i].PublishDate.ToString("yyyyMM"));
+                if (singleArchive == null)
+                {
+                    var newArchive = new ArchiveModuleViewModel()
+                    {
+                        Count = 1,
+                        Date = articles[i].PublishDate
+                    };
+
+                    viewModel.Add(newArchive);
+                }
+                else
+                {
+                    singleArchive.Count++;
+                }
+            }
+
+            return PartialView("_ArchiveModule", viewModel);
         }
 	}
 }

@@ -11,17 +11,18 @@ using NLog;
 
 namespace Blog.Areas.Administrator.Controllers
 {
+    [Authorize(Roles = "Administrator")]
     public class HomeController : Controller
     {
         public HomeController()
         {
-
+            
         }
 
         [HttpGet]
         public ActionResult Index()
         {
-            return View();
+            return RedirectToAction("Settings", "Settings");
         }
     }
 }

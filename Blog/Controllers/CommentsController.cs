@@ -43,7 +43,7 @@ namespace Blog.Controllers
                 bool result = _commentsService.Add(commentVM);
 
                 if (!result)
-                    throw new HttpException(404, "Błąd w trakcie próby dodania komentarza");
+                    throw new Exception("Błąd w trakcie próby dodania komentarza");
             }
             else
             {
@@ -56,10 +56,13 @@ namespace Blog.Controllers
         [HttpGet]
         public ActionResult RemoveComment(int id, int articleID)
         {
+            if (id != _securityService.GetCurrentID())
+                throw new Exception("Brak uprawnień.");
+
             var result = _commentsService.Remove(id);
 
             if (!result)
-                throw new HttpException(404, "Komentarz o podanym id (" + id + ") nie może zostać usunięty ponieważ nie istnieje.");
+                throw new Exception("Komentarz o podanym id (" + id + ") nie może zostać usunięty ponieważ nie istnieje.");
 
             return Redirect(HttpContext.Request.UrlReferrer.ToString());
         }

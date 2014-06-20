@@ -20,12 +20,16 @@
             <div class="settings-group"><span class="settings-label">Opis:</span> @Html.TextBoxFor(p => p.Settings.Description, new { @class = "form-control settings-control" })</div>
             <div class="settings-group"><span class="settings-label">Krótki opis:</span> @Html.TextBoxFor(p => p.Settings.ShortDescription, new { @class = "form-control settings-control" })</div>
             <div class="settings-group"><span class="settings-label">Tagi:</span> @Html.TextBoxFor(p => p.Settings.Tags, new { @class = "form-control settings-control" })</div>
+            <div class="settings-group"><span class="settings-label">Autor:</span> @Html.TextBoxFor(p => p.Settings.Author, new { @class = "form-control settings-control" })</div>
         </fieldset>
 
         <fieldset class="settings-fieldset">
             <legend>Inne</legend>
             <div class="settings-group"><span class="settings-label">Liczba tagów:</span> @Html.TextBoxFor(p => p.Settings.TagsCount, new { @class = "form-control settings-control" })</div>
             <div class="settings-group"><span class="settings-label">Długość krótkiej strony:</span> @Html.TextBoxFor(p => p.Settings.ShortSiteMaxLength, new { @class = "form-control settings-control" })</div>
+            <div class="settings-group"><span class="settings-label">Długość krótkiego kom.:</span> @Html.TextBoxFor(p => p.Settings.ShortCommentMaxLength, new { @class = "form-control settings-control" })</div>
+            <div class="settings-group"><span class="settings-label">Liczba najn. komentarzy:</span> @Html.TextBoxFor(p => p.Settings.RecentCommentsCount, new { @class = "form-control settings-control" })</div>
+            <div class="settings-group"><span class="settings-label">Elementów na stronę:</span> @Html.TextBoxFor(p => p.Settings.ItemsPerPage, new { @class = "form-control settings-control" })</div>
         </fieldset>
     </div>
     <div class="right-col">

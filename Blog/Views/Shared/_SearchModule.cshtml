@@ -1,5 +1,5 @@
 ﻿<div class="input-group">
-    @using(Html.BeginForm("Search", "Modules"))
+    @using (Html.BeginForm("Search", "Modules", FormMethod.Post, new { style = "display: table-row;" }))
     {
         <input type="text" class="form-control" name="search-phrase" placeholder="treść, kategoria, tytuł">
         <span class="input-group-btn">

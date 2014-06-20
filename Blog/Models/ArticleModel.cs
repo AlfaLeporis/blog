@@ -15,6 +15,7 @@ namespace Blog.Models
         public String Content { get; set; }
         public DateTime CreationDate { get; set; }
         public DateTime PublishDate { get; set; }
+        public DateTime LastUpdateDate { get; set; }
         public bool IsPublished { get; set; }
     }
 }

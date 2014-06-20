@@ -7,6 +7,7 @@ using Blog.ViewModels;
 using Blog.Models;
 using Omu.ValueInjecter;
 using Blog.App_Start;
+using System.Data.Entity;
 
 namespace Blog.Services
 {
@@ -15,262 +16,192 @@ namespace Blog.Services
         private ITagsService _tagsService = null;
         private ICategoriesService _categoriesService = null;
         private ICommentsService _commentsService = null;
+        private DbContext _db = null;
 
         private const String _readMoreTag = "<!--more-->";
 
         public ArticlesService(ITagsService tagsService,
                                ICategoriesService categoriesService,
-                               ICommentsService commentsService)
+                               ICommentsService commentsService,
+                               DbContext databaseContext)
         {
             _tagsService = tagsService;
             _categoriesService = categoriesService;
             _commentsService = commentsService;
+            _db = databaseContext;
         }
 
         public bool Add(ViewModels.ArticleViewModel viewModel)
         {
-            using(var db = new DatabaseContext())
-            {
-                if (db.Articles.Any(p => p.Alias == viewModel.Alias))
-                    return false;
+            if (_db.Set<ArticleModel>().Any(p => p.Alias == viewModel.Alias))
+                return false;
 
-                var model = new ArticleModel();
-                model.InjectFrom(viewModel);
+            var model = new ArticleModel();
+            model.InjectFrom<CustomInjection>(viewModel);
+            model.LastUpdateDate = DateTime.Now;
 
-                db.Articles.Add(model);
-                db.SaveChanges();
+            _db.Set<ArticleModel>().Add(model);
+            _db.SaveChanges();
 
-                _tagsService.Parse(viewModel.TagsString, model.ID);
-            }
+            _tagsService.Parse(viewModel.TagsString, model.ID);
 
             return true;
         }
 
-        public ViewModels.ArticleViewModel Get(int id)
+        public ViewModels.ArticleViewModel Get(int id, bool shortVersion)
         {
-            using(var db = new DatabaseContext())
+            var model = _db.Set<ArticleModel>().FirstOrDefault(p => p.ID == id);
+
+            if (model == null)
+                return null;
+
+            var viewModel = ConvertModel(model);
+
+            if (shortVersion)
             {
-                var model = db.Articles.FirstOrDefault(p => p.ID == id);
+                viewModel.IsReadMode = viewModel.Content.Contains(_readMoreTag);
 
-                if (model == null)
-                    return null;
-
-                var viewModel = new ArticleViewModel();
-                viewModel.InjectFrom<CustomInjection>(model);
-                viewModel.Tags = _tagsService.GetListByArticleID(model.ID);
-                viewModel.TagsString = _tagsService.GetStringByArticleID(model.ID);
-                viewModel.CategoryName = _categoriesService.Get(model.CategoryID).Title;
-                viewModel.IsReadMode = model.Content.Contains(_readMoreTag);
-                viewModel.Comments = _commentsService.GetByTargetID(id, Models.CommentTarget.Article);
-                viewModel.IsReadMode = false;
-                viewModel.CommentsView = false;
-                
-                return viewModel;
+                if (viewModel.IsReadMode)
+                {
+                    var readMorePosition = viewModel.Content.LastIndexOf(_readMoreTag);
+                    viewModel.Content = viewModel.Content.Remove(readMorePosition);
+                }
             }
+    
+            return viewModel;
+        }
+
+        private ArticleViewModel ConvertModel(ArticleModel model)
+        {
+            var viewModel = new ArticleViewModel();
+            viewModel.InjectFrom<CustomInjection>(model);
+            viewModel.Tags = _tagsService.GetListByArticleID(model.ID);
+            viewModel.TagsString = _tagsService.GetStringByArticleID(model.ID);
+            viewModel.CategoryName = _categoriesService.Get(model.CategoryID).Title;
+            viewModel.IsReadMode = model.Content.Contains(_readMoreTag);
+            viewModel.Comments = _commentsService.GetByTargetID(model.ID, Models.CommentTarget.Article);
+            viewModel.CommentsView = false;
+
+            return viewModel;
         }
 
         public ArticleViewModel GetByAlias(String alias)
         {
-            using (var db = new DatabaseContext())
-            {
-                var model = db.Articles.FirstOrDefault(p => p.Alias == alias);
+            var model = _db.Set<ArticleModel>().FirstOrDefault(p => p.Alias == alias);
 
-                if (model == null)
-                    return null;
+            if (model == null)
+                return null;
 
-                var viewModel = Get(model.ID);
+            var viewModel = ConvertModel(model);
 
-                return viewModel;
-            }
+            return viewModel;
         }
 
-        public List<ViewModels.ArticleViewModel> GetAll()
+        public List<ViewModels.ArticleViewModel> GetAll(bool shortVersion)
         {
-            using(var db = new DatabaseContext())
+            var models = _db.Set<ArticleModel>().Select(p => p.ID).ToList();
+            var viewModels = new List<ArticleViewModel>();
+
+            for(int i=0; i<models.Count; i++)
             {
-                var models = db.Articles.ToList();
-                var viewModels = new List<ArticleViewModel>();
-
-                for(int i=0; i<models.Count; i++)
-                {
-                    viewModels.Add(Get(models[i].ID));
-                }
-
-                db.SaveChanges();
-
-                return viewModels;
+                viewModels.Add(Get(models[i], shortVersion));
             }
+
+            return viewModels.OrderByDescending(p => p.PublishDate).ToList();
         }
 
-        public List<ViewModels.ArticleViewModel> GetByTagName(String tag)
+        public List<ViewModels.ArticleViewModel> GetByTagName(String tag, bool shortVersion)
         {
-            using (var db = new DatabaseContext())
+            var articlesID = _tagsService.GetArticlesIDByTagName(tag);
+            var articleViewModels = new List<ArticleViewModel>();
+
+            for (int i = 0; i < articlesID.Count; i++)
             {
-                if (!db.Tags.Any(p => p.Name == tag))
-                    return null;
-
-                var articlesID = _tagsService.GetArticlesIDByTagName(tag);
-                var articleViewModels = new List<ArticleViewModel>();
-
-                for (int i = 0; i < articlesID.Count; i++)
-                {
-                    articleViewModels.Add(Get(articlesID[i]));
-                }
-                
-                return articleViewModels;
+                articleViewModels.Add(Get(articlesID[i], shortVersion));
             }
-        }
 
-        public List<ViewModels.ArticleViewModel> GetShortByTagName(String tag)
-        {
-            using (var db = new DatabaseContext())
-            {
-                if (!db.Tags.Any(p => p.Name == tag))
-                    return null;
-
-                var articlesID = _tagsService.GetArticlesIDByTagName(tag);
-                var articleViewModels = new List<ArticleViewModel>();
-
-                for (int i = 0; i < articlesID.Count; i++)
-                {
-                    articleViewModels.Add(GetShortVersion(articlesID[i]));
-                }
-
-                return articleViewModels;
-            }
+            return articleViewModels.OrderByDescending(p => p.PublishDate).ToList();
         }
 
         public bool Remove(int id)
         {
-            using(var db = new DatabaseContext())
-            {
-                var model = db.Articles.FirstOrDefault(p => p.ID == id);
+            var model = _db.Set<ArticleModel>().FirstOrDefault(p => p.ID == id);
 
-                if (model == null)
-                    return false;
+            if (model == null)
+                return false;
 
-                db.Articles.Remove(model);
-                _tagsService.RemoveByArticleID(id);
+            _db.Set<ArticleModel>().Remove(model);
+            _tagsService.RemoveByArticleID(id);
 
-                db.SaveChanges();
-            }
-
+            _db.SaveChanges();
+            
             return true;
         }
 
         public bool Edit(ViewModels.ArticleViewModel viewModel)
         {
-            using(var db = new DatabaseContext())
-            {
-                var model = db.Articles.FirstOrDefault(p => p.ID == viewModel.ID);
+            var model = _db.Set<ArticleModel>().FirstOrDefault(p => p.ID == viewModel.ID);
 
-                if (model == null)
-                    return false;
+            if (model == null)
+                return false;
 
-                model.InjectFrom(viewModel);
+            model.InjectFrom<CustomInjection>(viewModel);
+            model.LastUpdateDate = DateTime.Now;
 
-                db.SaveChanges();
+            _db.SaveChanges();
 
-                _tagsService.Parse(viewModel.TagsString, model.ID);
-            }
+            _tagsService.Parse(viewModel.TagsString, model.ID);
 
             return true;
         }
 
         public bool SetArticleStatus(int id, bool status)
         {
-            using(var db = new DatabaseContext())
-            {
-                var model = db.Articles.FirstOrDefault(p => p.ID == id);
+            var model = _db.Set<ArticleModel>().FirstOrDefault(p => p.ID == id);
 
-                if (model == null)
-                    return false;
+            if (model == null)
+                return false;
 
-                model.IsPublished = status;
-                db.SaveChanges();
-            }
-
+            model.IsPublished = status;
+            _db.SaveChanges();
+            
             return true;
         }
 
-
-        public ArticleViewModel GetShortVersion(int id)
+        public List<ArticleViewModel> GetByCategoryName(string name, bool shortVersion)
         {
-            var viewModel = Get(id);
+            var categoryID = _categoriesService.GetIDByName(name);
 
-            if (viewModel == null)
+            if (categoryID == -1)
                 return null;
 
-            viewModel.IsReadMode = viewModel.Content.Contains(_readMoreTag);
+            var articleViewModels = new List<ArticleViewModel>();
+            var articlesID = _db.Set<ArticleModel>().Where(p => p.CategoryID == categoryID).Select(p => p.ID).ToList();
 
-            if (viewModel.IsReadMode)
+            for (int i = 0; i < articlesID.Count; i++)
             {
-                var readMorePosition = viewModel.Content.LastIndexOf(_readMoreTag);
-                viewModel.Content = viewModel.Content.Remove(readMorePosition);
+                articleViewModels.Add(Get(articlesID[i], shortVersion));
             }
 
-            return viewModel;
-        }
-
-        public List<ArticleViewModel> GetAllShortVersion()
-        {
-            using (var db = new DatabaseContext())
-            {
-                var models = db.Articles.ToList();
-                var viewModels = new List<ArticleViewModel>();
-
-                for (int i = 0; i < models.Count; i++)
-                {
-                    viewModels.Add(GetShortVersion(models[i].ID));
-                }
-
-                db.SaveChanges();
-
-                return viewModels;
-            }
+            return articleViewModels.OrderByDescending(p => p.PublishDate).ToList();
         }
 
 
-        public List<ArticleViewModel> GetByCategoryName(string name)
+        public List<ArticleViewModel> GetByDate(String date)
         {
-            using (var db = new DatabaseContext())
+            var articles = _db.Set<ArticleModel>().ToList();
+            var viewModel = new List<ArticleViewModel>();
+            
+            for (int i = 0; i < articles.Count; i++)
             {
-                var categoryID = _categoriesService.GetIDByName(name);
-
-                if (categoryID == -1)
-                    return null;
-
-                var articleViewModels = new List<ArticleViewModel>();
-                var articlesID = db.Articles.Where(p => p.CategoryID == categoryID).Select(p => p.ID).ToList();
-
-                for (int i = 0; i < articlesID.Count; i++)
+                if (articles[i].PublishDate.ToString("yyyyMM") == date)
                 {
-                    articleViewModels.Add(Get(articlesID[i]));
+                    var simpleArticle = Get(articles[i].ID, true);
+                    viewModel.Add(simpleArticle);
                 }
-
-                return articleViewModels;
             }
-        }
 
-        public List<ArticleViewModel> GetShortByCategoryName(string name)
-        {
-            using (var db = new DatabaseContext())
-            {
-                var categoryID = _categoriesService.GetIDByName(name);
-
-                if (categoryID == -1)
-                    return null;
-
-                var articleViewModels = new List<ArticleViewModel>();
-                var articlesID = db.Articles.Where(p => p.CategoryID == categoryID).Select(p => p.ID).ToList();
-
-                for (int i = 0; i < articlesID.Count; i++)
-                {
-                    articleViewModels.Add(GetShortVersion(articlesID[i]));
-                }
-
-                return articleViewModels;
-            }
+            return viewModel.OrderByDescending(p => p.PublishDate).ToList();
         }
     }
 }

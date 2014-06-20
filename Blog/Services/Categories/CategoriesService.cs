@@ -7,143 +7,124 @@ using Blog.DAL;
 using Blog.Models;
 using Omu.ValueInjecter;
 using Blog.App_Start;
+using System.Data.Entity;
 
 namespace Blog.Services
 {
     public class CategoriesService : ICategoriesService
     {
-        public CategoriesService()
-        {
+        private DbContext _db = null;
 
+        public CategoriesService(DbContext db)
+        {
+            _db = db;
         }
 
         public bool Add(CategoryViewModel viewModel)
         {
-            using(var db = new DatabaseContext())
-            {
-                if (db.Categories.Any(p => p.Title == viewModel.Title))
-                    return false;
+            if (_db.Set<CategoryModel>().Any(p => p.Title == viewModel.Title))
+                return false;
 
-                var model = new CategoryModel();
-                model.InjectFrom(viewModel);
+            var model = new CategoryModel();
+            model.InjectFrom<CustomInjection>(viewModel);
 
-                db.Categories.Add(model);
-                db.SaveChanges();
-            }
+            _db.Set<CategoryModel>().Add(model);
+            _db.SaveChanges();
 
             return true;
         }
 
         public bool Edit(CategoryViewModel viewModel)
         {
-            using(var db = new DatabaseContext())
-            {
-                if (db.Categories.Any(p => p.Title == viewModel.Title))
-                    return false;
+            var model = _db.Set<CategoryModel>().FirstOrDefault(p => p.ID == viewModel.ID);
 
-                var model = db.Categories.FirstOrDefault(p => p.ID == viewModel.ID);
+            if (model == null)
+                return false;
 
-                if (model == null)
-                    return false;
+            model.InjectFrom<CustomInjection>(viewModel);
 
-                model.InjectFrom(viewModel);
-
-                db.SaveChanges();
-            }
+            _db.SaveChanges();
 
             return true;
         }
 
+        private CategoryViewModel ConvertModel(CategoryModel model)
+        {
+            var viewModel = new CategoryViewModel();
+            viewModel.InjectFrom<CustomInjection>(model);
+
+            return viewModel;
+        }
+
         public bool Remove(int id)
         {
-            using (var db = new DatabaseContext())
-            {
-                if (!db.Categories.Any(p => p.ID == id))
-                    return false;
+            var element = _db.Set<CategoryModel>().FirstOrDefault(p => p.ID == id);
 
-                var element = db.Categories.FirstOrDefault(p => p.ID == id);
+            if (element == null)
+                return false;
 
-                if (element == null)
-                    return false;
+            _db.Set<CategoryModel>().Remove(element);
 
-                db.Categories.Remove(element);
-
-                db.SaveChanges();
-            }
+            _db.SaveChanges();
 
             return true;
         }
 
         public CategoryViewModel Get(int id)
         {
-            using (var db = new DatabaseContext())
-            {
-                var element = db.Categories.FirstOrDefault(p => p.ID == id);
+            var element = _db.Set<CategoryModel>().FirstOrDefault(p => p.ID == id);
 
-                if (element == null)
-                    return null;
+            if (element == null)
+                return null;
 
-                var viewModel = new CategoryViewModel();
-                viewModel.InjectFrom<CustomInjection>(element);
+            var viewModel = ConvertModel(element);
 
-                return viewModel;
-            }
+            return viewModel;
         }
 
         public List<CategoryViewModel> GetAll()
         {
-            using (var db = new DatabaseContext())
+            var categories = _db.Set<CategoryModel>().ToList();
+            var viewModels = new List<CategoryViewModel>();
+
+            for(int i=0; i<categories.Count; i++)
             {
-                var categories = db.Categories.ToList();
-                var viewModels = new List<CategoryViewModel>();
-
-                for(int i=0; i<categories.Count; i++)
-                {
-                    var vm = new CategoryViewModel();
-                    vm.InjectFrom<CustomInjection>(categories[i]);
-           
-                    viewModels.Add(vm);
-                }
-
-                return viewModels;
+                var vm = ConvertModel(categories[i]);
+                viewModels.Add(vm);
             }
+
+            return viewModels;
         }
 
 
         public List<CategoriesModuleViewModel> GetAllWithDetails()
         {
-            using(var db = new DatabaseContext())
+            var viewModel = new List<CategoriesModuleViewModel>();
+            var categories = _db.Set<CategoryModel>().ToList();
+
+            for(int i=0; i< categories.Count; i++)
             {
-                var viewModel = new List<CategoriesModuleViewModel>();
-                var categories = db.Categories.ToList();
+                var vm = new CategoriesModuleViewModel();
+                vm.Name = categories[i].Title;
 
-                for(int i=0; i< categories.Count; i++)
-                {
-                    var vm = new CategoriesModuleViewModel();
-                    vm.Name = categories[i].Title;
-
-                    var categoryID = categories[i].ID;
+                var categoryID = categories[i].ID;
                     
-                    var count = db.Articles.Count(p => p.CategoryID == categoryID);
-                    vm.Count = count;
+                var count = _db.Set<ArticleModel>().Count(p => p.CategoryID == categoryID);
+                vm.Count = count;
 
-                    viewModel.Add(vm);
-                }
-
-                return viewModel;
+                viewModel.Add(vm);
             }
+
+            return viewModel;
         }
 
 
         public int GetIDByName(string name)
         {
-            using(var db = new DatabaseContext())
-            {
-                if (!db.Categories.Any(p => p.Title == name))
-                    return -1;
+            if (!_db.Set<CategoryModel>().Any(p => p.Title == name))
+                return -1;
 
-                return db.Categories.First(p => p.Title == name).ID;
-            }
+            return _db.Set<CategoryModel>().First(p => p.Title == name).ID;
         }
     }
 }

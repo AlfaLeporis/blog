@@ -1,0 +1,26 @@
+﻿@model Blog.ViewModels.UserViewModel
+
+@{
+    ViewBag.Title = "EditUser";
+    Layout = "~/Areas/Administrator/Views/Shared/_Layout.cshtml";
+}
+
+@using (Html.BeginForm("EditUser", "Users", new { area = "Administrator" }))
+{
+    <div class="form-group">
+        <label for="inputEmail">Login</label>
+        @Html.HiddenFor(p => p.ID)
+        @Html.HiddenFor(p => p.LastVisit)
+        @Html.TextBoxFor(p => p.Name, new { @class = "form-control", placeholder = "Nazwa kategorii" })
+        @Html.ValidationMessageFor(p => p.Name, null, new { @class = "validation-message" })
+    </div>
+    
+    <div class="form-group">
+        <label for="inputEmail">EMail</label>
+        @Html.TextBoxFor(p => p.EMail, new { @class = "form-control", placeholder = "Nazwa kategorii" })
+        @Html.ValidationMessageFor(p => p.EMail, null, new { @class = "validation-message" })
+    </div>
+
+    <button type="submit" class="btn btn-primary register-button">Edytuj użytkownika</button>
+}
+

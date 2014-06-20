@@ -12,8 +12,7 @@ namespace Blog.Services
         bool Add(SiteViewModel viewModel);
         bool Edit(SiteViewModel viewModel);
         bool Remove(int id);
-        SiteViewModel Get(int id);
-        SiteViewModel GetShortVersion(int id, int maxlength);
+        SiteViewModel Get(int id, bool shortVersion);
         List<SiteViewModel> GetAll();
         bool SetSiteStatus(int id, bool status);
         SiteViewModel GetByAlias(String id);

@@ -1,4 +1,4 @@
 ﻿@model Blog.ViewModels.SettingsViewModel
 
-<h1>@Model.Title</h1>
+<h1 id="site-name">@Html.ActionLink(Model.Title, "Index", "Home")</h1>
 <h5>@Model.ShortDescription</h5>

@@ -16,5 +16,7 @@ namespace Blog.Services
         CommentViewModel Get(int id);
         List<CommentViewModel> GetAll();
         List<CommentViewModel> GetByTargetID(int id, CommentTarget target);
+        List<CommentViewModel> GetRecentComments(int count);
+        List<CommentViewModel> GetByUserID(int id);
     }
 }

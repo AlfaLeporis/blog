@@ -30,12 +30,19 @@ namespace Blog.Areas.Administrator.Controllers
             var result = _securityService.Login(viewModel);
 
             if (result)
-                return RedirectToAction("Index");
+                return RedirectToAction("Index", "Home", new { area = "Administrator" });
             else
             {
                 TempData.Add("ErrorMsg", "Błąd w trakcie próby zalogowania się. Spróbuj ponownie!");
                 return RedirectToAction("Auth");
             }
+        }
+
+        [HttpGet]
+        public ActionResult Logout()
+        {
+            _securityService.LogOut();
+            return RedirectToAction("Auth");
         }
 	}
 }

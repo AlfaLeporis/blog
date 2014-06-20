@@ -4,7 +4,24 @@
  */
 
 CKEDITOR.editorConfig = function( config ) {
-	// Define changes to default configuration here. For example:
-	// config.language = 'fr';
-	// config.uiColor = '#AADC6E';
+    config.extraPlugins = 'wpmore,dialog,dialogui,syntaxhighlight';
+    config.toolbar = [['Save', '-', 'Source', 'Preview', '-', 'Templates'],
+                ['Cut', 'Copy', 'Paste', 'PasteText', 'PasteFromWord', '-', 'Print', 'SpellChecker', 'Scayt'],
+                ['Undo', 'Redo', '-', 'Find', 'Replace'],
+                ['Link', 'Unlink', 'Anchor'],
+                '/',
+                ['NumberedList', 'BulletedList', '-', 'Outdent', 'Indent', 'Blockquote', 'CreateDiv'],
+                ['JustifyLeft', 'JustifyCenter', 'JustifyRight', 'JustifyBlock'],
+                ['NumberedList', 'BulletedList', '-', 'Outdent', 'Indent', 'Blockquote'],
+                ['Image', 'Flash', 'Table', 'HorizontalRule', 'Smiley', 'SpecialChar', 'PageBreak'],
+                 '/',
+                ['Styles', 'Format', 'Font', 'FontSize'],
+                ['Bold', 'Italic', 'Underline', 'Strike', '-', 'Subscript', 'Superscript'],
+                ['Maximize'],
+                ['Hello', 'Hello2'],
+                ['Source', 'WPMore'],
+                ['Syntaxhighlight']];
+    config.height = "500px";
+    config.filebrowserBrowseUrl = '/Administrator/Editor/FilesBrowser';
+    config.filebrowserUploadUrl = '/Administrator/Editor/Uploader';
 };

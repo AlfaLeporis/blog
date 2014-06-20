@@ -10,17 +10,14 @@ namespace Blog.Services
     public interface IArticlesService
     {
         bool Add(ArticleViewModel viewModel);
-        ArticleViewModel Get(int id);
+        ArticleViewModel Get(int id, bool shortVersion);
         ArticleViewModel GetByAlias(String alias);
-        ArticleViewModel GetShortVersion(int id);
-        List<ArticleViewModel> GetAll();
-        List<ArticleViewModel> GetAllShortVersion();
+        List<ArticleViewModel> GetAll(bool shortVersion);
         bool Remove(int id);
         bool Edit(ArticleViewModel viewModel);
         bool SetArticleStatus(int id, bool status);
-        List<ViewModels.ArticleViewModel> GetByTagName(String tag);
-        List<ViewModels.ArticleViewModel> GetShortByTagName(String tag);
-        List<ArticleViewModel> GetByCategoryName(String name);
-        List<ArticleViewModel> GetShortByCategoryName(String name);
+        List<ViewModels.ArticleViewModel> GetByTagName(String tag, bool shortVersion);
+        List<ArticleViewModel> GetByCategoryName(String name, bool shortVersion);
+        List<ArticleViewModel> GetByDate(String date);
     }
 }

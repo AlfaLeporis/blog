@@ -7,6 +7,8 @@
 
 @section CustomMeta{
     @Scripts.Render("~/bundles/ckeditor")
+    @Scripts.Render("~/bundles/alias-generator")
+    @Styles.Render("~/Content/syntax")
 }
 
 @using (Html.BeginForm("EditSite", "Sites", new { area = "Administrator" }))
@@ -16,10 +18,12 @@
             <legend>Dane strony</legend>
 
             <div>
-                <span class="settings-label" style="width: 100%">Alias:</span>
-                @Html.TextBoxFor(p => p.Alias, new { @class = "form-control", placeholder = "Alias" })
-            </div>
-
+                <div class="input-group">
+                    <span class="settings-label" style="width: 100%">Alias:</span>
+                    @Html.TextBoxFor(p => p.Alias, new { @class = "form-control", placeholder = "Alias", id = "tb-alias" })
+                    <div class="input-group-btn"><div class="btn btn-primary" onclick="generateAlias();">Wygeneruj</div></div>
+                </div>
+                </div>
             <div>
                 <span class="settings-label" style="width: 100%">Opis:</span>
                 @Html.TextBoxFor(p => p.Description, new { @class = "form-control", placeholder = "Opis" })
@@ -47,31 +51,11 @@
 
     <div class="clearfix"></div>
 
-    <div class="settings-group">@Html.TextBoxFor(p => p.Title, new { @class = "form-control", placeholder = "Tytuł artykułu" })</div>
+    <div class="settings-group">@Html.TextBoxFor(p => p.Title, new { @class = "form-control", placeholder = "Tytuł artykułu", id = "tb-title" })</div>
     <div style="height: 630px;">@Html.TextAreaFor(p => p.Content, new { id = "editor" })</div>
 
     <script>
-        CKEDITOR.replace('editor',
-            {
-                extraPlugins: 'wpmore',
-                toolbar: [['Save', '-', 'Source', 'Preview', '-', 'Templates'],
-                            ['Cut', 'Copy', 'Paste', 'PasteText', 'PasteFromWord', '-', 'Print', 'SpellChecker', 'Scayt'],
-                            ['Undo', 'Redo', '-', 'Find', 'Replace'],
-                            ['Link', 'Unlink', 'Anchor'],
-                            '/',
-                            ['NumberedList', 'BulletedList', '-', 'Outdent', 'Indent', 'Blockquote', 'CreateDiv'],
-                            ['JustifyLeft', 'JustifyCenter', 'JustifyRight', 'JustifyBlock'],
-                            ['NumberedList', 'BulletedList', '-', 'Outdent', 'Indent', 'Blockquote'],
-                            ['Image', 'Flash', 'Table', 'HorizontalRule', 'Smiley', 'SpecialChar', 'PageBreak'],
-                             '/',
-                            ['Styles', 'Format', 'Font', 'FontSize'],
-                            ['Bold', 'Italic', 'Underline', 'Strike', '-', 'Subscript', 'Superscript'],
-                            ['Maximize'],
-                            ['Hello', 'Hello2'],
-                            ['Source', 'WPMore']],
-                height: "500px"
-            }
-        );
+        CKEDITOR.replace('editor');
     </script>
 
     <div class="clearfix"></div>

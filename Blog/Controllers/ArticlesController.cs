@@ -23,8 +23,8 @@ namespace Blog.Controllers
         {
             var article = _articlesService.GetByAlias(id);
 
-            if (article == null)
-                throw new HttpException(404, "Artykuł o podanym id (" + id + ") nie może zostać odnaleziony.");
+            if (article == null || !article.IsPublished)
+                throw new Exception("Artykuł o podanym id (" + id + ") nie może zostać odnaleziony.");
 
             article.CommentsView = true;
 

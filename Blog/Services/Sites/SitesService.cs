@@ -8,124 +8,126 @@ using Blog.Models;
 using Omu.ValueInjecter;
 using Blog.App_Start;
 using Blog.Services;
+using System.Data.Entity;
 
 namespace Blog.Services
 {
     public class SitesService : ISitesService
     {
         private ICommentsService _commentsService = null;
+        private ISettingsService _settingsService = null;
+        private DbContext _db = null;
 
-        public SitesService(ICommentsService commentsService)
+        public SitesService(ICommentsService commentsService,
+                            ISettingsService settingsService,
+                            DbContext db)
         {
             _commentsService = commentsService;
+            _settingsService = settingsService;
+            _db = db;
         }
 
         public bool Add(SiteViewModel viewModel)
         {
-            using (var db = new DatabaseContext())
-            {
-                if (db.Sites.Any(p => p.Alias == viewModel.Alias))
-                    return false;
+            if (_db.Set<SiteModel>().Any(p => p.Alias == viewModel.Alias))
+                return false;
 
-                var model = new SiteModel();
-                model.InjectFrom(viewModel);
+            var model = new SiteModel();
+            model.InjectFrom<CustomInjection>(viewModel);
 
-                db.Sites.Add(model);
-                db.SaveChanges();
-            }
+            _db.Set<SiteModel>().Add(model);
+            _db.SaveChanges();
 
             return true;
         }
 
         public bool Edit(SiteViewModel viewModel)
         {
-            using (var db = new DatabaseContext())
-            {
-                if (db.Sites.Any(p => p.Alias == viewModel.Alias))
-                    return false;
+            var model = _db.Set<SiteModel>().FirstOrDefault(p => p.ID == viewModel.ID);
 
-                var model = db.Sites.FirstOrDefault(p => p.ID == viewModel.ID);
+            if (model == null)
+                return false;
 
-                if (model == null)
-                    return false;
+            model.InjectFrom<CustomInjection>(viewModel);
 
-                model.InjectFrom(viewModel);
-
-                db.SaveChanges();
-            }
+            _db.SaveChanges();
 
             return true;
         }
 
         public bool Remove(int id)
         {
-            using (var db = new DatabaseContext())
-            {
-                var element = db.Sites.FirstOrDefault(p => p.ID == id);
+            var element = _db.Set<SiteModel>().FirstOrDefault(p => p.ID == id);
 
-                if (element == null)
-                    return false;
+            if (element == null)
+                return false;
 
-                db.Sites.Remove(element);
+            _db.Set<SiteModel>().Remove(element);
 
-                db.SaveChanges();
-            }
+            _db.SaveChanges();
 
             return true;
         }
 
-        public SiteViewModel Get(int id)
+        public SiteViewModel Get(int id, bool shortVersion)
         {
-            using (var db = new DatabaseContext())
+            var element = _db.Set<SiteModel>().FirstOrDefault(p => p.ID == id);
+
+            if (element == null)
+                return null;
+
+            var viewModel = ConvertModel(element);
+
+            if(shortVersion)
             {
-                var element = db.Sites.FirstOrDefault(p => p.ID == id);
+                int contentLength = viewModel.Content.Length;
+                int maxLength = Convert.ToInt32(_settingsService.GetSettings().ShortSiteMaxLength);
 
-                if (element == null)
-                    return null;
+                if (contentLength > maxLength)
+                    contentLength = maxLength;
 
-                var viewModel = new SiteViewModel();
-                viewModel.InjectFrom<CustomInjection>(element);
-                viewModel.Comments = _commentsService.GetByTargetID(id, CommentTarget.Site);
-                viewModel.IsReadMore = false;
+                viewModel.Content = viewModel.Content.Remove(contentLength);
+                viewModel.Content += "...";
 
-                return viewModel;
+                viewModel.IsReadMore = true;
             }
+
+            return viewModel;
+        }
+
+        private SiteViewModel ConvertModel(SiteModel model)
+        {
+            var viewModel = new SiteViewModel();
+            viewModel.InjectFrom<CustomInjection>(model);
+            viewModel.Comments = _commentsService.GetByTargetID(model.ID, CommentTarget.Site);
+            viewModel.IsReadMore = false;
+
+            return viewModel;
         }
 
         public List<SiteViewModel> GetAll()
         {
-            using (var db = new DatabaseContext())
+            var sites = _db.Set<SiteModel>().ToList();
+            var viewModels = new List<SiteViewModel>();
+
+            for (int i = 0; i < sites.Count; i++)
             {
-                var sites = db.Sites.ToList();
-                var viewModels = new List<SiteViewModel>();
-
-                for (int i = 0; i < sites.Count; i++)
-                {
-                    var vm = new SiteViewModel();
-                    vm.InjectFrom<CustomInjection>(sites[i]);
-                    vm.Comments = _commentsService.GetByTargetID(sites[i].ID, CommentTarget.Site);
-                    vm.IsReadMore = false;
-
-                    viewModels.Add(vm);
-                }
-
-                return viewModels;
+                viewModels.Add(ConvertModel(sites[i]));
             }
+
+            return viewModels;
         }
 
 
         public bool SetSiteStatus(int id, bool status)
         {
-            using (var db = new DatabaseContext())
-            {
-                var site = db.Sites.FirstOrDefault(p => p.ID == id);
+            var site = _db.Set<SiteModel>().FirstOrDefault(p => p.ID == id);
 
-                if (site == null)
-                    return false;
+            if (site == null)
+                return false;
 
-                site.IsPublished = status;
-                db.SaveChanges();
-            }
+            site.IsPublished = status;
+            _db.SaveChanges();
 
             return true;
         }
@@ -133,35 +135,12 @@ namespace Blog.Services
 
         public SiteViewModel GetByAlias(string id)
         {
-            using(var db = new DatabaseContext())
-            {
-                var site = db.Sites.FirstOrDefault(p => p.Alias == id);
+            var site = _db.Set<SiteModel>().FirstOrDefault(p => p.Alias == id);
 
-                if (site == null)
-                    return null;
-
-                var viewModel = Get(site.ID);
-
-                return viewModel;
-            }
-        }
-
-
-        public SiteViewModel GetShortVersion(int id, int maxLength)
-        {
-            var viewModel = Get(id);
-
-            if (viewModel == null)
+            if (site == null)
                 return null;
 
-            int contentLength = viewModel.Content.Length;
-            if (contentLength > maxLength)
-                contentLength = maxLength;
-
-            viewModel.Content = viewModel.Content.Remove(contentLength);
-            viewModel.Content += "...";
-
-            viewModel.IsReadMore = true;
+            var viewModel = ConvertModel(site);
 
             return viewModel;
         }
