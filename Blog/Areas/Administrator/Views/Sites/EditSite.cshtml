@@ -1,7 +1,7 @@
 ﻿@model Blog.ViewModels.SiteViewModel
 
 @{
-    ViewBag.Title = "EditSite";
+    ViewBag.Title = "Edytuj stronę";
     Layout = "~/Areas/Administrator/Views/Shared/_Layout.cshtml";
 }
 
@@ -23,10 +23,12 @@
                     @Html.TextBoxFor(p => p.Alias, new { @class = "form-control", placeholder = "Alias", id = "tb-alias" })
                     <div class="input-group-btn"><div class="btn btn-primary" onclick="generateAlias();">Wygeneruj</div></div>
                 </div>
+                @Html.ValidationMessageFor(p => p.Alias, null, new { @class = "validation-message" })
                 </div>
             <div>
                 <span class="settings-label" style="width: 100%">Opis:</span>
                 @Html.TextBoxFor(p => p.Description, new { @class = "form-control", placeholder = "Opis" })
+                @Html.ValidationMessageFor(p => p.Description, null, new { @class = "validation-message" })
             </div>
 
         </fieldset>
@@ -34,6 +36,12 @@
     <div class="right-col">
         <fieldset class="settings-fieldset">
             <legend>Opcje publikacji</legend>
+
+            <div>
+                <span class="settings-label" style="width: 100%">Data utworzenia:</span>
+                @Html.TextBoxFor(p => p.CreationDate, new { @class = "form-control", placeholder = "Data utworzenia artykułu" })
+                @Html.ValidationMessageFor(p => p.CreationDate, null, new { @class = "validation-message" })
+            </div>
 
             <div class="settings-group">
                 <span class="settings-label">Status publikacji:</span>
@@ -45,6 +53,7 @@
                         @Html.RadioButtonFor(Model => Model.IsPublished, false) Nieopublikowana
                     </label>
                 </div>
+                @Html.ValidationMessageFor(p => p.IsPublished, null, new { @class = "validation-message" })
             </div>
         </fieldset>
     </div>
@@ -52,7 +61,10 @@
     <div class="clearfix"></div>
 
     <div class="settings-group">@Html.TextBoxFor(p => p.Title, new { @class = "form-control", placeholder = "Tytuł artykułu", id = "tb-title" })</div>
+    @Html.ValidationMessageFor(p => p.Title, null, new { @class = "validation-message" })
+
     <div style="height: 630px;">@Html.TextAreaFor(p => p.Content, new { id = "editor" })</div>
+    @Html.ValidationMessageFor(p => p.Content, null, new { @class = "validation-message", style="margin-top: 10px;"})
 
     <script>
         CKEDITOR.replace('editor');

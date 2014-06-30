@@ -6,6 +6,7 @@ using System.Web.Mvc;
 using Blog.Services;
 using Blog.ViewModels;
 using Microsoft.Practices.Unity;
+using Blog.Infrastructure;
 
 namespace Blog.Areas.Administrator.Controllers
 {
@@ -68,6 +69,13 @@ namespace Blog.Areas.Administrator.Controllers
                 throw new Exception("Usunięcie katogorii (" + id + ") nie powiodło się.");
 
             return RedirectToAction("Categories");
+        }
+
+        public ActionResult PartialCategoriesList(int? selectedCategory)
+        {
+            var categories = _categoriesService.GetAll();
+            ViewBag.SelectedCategoryID = selectedCategory;
+            return PartialView("_CategoriesList", categories);
         }
 	}
 }

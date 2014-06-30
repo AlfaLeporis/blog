@@ -6,6 +6,7 @@ using System.Web.Mvc;
 using Microsoft.Practices.Unity;
 using Blog.ViewModels;
 using Blog.Services;
+using Blog.Infrastructure;
 
 namespace Blog.Controllers
 {
@@ -46,7 +47,7 @@ namespace Blog.Controllers
 
         public ActionResult TagsModule()
         {
-            var viewModel = _tagsService.GetMostPopularTags(Convert.ToInt32(_settingsService.GetSettings().TagsCount));
+            var viewModel = _tagsService.GetMostPopularTags(_settingsService.GetSettings().TagsCount);
 
             float delta = _maxTagSize - _minTagSize;
             int maxCount = viewModel.Count == 0 ? 0 : viewModel.Max(p => p.Count);
@@ -70,7 +71,10 @@ namespace Blog.Controllers
 
         public ActionResult SitesModule()
         {
-            var viewModel = _sitesService.GetAll().Select(p => new SitesModuleViewModel() { Title = p.Title, Alias = p.Alias }).ToList();
+            PaginationSettings pagination = null;
+            var viewModel = _sitesService.GetAll(ref pagination).
+                Select(p => new SitesModuleViewModel() { Title = p.Title, Alias = p.Alias }).
+                ToList();
             return PartialView("_SitesModule", viewModel);
         }
 
@@ -89,7 +93,7 @@ namespace Blog.Controllers
                 return RedirectToAction("Index", "Home");
             }
 
-            int maxSiteLength = Convert.ToInt32(_settingsService.GetSettings().ShortSiteMaxLength);
+            int maxSiteLength = _settingsService.GetSettings().ShortSiteMaxLength;
             var result = _searchService.Search(phrase, maxSiteLength);
 
             return View(result);
@@ -97,8 +101,8 @@ namespace Blog.Controllers
 
         public ActionResult RecentCommentsModule()
         {
-            int commentsCount = Convert.ToInt32(_settingsService.GetSettings().RecentCommentsCount);
-            int commentLength = Convert.ToInt32(_settingsService.GetSettings().ShortCommentMaxLength);
+            int commentsCount = _settingsService.GetSettings().RecentCommentsCount;
+            int commentLength = _settingsService.GetSettings().ShortCommentMaxLength;
 
             var viewModel = new List<RecentCommentsModuleViewModel>();
             var recentComments = _commentsService.GetRecentComments(commentsCount);
@@ -127,7 +131,8 @@ namespace Blog.Controllers
 
         public ActionResult ArchiveModule()
         {
-            var articles = _articlesService.GetAll(false);
+            PaginationSettings pagination = null;
+            var articles = _articlesService.GetAll(false, ref pagination);
             var viewModel = new List<ArchiveModuleViewModel>();
 
             for (int i = 0; i < articles.Count; i++)

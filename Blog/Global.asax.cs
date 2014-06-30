@@ -12,6 +12,7 @@ using Blog.Filters;
 using Microsoft.Practices.Unity;
 using WebMatrix.WebData;
 using System.Web.Security;
+using NLog;
 
 namespace Blog
 {
@@ -22,15 +23,22 @@ namespace Blog
     {
         protected void Application_Start()
         {
-            AreaRegistration.RegisterAllAreas();
-
-            WebApiConfig.Register(GlobalConfiguration.Configuration);
-            FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
-            RouteConfig.RegisterRoutes(RouteTable.Routes);
-            BundleConfig.RegisterBundles(BundleTable.Bundles);
-
             var bootstrapper = new Bootstrapper();
             bootstrapper.Init();
+        }
+
+        protected void Application_Error(object sender, EventArgs e)
+        {
+            var exception = Server.GetLastError();
+
+            var logger = LogManager.GetLogger("MainLogger");
+            String log = String.Empty;
+            log += "-------314159------------------Critical error handled------------------------------\r\n";
+            log += "Message: " + exception.Message + Environment.NewLine;
+            log += "Stacktrace: " + exception.StackTrace + Environment.NewLine;
+            log += "----------------------------------------------------------------------------------\r\n";
+
+            logger.Error(log);
         }
     }
 }

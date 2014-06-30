@@ -6,40 +6,43 @@ using System.Web.Mvc;
 using Microsoft.Practices.Unity;
 using Blog.ViewModels;
 using Blog.Services;
+using Blog.Infrastructure;
 
 namespace Blog.Controllers
 {
     public class TagsController : Controller
     {
         private IArticlesService _articlesService = null;
-        private IPaginationService _paginationService = null;
+        private ISettingsService _settingsService = null;
 
         public TagsController(IArticlesService articlesService,
-                              IPaginationService paginationService)
+                              ISettingsService settingsService)
         {
             _articlesService = articlesService;
-            _paginationService = paginationService;
+            _settingsService = settingsService;
         }
 
         [HttpGet]
         public ActionResult Tag(String id, int? page)
         {
-            var articles = _articlesService.GetByTagName(id, false).Where(p => p.IsPublished).ToList();
+            if (!page.HasValue)
+                page = 1;
+
+            int pageSize = _settingsService.GetSettings().ItemsPerPage;
+            var pagination = new PaginationSettings(page.Value, pageSize);
+            var articles = _articlesService.GetByTagName(id, true, ref pagination).Where(p => p.IsPublished).ToList();
 
             if (articles == null)
                 throw new Exception("Podany tag (" + id + ") nie istnieje");
 
-            if (!page.HasValue)
-                page = 1;
-
             ViewBag.PaginationCurrent = page.Value;
-            ViewBag.PaginationTotal = _paginationService.GetTotalPagination(articles.Count);
+            ViewBag.PaginationTotal = PaginationSystem.GetPagesCount(pagination.TotalItems, pageSize);
 
             var viewModel = new TagsSiteViewModel()
             {
                 TagName = id
             };
-            viewModel.Articles = _paginationService.ToPaginationList<ArticleViewModel>(articles, page.Value);
+            viewModel.Articles = articles;
 
             return View(viewModel);
         }

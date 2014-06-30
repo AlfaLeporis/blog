@@ -167,7 +167,7 @@ namespace Blog.Services
             if (user == null)
                 return false;
 
-            bool result = Membership.DeleteUser(user.Name);
+            bool result = System.Web.Security.Membership.DeleteUser(user.Name);
             return result;
         }
     }

@@ -41,7 +41,7 @@ namespace Blog.Controllers
             else
                 TempData.Add("ErrorMsg", "Nieprawidłowe dane, spróbuj ponownie!");
 
-            return RedirectToAction("Home", "Index");
+            return RedirectToAction("Index", "Home");
         }
 
         [HttpGet]

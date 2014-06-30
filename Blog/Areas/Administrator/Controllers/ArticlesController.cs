@@ -6,6 +6,8 @@ using System.Web.Mvc;
 using Blog.Services;
 using Blog.ViewModels;
 using Microsoft.Practices.Unity;
+using Blog.Infrastructure;
+using Blog.Filters;
 
 namespace Blog.Areas.Administrator.Controllers
 {
@@ -25,20 +27,19 @@ namespace Blog.Areas.Administrator.Controllers
         [HttpGet]
         public ActionResult Articles()
         {
-            var articles = _articlesService.GetAll(false);
+            PaginationSettings pagination = null;
+            var articles = _articlesService.GetAll(false, ref pagination);
             return View(articles);
         }
 
         [HttpGet]
         public ActionResult EditArticle(int? id)
         {
-            ViewData.Add(new KeyValuePair<string, object>("CategoriesList", _categoriesService.GetAll()));
-
-            ViewBag.CategoriesList = _categoriesService.GetAll();
-
+            var categories = _categoriesService.GetAll();
             if (id.HasValue)
             {
                 var article = _articlesService.Get(id.Value, false);
+                article.Categories = categories;
                 return View(article);
             }
             else
@@ -47,7 +48,9 @@ namespace Blog.Areas.Administrator.Controllers
                 {
                     CreationDate = DateTime.Now,
                     PublishDate = DateTime.Now,
-                    Tags = new List<string>()
+                    Tags = new List<string>(),
+                    Categories = categories,
+                    CategoryID = 0
                 };
                 return View(viewModel);
             }
@@ -56,8 +59,6 @@ namespace Blog.Areas.Administrator.Controllers
         [HttpPost]
         public ActionResult EditArticle(ArticleViewModel viewModel)
         {
-            ViewData.Add(new KeyValuePair<string,object>("CategoriesList", _categoriesService.GetAll()));
-
             ModelState.Remove("CategoryName");
             ModelState.Remove("Tags");
 

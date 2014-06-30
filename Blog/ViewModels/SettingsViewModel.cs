@@ -24,7 +24,8 @@ namespace Blog.ViewModels
         public String SMTPAdress { get; set; }
 
         [Required(ErrorMessage = "Pole jest wymagane!")]
-        public String SMTPPort { get; set; }
+        [RegularExpression("^[0-9]+$")]
+        public int SMTPPort { get; set; }
 
         [Required(ErrorMessage = "Pole jest wymagane!")]
         public String SMTPUserName { get; set; }
@@ -33,27 +34,32 @@ namespace Blog.ViewModels
         public String SMTPPassword { get; set; }
 
         [Required(ErrorMessage = "Pole jest wymagane!")]
-        public String SMTPUseSSL { get; set; }
+        public bool SMTPUseSSL { get; set; }
 
         [Required(ErrorMessage = "Pole jest wymagane!")]
         public String SMTPUserAdress { get; set; }
 
         [Required(ErrorMessage = "Pole jest wymagane!")]
-        public String TagsCount { get; set; }
+        [RegularExpression("^[0-9]+$")]
+        public int TagsCount { get; set; }
 
         [Required(ErrorMessage = "Pole jest wymagane!")]
-        public String ShortSiteMaxLength { get; set; }
+        [RegularExpression("^[0-9]+$")]
+        public int ShortSiteMaxLength { get; set; }
 
         [Required(ErrorMessage = "Pole jest wymagane!")]
         public String Author { get; set; }
 
         [Required(ErrorMessage = "Pole jest wymagane!")]
-        public String ShortCommentMaxLength { get; set; }
+        [RegularExpression("^[0-9]+$")]
+        public int ShortCommentMaxLength { get; set; }
 
         [Required(ErrorMessage = "Pole jest wymagane!")]
-        public String RecentCommentsCount { get; set; }
+        [RegularExpression("^[0-9]+$")]
+        public int RecentCommentsCount { get; set; }
 
         [Required(ErrorMessage = "Pole jest wymagane!")]
-        public String ItemsPerPage { get; set; }
+        [RegularExpression("^[0-9]+$")]
+        public int ItemsPerPage { get; set; }
     }
 }

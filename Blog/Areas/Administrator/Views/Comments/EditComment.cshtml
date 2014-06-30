@@ -1,7 +1,7 @@
 ﻿@model Blog.ViewModels.CommentViewModel
 
 @{
-    ViewBag.Title = "EditComment";
+    ViewBag.Title = "Edytuj komentarz";
     Layout = "~/Areas/Administrator/Views/Shared/_Layout.cshtml";
 }
 
@@ -14,6 +14,6 @@
         @Html.ValidationMessageFor(p => p.Content, null, new { @class = "validation-message" })
     </div>
 
-    <button type="submit" class="btn btn-primary register-button">Edytuj komentarz</button>
+    <button type="submit" class="btn btn-primary register-button">Zapisz komentarz</button>
 }
 

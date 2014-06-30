@@ -6,6 +6,7 @@ using System.Web.Mvc;
 using Microsoft.Practices.Unity;
 using Blog.ViewModels;
 using Blog.Services;
+using Blog.Infrastructure;
 
 namespace Blog.Controllers
 {
@@ -13,31 +14,36 @@ namespace Blog.Controllers
     {
         private IArticlesService _articlesService = null;
         private IFeedsService _feedsService = null;
-        private IPaginationService _paginationService = null;
+        private ISettingsService _settingsService = null;
+        private ISiteMapsService _siteMapsService = null;
 
         public HomeController(IArticlesService articlesService,
                               IFeedsService feedsService,
-                              IPaginationService paginationService)
+                              ISettingsService settingsService,
+                              ISiteMapsService siteMapsService)
         {
             _articlesService = articlesService;
             _feedsService = feedsService;
-            _paginationService = paginationService;
+            _settingsService = settingsService;
+            _siteMapsService = siteMapsService;
         }
 
         [HttpGet]
         public ActionResult Index(int? page)
         {
-            var articles = _articlesService.GetAll(true).Where(p => p.IsPublished).ToList();
-            articles.ForEach(p => p.CommentsView = false);
-
             if (!page.HasValue)
                 page = 1;
 
+            var pageSize = _settingsService.GetSettings().ItemsPerPage;
+            var pagination = new PaginationSettings(page.Value, pageSize);
+            var articles = _articlesService.GetAll(true, ref pagination).Where(p => p.IsPublished).ToList();
+            articles.ForEach(p => p.CommentsView = false);
+            
             ViewBag.PaginationCurrent = page.Value;
-            ViewBag.PaginationTotal = _paginationService.GetTotalPagination(articles.Count);
+            ViewBag.PaginationTotal = PaginationSystem.GetPagesCount(pagination.TotalItems, pageSize);
 
             var viewModel = new ClientViewModel();
-            viewModel.Articles = _paginationService.ToPaginationList<ArticleViewModel>(articles, page.Value);
+            viewModel.Articles = articles;
             
             return View(viewModel);
         }
@@ -49,7 +55,8 @@ namespace Blog.Controllers
 
         public ActionResult GetArticlesATOM()
         {
-            var articles = _articlesService.GetAll(false);
+            PaginationSettings pagination = null;
+            var articles = _articlesService.GetAll(false, ref pagination);
             var result = _feedsService.GenerateArticlesATOMFeed(articles, 10);
 
             return Content(result.OuterXml, "text/xml");
@@ -61,6 +68,12 @@ namespace Blog.Controllers
             var result = _feedsService.GenerateCommentsATOMFeed(article);
 
             return Content(result.OuterXml, "text/xml");
+        }
+
+        public ActionResult GetSiteMap()
+        {
+            var xml = _siteMapsService.GenerateNewSiteMap();
+            return Content(xml.OuterXml, "text/xml");
         }
     }
 }

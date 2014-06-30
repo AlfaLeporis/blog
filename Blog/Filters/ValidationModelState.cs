@@ -16,7 +16,7 @@ namespace Blog.Filters
                 {
                     ViewData = filterContext.Controller.ViewData,
                     ViewName = filterContext.ActionDescriptor.ActionName,
-                };
+                };        
             }
 
             base.OnActionExecuting(filterContext);

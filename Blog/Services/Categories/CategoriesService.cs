@@ -8,6 +8,7 @@ using Blog.Models;
 using Omu.ValueInjecter;
 using Blog.App_Start;
 using System.Data.Entity;
+using Blog.Infrastructure;
 
 namespace Blog.Services
 {
@@ -27,6 +28,7 @@ namespace Blog.Services
 
             var model = new CategoryModel();
             model.InjectFrom<CustomInjection>(viewModel);
+            model.IsRemoved = false;
 
             _db.Set<CategoryModel>().Add(model);
             _db.SaveChanges();
@@ -63,8 +65,7 @@ namespace Blog.Services
             if (element == null)
                 return false;
 
-            _db.Set<CategoryModel>().Remove(element);
-
+            element.IsRemoved = true;
             _db.SaveChanges();
 
             return true;
@@ -84,7 +85,10 @@ namespace Blog.Services
 
         public List<CategoryViewModel> GetAll()
         {
-            var categories = _db.Set<CategoryModel>().ToList();
+            var categories = _db.Set<CategoryModel>()
+                .Where(p => !p.IsRemoved)
+                .OrderBy(p => p.ID)
+                .ToList();
             var viewModels = new List<CategoryViewModel>();
 
             for(int i=0; i<categories.Count; i++)
@@ -100,7 +104,7 @@ namespace Blog.Services
         public List<CategoriesModuleViewModel> GetAllWithDetails()
         {
             var viewModel = new List<CategoriesModuleViewModel>();
-            var categories = _db.Set<CategoryModel>().ToList();
+            var categories = _db.Set<CategoryModel>().Where(p => !p.IsRemoved).ToList();
 
             for(int i=0; i< categories.Count; i++)
             {

@@ -27,7 +27,7 @@ namespace Blog.Services
                 for(int i=0; i<properties.Count(); i++)
                 {
                     String name = properties[i].Name;
-                    String value = properties[i].GetValue(viewModel) as String;
+                    String value = properties[i].GetValue(viewModel).ToString();
 
                     writer.WriteLine(name + "=" + value);
                 }
@@ -50,7 +50,9 @@ namespace Blog.Services
                         String line = reader.ReadLine();
                         var words = line.Split('=');
 
-                        properties.First(p => p.Name == words[0]).SetValue(viewModel, words[1]);
+                        var property = properties.First(p => p.Name == words[0]);
+                        var convertedValue = Convert.ChangeType(words[1], property.PropertyType);
+                        property.SetValue(viewModel, convertedValue);
                     }
                 }
 

@@ -10,6 +10,9 @@ using WebMatrix.WebData;
 using System.Web.Security;
 using Blog.DAL;
 using System.IO;
+using System.Web.Optimization;
+using System.Web.Routing;
+using System.Web.Http;
 
 namespace Blog.App_Start
 {
@@ -17,12 +20,20 @@ namespace Blog.App_Start
     {
         public void Init()
         {
-            RegisterTypes();
+            var unityContainer = RegisterTypes();
+
+            AreaRegistration.RegisterAllAreas();
+            WebApiConfig.Register(GlobalConfiguration.Configuration);
+            FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters, unityContainer);
+            RouteConfig.RegisterRoutes(RouteTable.Routes);
+            BundleConfig.RegisterBundles(BundleTable.Bundles);
+
             InitDatabase();
             InitFiles();
+            InitCustomProviders(unityContainer);
         }
 
-        public void RegisterTypes()
+        private IUnityContainer RegisterTypes()
         {
             var unityContainer = new UnityContainer();
             unityContainer.RegisterType<ISecurityService, SecurityService>();
@@ -34,14 +45,15 @@ namespace Blog.App_Start
             unityContainer.RegisterType<ISitesService, SitesService>();
             unityContainer.RegisterType<ISearchService, SearchService>();
             unityContainer.RegisterType<IFeedsService, FeedsService>();
-            unityContainer.RegisterType<IPaginationService, PaginationService>();
+            unityContainer.RegisterType<IBackupsService, BackupsService>();
+            unityContainer.RegisterType<ISiteMapsService, SiteMapsService>();
             unityContainer.RegisterInstance<ISettingsService>(new SettingsService());
             unityContainer.RegisterInstance<DbContext>(new DatabaseContext());
 
-            ControllerBuilder.Current.SetControllerFactory(new CustomControllerFactory(unityContainer));
+            return unityContainer;
         }
 
-        public void InitDatabase()
+        private void InitDatabase()
         {
             var dbContext = new DAL.DatabaseContext();
             dbContext.Dispose();
@@ -61,11 +73,32 @@ namespace Blog.App_Start
                 Roles.AddUsersToRole(new[] { "AlfaLeporis" }, "Administrator");
         }
 
-        public void InitFiles()
+        private void InitFiles()
         {
-            var uploadedPath = HttpContext.Current.Server.MapPath("Uploaded");
-            if (!Directory.Exists(uploadedPath))
-                Directory.CreateDirectory(uploadedPath);
+            CreateDirIfNotExist("Uploaded",
+                                "Backups",
+                                "Backups\\tmp");
+        }
+
+        private void InitCustomProviders(IUnityContainer container)
+        {
+            ControllerBuilder.Current.SetControllerFactory(new CustomControllerFactory(container));
+
+            IFilterProvider filterProvider = FilterProviders.Providers.Single(p => p is FilterAttributeFilterProvider);
+            FilterProviders.Providers.Remove(filterProvider);
+
+            var provider = new CustomFilterProvider(container);
+            FilterProviders.Providers.Add(provider);
+        }
+
+        private void CreateDirIfNotExist(params String[] dirName)
+        {
+            for(int i=0; i<dirName.Length; i++)
+            {
+                var uploadedPath = HttpContext.Current.Server.MapPath(dirName.ElementAt(i));
+                if (!Directory.Exists(uploadedPath))
+                    Directory.CreateDirectory(uploadedPath);
+            }
         }
     }
 }

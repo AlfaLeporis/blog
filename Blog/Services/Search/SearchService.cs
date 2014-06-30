@@ -4,6 +4,7 @@ using System.Linq;
 using System.Web;
 using Blog.ViewModels;
 using Blog.Services;
+using Blog.Infrastructure;
 
 namespace Blog.Services
 {
@@ -28,14 +29,16 @@ namespace Blog.Services
                 Phrase = phrase
             };
 
-            var sitesIDs = _sitesService.GetAll().Where(p => 
+            PaginationSettings pagination = null;
+
+            var sitesIDs = _sitesService.GetAll(ref pagination).Where(p => 
                 p.Content.Contains(phrase) || 
                 p.Title.Contains(phrase) || 
                 p.Alias.Contains(phrase))
                 .Select(p => p.ID.Value)
                 .ToList();
 
-            var articlesIDs = _articlesService.GetAll(false).Where(p =>
+            var articlesIDs = _articlesService.GetAll(true, ref pagination).Where(p =>
                 p.Content.Contains(phrase) ||
                 p.Title.Contains(phrase) ||
                 p.TagsString.Contains(phrase) ||
@@ -50,7 +53,7 @@ namespace Blog.Services
             {
                 var article = _articlesService.Get(articlesIDs[i], false);
                 if (article == null)
-                    throw new HttpException(404, "Artykuł o podanym id (" + articlesIDs[i] + ") nie istnieje");
+                    throw new Exception("Artykuł o podanym id (" + articlesIDs[i] + ") nie istnieje");
 
                 viewModel.Articles.Add(article);
             }
@@ -59,7 +62,7 @@ namespace Blog.Services
             {
                 var site = _sitesService.Get(sitesIDs[i], true);
                 if (site == null)
-                    throw new HttpException(404, "Strona o podanym id (" + sitesIDs[i] + ") nie istnieje");
+                    throw new Exception("Strona o podanym id (" + sitesIDs[i] + ") nie istnieje");
 
                 viewModel.Sites.Add(site);
             }

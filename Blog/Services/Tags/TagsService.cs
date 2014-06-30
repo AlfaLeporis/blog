@@ -6,6 +6,9 @@ using Blog.Services;
 using Blog.DAL;
 using Blog.Models;
 using System.Data.Entity;
+using Blog.ViewModels;
+using Blog.App_Start;
+using Omu.ValueInjecter;
 
 namespace Blog.Services
 {
@@ -20,7 +23,7 @@ namespace Blog.Services
 
         public void Parse(String tags, int articleID)
         {
-            _db.Set<TagModel>().RemoveRange(_db.Set<TagModel>().Where(p => p.ArticleID == articleID));
+            _db.Set<TagModel>().Where(p => p.ArticleID == articleID).ToList().ForEach(p => p.IsRemoved = true);
             var tagsList = tags.Split(',').ToList();
 
             for (int i = 0; i < tagsList.Count(); i++)
@@ -28,7 +31,8 @@ namespace Blog.Services
                 var tagModel = new TagModel()
                 {
                     ArticleID = articleID,
-                    Name = tagsList[i].Trim()
+                    Name = tagsList[i].Trim(),
+                    IsRemoved = false
                 };
 
                 _db.Set<TagModel>().Add(tagModel);
@@ -42,6 +46,7 @@ namespace Blog.Services
             var tags = String.Empty;
             var splittedTags = _db.Set<TagModel>()
                 .Where(p => p.ArticleID == articleID)
+                .Where(p => !p.IsRemoved)
                 .ToList();
 
             for(int i=0; i<splittedTags.Count(); i++)
@@ -60,6 +65,7 @@ namespace Blog.Services
             var tags = String.Empty;
             var splittedTags = _db.Set<TagModel>()
                 .Where(p => p.ArticleID == articleID)
+                .Where(p => !p.IsRemoved)
                 .Select(p => p.Name)
                 .ToList();
 
@@ -77,7 +83,7 @@ namespace Blog.Services
 
         public List<int> GetArticlesIDByTagName(String tag)
         {
-            var articles = _db.Set<TagModel>().Where(p => p.Name == tag).Select(p => p.ArticleID).ToList();
+            var articles = _db.Set<TagModel>().Where(p => p.Name == tag).Where(p => !p.IsRemoved).Select(p => p.ArticleID).ToList();
             return articles;
         }
 
@@ -85,7 +91,7 @@ namespace Blog.Services
         public List<ViewModels.TagsModuleViewModel> GetMostPopularTags(int count)
         {
             var tagsList = new List<ViewModels.TagsModuleViewModel>();
-            var list = _db.Set<TagModel>().ToList();
+            var list = _db.Set<TagModel>().Where(p => !p.IsRemoved).ToList();
 
             for(int i=0; i<list.Count; i++)
             {
@@ -103,6 +109,27 @@ namespace Blog.Services
             }
 
             return tagsList;
+        }
+
+        private TagViewModel ConvertModel(TagModel model)
+        {
+            var viewModel = new TagViewModel();
+            viewModel.InjectFrom<CustomInjection>(model);
+
+            return viewModel;
+        }
+
+        public List<ViewModels.TagViewModel> GetAll()
+        {
+            var tags = _db.Set<TagModel>().ToList();
+            var viewModel = new List<TagViewModel>();
+
+            for(int i=0; i<tags.Count; i++)
+            {
+                viewModel.Add(ConvertModel(tags[i]));
+            }
+
+            return viewModel;
         }
     }
 }

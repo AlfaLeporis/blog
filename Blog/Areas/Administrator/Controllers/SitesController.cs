@@ -6,6 +6,7 @@ using System.Web.Mvc;
 using Blog.Services;
 using Blog.ViewModels;
 using Microsoft.Practices.Unity;
+using Blog.Infrastructure;
 
 namespace Blog.Areas.Administrator.Controllers
 {
@@ -22,7 +23,8 @@ namespace Blog.Areas.Administrator.Controllers
         [HttpGet]
         public ActionResult Sites()
         {
-            var viewModel = _sitesService.GetAll();
+            PaginationSettings pagination = null;
+            var viewModel = _sitesService.GetAll(ref pagination);
             return View(viewModel);
         }
 
@@ -38,7 +40,11 @@ namespace Blog.Areas.Administrator.Controllers
 
                 return View(viewModel);
             }
-            return View();
+            return View(new SiteViewModel()
+            {
+                CreationDate = DateTime.Now,
+                LastUpdateDate = DateTime.Now
+            });
         }
 
         [HttpPost]

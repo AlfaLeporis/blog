@@ -17,5 +17,6 @@ namespace Blog.Models
         public DateTime PublishDate { get; set; }
         public DateTime LastUpdateDate { get; set; }
         public bool IsPublished { get; set; }
+        public bool IsRemoved { get; set; }
     }
 }

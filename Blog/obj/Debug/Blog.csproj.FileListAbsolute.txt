@@ -55,3 +55,5 @@ C:\Users\Paweł\Desktop\Blog\Blog\obj\Debug\Blog.csproj.App.config
 C:\Users\Paweł\Desktop\Blog\Blog\obj\Debug\Blog.csprojResolveAssemblyReference.cache
 C:\Users\Paweł\Desktop\Blog\Blog\obj\Debug\Blog.dll
 C:\Users\Paweł\Desktop\Blog\Blog\obj\Debug\Blog.pdb
+C:\Users\Paweł\Desktop\Blog\Blog\bin\Ionic.Zip.dll
+C:\Users\Paweł\Desktop\Blog\Blog\bin\Ionic.Zip.xml

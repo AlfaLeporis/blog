@@ -19,5 +19,6 @@ namespace Blog.Models
         public DateTime PublishDate { get; set; }
         public String Content { get; set; }
         public CommentTarget Target { get; set; }
+        public bool IsRemoved { get; set; }
     }
 }

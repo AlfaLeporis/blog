@@ -9,6 +9,7 @@ using Omu.ValueInjecter;
 using Blog.App_Start;
 using Blog.Services;
 using System.Data.Entity;
+using Blog.Infrastructure;
 
 namespace Blog.Services
 {
@@ -34,6 +35,7 @@ namespace Blog.Services
 
             var model = new SiteModel();
             model.InjectFrom<CustomInjection>(viewModel);
+            model.LastUpdateDate = DateTime.Now;
 
             _db.Set<SiteModel>().Add(model);
             _db.SaveChanges();
@@ -48,6 +50,7 @@ namespace Blog.Services
             if (model == null)
                 return false;
 
+            model.LastUpdateDate = DateTime.Now;
             model.InjectFrom<CustomInjection>(viewModel);
 
             _db.SaveChanges();
@@ -62,7 +65,7 @@ namespace Blog.Services
             if (element == null)
                 return false;
 
-            _db.Set<SiteModel>().Remove(element);
+            element.IsRemoved = true;
 
             _db.SaveChanges();
 
@@ -81,7 +84,7 @@ namespace Blog.Services
             if(shortVersion)
             {
                 int contentLength = viewModel.Content.Length;
-                int maxLength = Convert.ToInt32(_settingsService.GetSettings().ShortSiteMaxLength);
+                int maxLength = _settingsService.GetSettings().ShortSiteMaxLength;
 
                 if (contentLength > maxLength)
                     contentLength = maxLength;
@@ -105,9 +108,16 @@ namespace Blog.Services
             return viewModel;
         }
 
-        public List<SiteViewModel> GetAll()
+        public List<SiteViewModel> GetAll(ref PaginationSettings pagination)
         {
-            var sites = _db.Set<SiteModel>().ToList();
+            if (pagination != null)
+                pagination.TotalItems = _db.Set<ArticleModel>().Where(p => !p.IsRemoved).Count();
+
+            var sites = _db.Set<SiteModel>()
+                .Where(p => !p.IsRemoved)
+                .OrderBy(p => p.ID)
+                .Paginate(pagination)
+                .ToList();
             var viewModels = new List<SiteViewModel>();
 
             for (int i = 0; i < sites.Count; i++)

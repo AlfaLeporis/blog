@@ -10,5 +10,6 @@ namespace Blog.Models
         public int ID { get; set; }
         public int ArticleID { get; set; }
         public String Name { get; set; }
+        public bool IsRemoved { get; set; }
     }
 }

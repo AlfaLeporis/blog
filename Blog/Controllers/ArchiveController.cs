@@ -5,19 +5,20 @@ using System.Web;
 using System.Web.Mvc;
 using Blog.Services;
 using Blog.ViewModels;
+using Blog.Infrastructure;
 
 namespace Blog.Controllers
 {
     public class ArchiveController : Controller
     {
         private IArticlesService _articlesService = null;
-        private IPaginationService _paginationService = null;
+        private ISettingsService _settingsService = null;
 
         public ArchiveController(IArticlesService articlesService,
-                                    IPaginationService paginationService)
+                                 ISettingsService settingsService)
         {
             _articlesService = articlesService;
-            _paginationService = paginationService;
+            _settingsService = settingsService;
         }
 
         public ActionResult Index()
@@ -27,15 +28,20 @@ namespace Blog.Controllers
 
         public ActionResult Archive(String id, int? page)
         {
-            var viewModel = _articlesService.GetByDate(id).Where(p => p.IsPublished).ToList();
+            var viewModel = new ArchiveViewModel();
 
             if (!page.HasValue)
                 page = 1;
 
-            ViewBag.PaginationCurrent = page.Value;
-            ViewBag.PaginationTotal = _paginationService.GetTotalPagination(viewModel.Count);
+            int pageSize = _settingsService.GetSettings().ItemsPerPage;
+            PaginationSettings pagination = new PaginationSettings(page.Value, pageSize);
+            viewModel.Articles = _articlesService.GetByDate(id, false, ref pagination).Where(p => p.IsPublished).ToList();
 
-            viewModel = _paginationService.ToPaginationList<ArticleViewModel>(viewModel, page.Value);
+            viewModel.FirstDate = viewModel.Articles.Min(p => p.PublishDate).ToShortDateString();
+            viewModel.LastDate = viewModel.Articles.Max(p => p.PublishDate).ToShortDateString();
+
+            ViewBag.PaginationCurrent = page.Value;
+            ViewBag.PaginationTotal = PaginationSystem.GetPagesCount(pagination.TotalItems, pageSize);
 
             return View(viewModel);
         }

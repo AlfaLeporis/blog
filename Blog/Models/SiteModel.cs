@@ -13,5 +13,8 @@ namespace Blog.Models
         public String Description { get; set; }
         public String Content { get; set; }
         public bool IsPublished { get; set; }
+        public bool IsRemoved { get; set; }
+        public DateTime CreationDate { get; set; }
+        public DateTime LastUpdateDate { get; set; }
     }
 }

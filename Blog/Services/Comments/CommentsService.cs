@@ -10,6 +10,7 @@ using Omu.ValueInjecter;
 using System.Security.Cryptography;
 using System.Text;
 using System.Data.Entity;
+using Blog.Infrastructure;
 
 namespace Blog.Services
 {
@@ -28,6 +29,7 @@ namespace Blog.Services
         public bool Add(CommentViewModel viewModel)
         {
             var model = new CommentModel();
+            model.IsRemoved = false;
             model.InjectFrom<CustomInjection>(viewModel);
 
             _db.Set<CommentModel>().Add(model);
@@ -57,7 +59,7 @@ namespace Blog.Services
             if (model == null)
                 return false;
 
-            _db.Set<CommentModel>().Remove(model);
+            model.IsRemoved = true;
 
             _db.SaveChanges();
 
@@ -103,7 +105,7 @@ namespace Blog.Services
 
         public List<CommentViewModel> GetAll()
         {
-            var comments = _db.Set<CommentModel>().ToList();
+            var comments = _db.Set<CommentModel>().Where(p => !p.IsRemoved).ToList();
             var viewModels = new List<CommentViewModel>();
 
             for (int i = 0; i < comments.Count; i++)
@@ -118,7 +120,7 @@ namespace Blog.Services
         public List<CommentViewModel> GetByTargetID(int id, CommentTarget target)
         {
             var viewModels = new List<CommentViewModel>();
-            var comments = _db.Set<CommentModel>().Where(p => p.ArticleID == id && p.Target == target).ToList();
+            var comments = _db.Set<CommentModel>().Where(p => p.ArticleID == id && p.Target == target).Where(p => !p.IsRemoved).ToList();
 
             for (int i = 0; i < comments.Count; i++)
             {
@@ -145,6 +147,7 @@ namespace Blog.Services
         public List<CommentViewModel> GetRecentComments(int count)
         {
             var recentComments = _db.Set<CommentModel>().
+                Where(p => !p.IsRemoved).
                 OrderByDescending(p => p.PublishDate).
                 Take(count).
                 ToList();
@@ -162,7 +165,7 @@ namespace Blog.Services
 
         public List<CommentViewModel> GetByUserID(int id)
         {
-            var model = _db.Set<CommentModel>().Where(p => p.AuthorID == id).ToList();
+            var model = _db.Set<CommentModel>().Where(p => p.AuthorID == id).Where(p => !p.IsRemoved).ToList();
             var viewModel = new List<CommentViewModel>();
 
             for(int i=0; i<model.Count; i++)

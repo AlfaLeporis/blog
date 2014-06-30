@@ -3,7 +3,11 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width" />
-    <title>@ViewBag.Title</title>
+    <title>@ViewBag.SiteName :: @ViewBag.Title</title>
+    <meta name="description" content="@ViewBag.SiteDescription" />
+    <meta name="author" content="@ViewBag.SiteAuthor" />
+    <meta name="keywords" content="@ViewBag.SiteTags" />
+    <meta name="generator" content="@ViewBag.CMSTitle">
     @Scripts.Render("~/bundles/jquery")
     @Scripts.Render("~/bundles/jqueryval")
     @Scripts.Render("~/bundles/custom-scripts")

@@ -1,7 +1,7 @@
 ﻿@model Blog.ViewModels.AdminSettingsViewModel
 
 @{
-    ViewBag.Title = "Settings";
+    ViewBag.Title = "Ustawienia";
     Layout = "~/Areas/Administrator/Views/Shared/_Layout.cshtml";
 }
 
@@ -17,29 +17,59 @@
         <fieldset class="settings-fieldset">
             <legend>SEO</legend>
             <div class="settings-group"><span class="settings-label">Tytuł:</span> @Html.TextBoxFor(p => p.Settings.Title, new { @class = "form-control settings-control" })</div>
+            @Html.ValidationMessageFor(p => p.Settings.Title, null, new { @class = "validation-message"})
+            
             <div class="settings-group"><span class="settings-label">Opis:</span> @Html.TextBoxFor(p => p.Settings.Description, new { @class = "form-control settings-control" })</div>
+            @Html.ValidationMessageFor(p => p.Settings.Description, null, new { @class = "validation-message" })
+            
             <div class="settings-group"><span class="settings-label">Krótki opis:</span> @Html.TextBoxFor(p => p.Settings.ShortDescription, new { @class = "form-control settings-control" })</div>
+            @Html.ValidationMessageFor(p => p.Settings.ShortDescription, null, new { @class = "validation-message" })
+
             <div class="settings-group"><span class="settings-label">Tagi:</span> @Html.TextBoxFor(p => p.Settings.Tags, new { @class = "form-control settings-control" })</div>
+            @Html.ValidationMessageFor(p => p.Settings.Tags, null, new { @class = "validation-message" })
+
             <div class="settings-group"><span class="settings-label">Autor:</span> @Html.TextBoxFor(p => p.Settings.Author, new { @class = "form-control settings-control" })</div>
-        </fieldset>
+            @Html.ValidationMessageFor(p => p.Settings.Author, null, new { @class = "validation-message" })
+        
+         </fieldset>
 
         <fieldset class="settings-fieldset">
             <legend>Inne</legend>
             <div class="settings-group"><span class="settings-label">Liczba tagów:</span> @Html.TextBoxFor(p => p.Settings.TagsCount, new { @class = "form-control settings-control" })</div>
+            @Html.ValidationMessageFor(p => p.Settings.TagsCount, null, new { @class = "validation-message" })
+            
             <div class="settings-group"><span class="settings-label">Długość krótkiej strony:</span> @Html.TextBoxFor(p => p.Settings.ShortSiteMaxLength, new { @class = "form-control settings-control" })</div>
+            @Html.ValidationMessageFor(p => p.Settings.ShortSiteMaxLength, null, new { @class = "validation-message" })
+            
             <div class="settings-group"><span class="settings-label">Długość krótkiego kom.:</span> @Html.TextBoxFor(p => p.Settings.ShortCommentMaxLength, new { @class = "form-control settings-control" })</div>
+            @Html.ValidationMessageFor(p => p.Settings.ShortCommentMaxLength, null, new { @class = "validation-message" })
+            
             <div class="settings-group"><span class="settings-label">Liczba najn. komentarzy:</span> @Html.TextBoxFor(p => p.Settings.RecentCommentsCount, new { @class = "form-control settings-control" })</div>
+            @Html.ValidationMessageFor(p => p.Settings.RecentCommentsCount, null, new { @class = "validation-message" })
+            
             <div class="settings-group"><span class="settings-label">Elementów na stronę:</span> @Html.TextBoxFor(p => p.Settings.ItemsPerPage, new { @class = "form-control settings-control" })</div>
-        </fieldset>
+            @Html.ValidationMessageFor(p => p.Settings.ItemsPerPage, null, new { @class = "validation-message" })
+        
+         </fieldset>
     </div>
     <div class="right-col">
         <fieldset class="settings-fieldset">
             <legend>SMTP</legend>
             <div class="settings-group"><span class="settings-label">Adres:</span> @Html.TextBoxFor(p => p.Settings.SMTPAdress, new { @class = "form-control settings-control" })</div>
+            @Html.ValidationMessageFor(p => p.Settings.SMTPAdress, null, new { @class = "validation-message" })
+
             <div class="settings-group"><span class="settings-label">Port:</span> @Html.TextBoxFor(p => p.Settings.SMTPPort, new { @class = "form-control settings-control" })</div>
+            @Html.ValidationMessageFor(p => p.Settings.SMTPPort, null, new { @class = "validation-message" })
+
             <div class="settings-group"><span class="settings-label">Nazwa użytkownika:</span> @Html.TextBoxFor(p => p.Settings.SMTPUserName, new { @class = "form-control settings-control" })</div>
+            @Html.ValidationMessageFor(p => p.Settings.SMTPUserName, null, new { @class = "validation-message" })
+
             <div class="settings-group"><span class="settings-label">Hasło:</span> @Html.TextBoxFor(p => p.Settings.SMTPPassword, new { @class = "form-control settings-control" })</div>
+            @Html.ValidationMessageFor(p => p.Settings.SMTPPassword, null, new { @class = "validation-message" })
+
             <div class="settings-group"><span class="settings-label">Nazwa nadawcy:</span> @Html.TextBoxFor(p => p.Settings.SMTPUserAdress, new { @class = "form-control settings-control" })</div>
+            @Html.ValidationMessageFor(p => p.Settings.SMTPUserAdress, null, new { @class = "validation-message" })
+
             <div class="settings-group"><span class="settings-label">Użyj SSL:</span> 
                 <div class="btn-group" data-toggle="buttons">
                     <label class="btn btn-success radio-button">
@@ -50,6 +80,8 @@
                     </label>
                 </div>
             </div>
+            @Html.ValidationMessageFor(p => p.Settings.SMTPUseSSL, null, new { @class = "validation-message" })
+
         </fieldset>
     </div>
     

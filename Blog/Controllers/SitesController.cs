@@ -12,10 +12,13 @@ namespace Blog.Controllers
     public class SitesController : Controller
     {
         private ISitesService _sitesService = null;
+        private ISettingsService _settingsService = null;
 
-        public SitesController(ISitesService sitesService)
+        public SitesController(ISitesService sitesService,
+                               ISettingsService settingsService)
         {
             _sitesService = sitesService;
+            _settingsService = settingsService;
         }
 
         [HttpGet]

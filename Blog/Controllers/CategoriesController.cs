@@ -6,40 +6,43 @@ using System.Web.Mvc;
 using Microsoft.Practices.Unity;
 using Blog.ViewModels;
 using Blog.Services;
+using Blog.Infrastructure;
 
 namespace Blog.Controllers
 {
     public class CategoriesController : Controller
     {
         private IArticlesService _articlesService = null;
-        private IPaginationService _paginationService = null;
+        private ISettingsService _settingsService = null;
 
         public CategoriesController(IArticlesService articlesService,
-                                    IPaginationService paginationService)
+                                 ISettingsService settingsService)
         {
             _articlesService = articlesService;
-            _paginationService = paginationService;
+            _settingsService = settingsService;
         }
 
         [HttpGet]
         public ActionResult Category(String id, int? page)
         {
-            var articles = _articlesService.GetByCategoryName(id, false).Where(p => p.IsPublished).ToList();
+            if (!page.HasValue)
+                page = 1;
+
+            int pageSize = _settingsService.GetSettings().ItemsPerPage;
+            PaginationSettings pagination = new PaginationSettings(page.Value, pageSize);
+            var articles = _articlesService.GetByCategoryName(id, true, ref pagination).Where(p => p.IsPublished).ToList();
 
             if (articles == null)
                 throw new Exception("Podana kategoria (" + id + ") nie istnieje.");
 
-            if (!page.HasValue)
-                page = 1;
-
             ViewBag.PaginationCurrent = page.Value;
-            ViewBag.PaginationTotal = _paginationService.GetTotalPagination(articles.Count);
+            ViewBag.PaginationTotal = PaginationSystem.GetPagesCount(pagination.TotalItems, pageSize);
 
             var viewModel = new CategoriesSiteViewModel()
             {
                 CategoryName = id
             };
-            viewModel.Articles = _paginationService.ToPaginationList<ArticleViewModel>(articles, page.Value);
+            viewModel.Articles = articles;
 
             return View(viewModel);
         }

@@ -15,5 +15,6 @@ namespace Blog.Services
         bool RemoveByArticleID(int articleID);
         List<int> GetArticlesIDByTagName(String tag);
         List<TagsModuleViewModel> GetMostPopularTags(int count);
+        List<TagViewModel> GetAll();
     }
 }
