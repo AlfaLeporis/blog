@@ -11,7 +11,7 @@ namespace Blog.Services
     public class FeedsService : IFeedsService
     {
         private ISettingsService _settingsService = null;
-        private const String _articleUrl = "Articles/Article/";
+        private const String _articleUrl = "Article/";
 
         public FeedsService(ISettingsService settingsService)
         {

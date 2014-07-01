@@ -30,7 +30,7 @@ namespace Blog.Services
 
         public bool Add(SiteViewModel viewModel)
         {
-            if (_db.Set<SiteModel>().Any(p => p.Alias == viewModel.Alias))
+            if (_db.Set<SiteModel>().Any(p => p.Alias == viewModel.Alias && !p.IsRemoved))
                 return false;
 
             var model = new SiteModel();

@@ -18,7 +18,7 @@ namespace Blog.Services
         bool Edit(ArticleViewModel viewModel);
         bool SetArticleStatus(int id, bool status);
         List<ArticleViewModel> GetByTagName(String tag, bool shortVersion, ref PaginationSettings pagination);
-        List<ArticleViewModel> GetByCategoryName(String name, bool shortVersion, ref PaginationSettings pagination);
+        List<ArticleViewModel> GetByCategoryAlias(String name, bool shortVersion, ref PaginationSettings pagination);
         List<ArticleViewModel> GetByDate(String date, bool shortVersion, ref PaginationSettings pagination);
     }
 }

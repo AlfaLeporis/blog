@@ -40,7 +40,8 @@ namespace Blog.Controllers
 
             var viewModel = new TagsSiteViewModel()
             {
-                TagName = id
+                TagName = id,
+                TotalCount = pagination.TotalItems
             };
             viewModel.Articles = articles;
 

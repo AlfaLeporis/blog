@@ -13,6 +13,7 @@ using System.IO;
 using System.Web.Optimization;
 using System.Web.Routing;
 using System.Web.Http;
+using System.Data.Entity.Migrations;
 
 namespace Blog.App_Start
 {
@@ -55,6 +56,8 @@ namespace Blog.App_Start
 
         private void InitDatabase()
         {
+            Database.SetInitializer(new MigrateDatabaseToLatestVersion<DatabaseContext, Migrations.Configuration>());
+
             var dbContext = new DAL.DatabaseContext();
             dbContext.Dispose();
 

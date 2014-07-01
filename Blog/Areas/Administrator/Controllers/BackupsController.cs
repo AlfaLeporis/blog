@@ -32,7 +32,8 @@ namespace Blog.Areas.Administrator.Controllers
             var viewModel = new BackupSiteViewModel();
             viewModel.Backups = backups.OrderByDescending(p => p.CreateDate).ToList();
             viewModel.Count = backups.Count;
-            viewModel.LastBackup = backups.Max(p => p.CreateDate);
+            viewModel.LastBackup = backups.Count != 0 ? backups.Max(p => p.CreateDate) :
+                                                        DateTime.MinValue;
 
             return View(viewModel);
         }

@@ -208,6 +208,11 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Infrastructure\PaginationSystem.cs" />
+    <Compile Include="Migrations\201407011152224_InitialCreate.cs" />
+    <Compile Include="Migrations\201407011152224_InitialCreate.Designer.cs">
+      <DependentUpon>201407011152224_InitialCreate.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\CategoryModel.cs" />
     <Compile Include="Models\CommentModel.cs" />
     <Compile Include="Models\ArticleModel.cs" />
@@ -741,6 +746,11 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\201407011152224_InitialCreate.resx">
+      <DependentUpon>201407011152224_InitialCreate.cs</DependentUpon>
+    </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

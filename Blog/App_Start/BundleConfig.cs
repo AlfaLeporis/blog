@@ -26,7 +26,8 @@ namespace Blog
                         "~/Content/bootstrap-theme.css"));
 
             bundles.Add(new ScriptBundle("~/bundles/ckeditor").Include(
-                "~/Scripts/CKEditor/ckeditor.js"));
+                "~/Scripts/CKEditor/ckeditor.js",
+                "~/Scripts/CKEditor/config.js"));
 
             bundles.Add(new ScriptBundle("~/bundles/syntax").Include(
                 "~/Scripts/SyntaxHighlighter/shCore.js",

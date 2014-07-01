@@ -121,7 +121,7 @@ namespace Blog.Services
 
         public List<ViewModels.TagViewModel> GetAll()
         {
-            var tags = _db.Set<TagModel>().ToList();
+            var tags = _db.Set<TagModel>().Where(p => !p.IsRemoved).ToList();
             var viewModel = new List<TagViewModel>();
 
             for(int i=0; i<tags.Count; i++)
@@ -130,6 +130,22 @@ namespace Blog.Services
             }
 
             return viewModel;
+        }
+
+        public List<TagViewModel> GetAllWithoutDuplicates()
+        {
+            var parsedTags = new List<String>();
+            var tags = GetAll();
+
+            for(int i=0; i<tags.Count; i++)
+            {
+                if (!parsedTags.Contains(tags[i].Name))
+                    parsedTags.Add(tags[i].Name);
+                else
+                    tags.Remove(tags[i]);
+            }
+
+            return tags;
         }
     }
 }

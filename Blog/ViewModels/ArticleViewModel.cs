@@ -14,6 +14,7 @@ namespace Blog.ViewModels
 
         public bool IsReadMode { get; set; }
         public String CategoryName { get; set; }
+        public String CategoryAlias { get; set; }
         public List<String> Tags { get; set; }
         public List<CommentViewModel> Comments { get; set; }
         public bool CommentsView { get; set; }

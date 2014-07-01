@@ -5,15 +5,28 @@
     Layout = "~/Areas/Administrator/Views/Shared/_Layout.cshtml";
 }
 
+@section CustomMeta{
+    @Scripts.Render("~/bundles/alias-generator")
+}
+
 @using (Html.BeginForm("EditCategory", "Categories", new { area = "Administrator" }))
 {
     <div class="form-group">
         <label for="inputEmail">Nazwa kategorii</label>
         @Html.HiddenFor(p => p.ID)
-        @Html.TextBoxFor(p => p.Title, new { @class = "form-control", placeholder = "Nazwa kategorii" })
+        @Html.TextBoxFor(p => p.Title, new { @class = "form-control", placeholder = "Nazwa kategorii", id = "tb-title" })
         @Html.ValidationMessageFor(p => p.Title, null, new { @class = "validation-message" })
     </div>
-        
+
+    <div>
+        <span class="settings-label" style="width: 100%">Alias:</span>
+        <div class="input-group">
+            @Html.TextBoxFor(p => p.Alias, new { @class = "form-control", placeholder = "Alias", id="tb-alias" })
+            <div class="input-group-btn"><div class="btn btn-primary" onclick="generateAlias();">Wygeneruj</div></div>
+        </div>
+        @Html.ValidationMessageFor(p => p.Alias, null, new { @class = "validation-message" })
+    </div>
+
     <button type="submit" class="btn btn-primary register-button">Zapisz kategorię</button>
 }
 

@@ -7,7 +7,7 @@
             <span class="glyphicon glyphicon-time" style="margin: 2px 5px 0 0;"></span> @Model.PublishDate
         </div>
         <div class="info-right">
-            <span class="glyphicon glyphicon-list-alt" style="margin: 2px 5px 0 0;"></span> @Html.ActionLink(Model.CategoryName, "Category", "Categories", new { id = Model.CategoryName }, null)
+            <span class="glyphicon glyphicon-list-alt" style="margin: 2px 5px 0 0;"></span> @Html.ActionLink(Model.CategoryName, "Category", "Categories", new { id = Model.CategoryAlias }, null)
         </div>
     </div>
 

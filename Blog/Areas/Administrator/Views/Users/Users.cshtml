@@ -24,7 +24,10 @@
 
                 <td style="width: 30%;">
                     @Html.ActionLink("Edytuj", "EditUser", "Users", new { area = "Administrator", id = Model[i].ID.Value }, new { @class = "btn btn-primary table-button" })
-                    @Html.ActionLink("Usuń", "RemoveUser", "Users", new { area = "Administrator", id = Model[i].ID.Value }, new { @class = "btn btn-danger table-button" })
+                    @if(!Roles.IsUserInRole(Model[i].Name, "Administrator"))
+                    {
+                        @Html.ActionLink("Usuń", "RemoveUser", "Users", new { area = "Administrator", id = Model[i].ID.Value }, new { @class = "btn btn-danger table-button" })
+                    }
                 </td>
             </tr>
         }

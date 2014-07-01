@@ -12,5 +12,9 @@ namespace Blog.ViewModels
 
         [Required(ErrorMessage = "Pole jest wymagane!")]
         public String Title { get; set; }
+
+        [Required(ErrorMessage = "Pole jest wymagane!")]
+        [RegularExpression("^[a-z0-9\\-]+$", ErrorMessage = "Pole nie ma odpowiedniego formatu")]
+        public String Alias { get; set; }
     }
 }

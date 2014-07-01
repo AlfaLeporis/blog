@@ -8,6 +8,7 @@ namespace Blog.ViewModels
     public class CategoriesModuleViewModel
     {
         public String Name { get; set; }
+        public String Alias { get; set; }
         public int Count { get; set; }
     }
 }

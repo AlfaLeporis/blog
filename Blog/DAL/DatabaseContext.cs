@@ -23,9 +23,7 @@ namespace Blog.DAL
 
         public DatabaseContext() : base("MainDBConnection")
         {
-            Database.SetInitializer(new DropCreateDatabaseIfModelChanges<DatabaseContext>());
             Database.CreateIfNotExists();
-            Database.Initialize(true);
         }
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)

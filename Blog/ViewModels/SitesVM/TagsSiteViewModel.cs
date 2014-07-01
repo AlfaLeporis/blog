@@ -9,5 +9,6 @@ namespace Blog.ViewModels
     {
         public List<ViewModels.ArticleViewModel> Articles { get; set; }
         public String TagName { get; set; }
+        public int TotalCount { get; set; }
     }
 }

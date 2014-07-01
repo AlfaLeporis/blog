@@ -9,6 +9,7 @@ namespace Blog.Models
     {
         public int ID { get; set; }
         public String Title { get; set; }
+        public String Alias { get; set; }
         public bool IsRemoved { get; set; }
     }
 }

@@ -34,7 +34,7 @@ namespace Blog.Services
 
         public bool Add(ViewModels.ArticleViewModel viewModel)
         {
-            if (_db.Set<ArticleModel>().Any(p => p.Alias == viewModel.Alias))
+            if (_db.Set<ArticleModel>().Any(p => p.Alias == viewModel.Alias && !p.IsRemoved))
                 return false;
 
             var model = new ArticleModel();
@@ -64,11 +64,14 @@ namespace Blog.Services
 
         private ArticleViewModel ConvertModel(ArticleModel model, bool shortVersion)
         {
+            var category = _categoriesService.Get(model.CategoryID);
+
             var viewModel = new ArticleViewModel();
             viewModel.InjectFrom<CustomInjection>(model);
             viewModel.Tags = _tagsService.GetListByArticleID(model.ID);
             viewModel.TagsString = _tagsService.GetStringByArticleID(model.ID);
-            viewModel.CategoryName = _categoriesService.Get(model.CategoryID).Title;
+            viewModel.CategoryName = category.Title;
+            viewModel.CategoryAlias = category.Alias;
             viewModel.IsReadMode = shortVersion;
             viewModel.Comments = _commentsService.GetByTargetID(model.ID, Models.CommentTarget.Article);
             viewModel.CommentsView = !shortVersion;
@@ -180,9 +183,9 @@ namespace Blog.Services
             return true;
         }
 
-        public List<ArticleViewModel> GetByCategoryName(string name, bool shortVersion, ref PaginationSettings pagination)
+        public List<ArticleViewModel> GetByCategoryAlias(string name, bool shortVersion, ref PaginationSettings pagination)
         {
-            var categoryID = _categoriesService.GetIDByName(name);
+            var categoryID = _categoriesService.GetIDByAlias(name);
             
             if (categoryID == -1)
                 return null;
@@ -207,22 +210,30 @@ namespace Blog.Services
 
         public List<ArticleViewModel> GetByDate(String date, bool shortVersion, ref PaginationSettings pagination)
         {
+            int year = Convert.ToInt32(date.Substring(0, 4));
+            int month = Convert.ToInt32(date.Substring(4, 2));
+
             if (pagination != null)
-                pagination.TotalItems = _db.Set<ArticleModel>().Where(p => !p.IsRemoved).Count();
+                pagination.TotalItems = _db.Set<ArticleModel>().Where(
+                    p => !p.IsRemoved && 
+                    p.PublishDate.Month == month && 
+                    p.PublishDate.Year == year)
+                    .Count();
 
             var articles = _db.Set<ArticleModel>()
-                .Where(p => !p.IsRemoved)
+                .Where(p => 
+                    !p.IsRemoved && 
+                    p.PublishDate.Month == month && 
+                    p.PublishDate.Year == year)
                 .OrderBy(p => p.ID)
-                .Paginate(pagination).ToList();
+                .Paginate(pagination)
+                .ToList();
             var viewModel = new List<ArticleViewModel>();
             
             for (int i = 0; i < articles.Count; i++)
             {
-                if (articles[i].PublishDate.ToString("yyyyMM") == date)
-                {
-                    var simpleArticle = ConvertModel(articles[i], true);
-                    viewModel.Add(simpleArticle);
-                }
+                var simpleArticle = ConvertModel(articles[i], true);
+                viewModel.Add(simpleArticle);
             }
 
             return viewModel.OrderByDescending(p => p.PublishDate).ToList();

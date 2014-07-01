@@ -30,7 +30,7 @@ namespace Blog.Controllers
 
             int pageSize = _settingsService.GetSettings().ItemsPerPage;
             PaginationSettings pagination = new PaginationSettings(page.Value, pageSize);
-            var articles = _articlesService.GetByCategoryName(id, true, ref pagination).Where(p => p.IsPublished).ToList();
+            var articles = _articlesService.GetByCategoryAlias(id, true, ref pagination).Where(p => p.IsPublished).ToList();
 
             if (articles == null)
                 throw new Exception("Podana kategoria (" + id + ") nie istnieje.");
@@ -40,7 +40,8 @@ namespace Blog.Controllers
 
             var viewModel = new CategoriesSiteViewModel()
             {
-                CategoryName = id
+                CategoryName = id,
+                TotalCount = pagination.TotalItems
             };
             viewModel.Articles = articles;
 

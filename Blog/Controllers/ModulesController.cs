@@ -47,21 +47,21 @@ namespace Blog.Controllers
 
         public ActionResult TagsModule()
         {
-            var viewModel = _tagsService.GetMostPopularTags(_settingsService.GetSettings().TagsCount);
+var viewModel = _tagsService.GetMostPopularTags(_settingsService.GetSettings().TagsCount);
 
-            float delta = _maxTagSize - _minTagSize;
-            int maxCount = viewModel.Count == 0 ? 0 : viewModel.Max(p => p.Count);
-            int minCount = viewModel.Count == 0 ? 0 : viewModel.Min(p => p.Count);
+float delta = _maxTagSize - _minTagSize;
+int maxCount = viewModel.Count == 0 ? 0 : viewModel.Max(p => p.Count);
+int minCount = viewModel.Count == 0 ? 0 : viewModel.Min(p => p.Count);
 
-            for (int i = 0; i < viewModel.Count; i++)
-            {
-                float deltaSize = (100 * viewModel[i].Count) / maxCount;
-                deltaSize *= delta / 100;
+for (int i = 0; i < viewModel.Count; i++)
+{
+    float deltaSize = (100 * viewModel[i].Count) / maxCount;
+    deltaSize *= delta / 100;
 
-                viewModel[i].Size = _minTagSize + deltaSize;
-            }
+    viewModel[i].Size = _minTagSize + deltaSize;
+}
 
-            return PartialView("_TagsModule", viewModel);
+return PartialView("_TagsModule", viewModel);
         }
 
         public ActionResult CategoriesModule()

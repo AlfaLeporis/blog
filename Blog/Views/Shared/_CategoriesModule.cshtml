@@ -8,7 +8,7 @@
             @for (int i = 0; i < Model.Count; i++)
             {
                 <li>
-                    <a href="@Url.Action("Category", "Categories", new{id = Model[i].Name})" class="btn btn-default" style="width: 100%">
+                    <a href="@Url.Action("Category", "Categories", new{id = Model[i].Alias})" class="btn btn-default" style="width: 100%">
                         <div class="pull-left">@Model[i].Name </div>
                         <span class="badge pull-right">@Model[i].Count</span>
                     </a> 

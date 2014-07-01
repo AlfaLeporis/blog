@@ -20,10 +20,12 @@ namespace Blog.Areas.Administrator.Controllers
         [HttpGet]
         public ActionResult ServerInfo()
         {
-            var viewModel = new AdminServerInfoViewModel();
-            viewModel.ServerInfo = System.Web.Helpers.ServerInfo.GetHtml().ToString();
+            return RedirectToAction("Settings", new { area = "Administrator" });
 
-            return View(viewModel);
+            //var viewModel = new AdminServerInfoViewModel();
+            //viewModel.ServerInfo = System.Web.Helpers.ServerInfo.GetHtml().ToString();
+
+            //return View(viewModel);
         }
 	}
 }

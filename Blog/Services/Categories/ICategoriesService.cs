@@ -17,5 +17,7 @@ namespace Blog.Services
         List<CategoryViewModel> GetAll();
         List<CategoriesModuleViewModel> GetAllWithDetails();
         int GetIDByName(String name);
+        int GetIDByAlias(String alias);
+        CategoryViewModel GetByAlias(string alias);
     }
 }

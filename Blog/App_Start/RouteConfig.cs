@@ -12,6 +12,7 @@ namespace Blog
         public static void RegisterRoutes(RouteCollection routes)
         {
             routes.IgnoreRoute("{resource}.axd/{*pathInfo}");
+            routes.IgnoreRoute("favicon.ico");
 
             var namesDic = new Dictionary<String, String>();
             namesDic.Add("Articles", "Article");
@@ -30,6 +31,13 @@ namespace Blog
                     namespaces: new[] { "Blog.Controllers" }
                 );
             }
+
+            routes.MapRoute(
+                name: "XMLMap",
+                url: "sitemap.xml",
+                defaults: new { controller = "Home", action = "GetSiteMap", id = UrlParameter.Optional },
+                namespaces: new[] { "Blog.Controllers" }
+            );
 
             routes.MapRoute(
                 name: "Default",

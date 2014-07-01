@@ -23,7 +23,7 @@ namespace Blog.Services
 
         public bool Add(CategoryViewModel viewModel)
         {
-            if (_db.Set<CategoryModel>().Any(p => p.Title == viewModel.Title))
+            if (_db.Set<CategoryModel>().Any(p => p.Title == viewModel.Title && !p.IsRemoved))
                 return false;
 
             var model = new CategoryModel();
@@ -110,6 +110,7 @@ namespace Blog.Services
             {
                 var vm = new CategoriesModuleViewModel();
                 vm.Name = categories[i].Title;
+                vm.Alias = categories[i].Alias;
 
                 var categoryID = categories[i].ID;
                     
@@ -125,10 +126,30 @@ namespace Blog.Services
 
         public int GetIDByName(string name)
         {
-            if (!_db.Set<CategoryModel>().Any(p => p.Title == name))
+            if (!_db.Set<CategoryModel>().Any(p => p.Title == name && !p.IsRemoved))
                 return -1;
 
             return _db.Set<CategoryModel>().First(p => p.Title == name).ID;
+        }
+
+        public int GetIDByAlias(string alias)
+        {
+            if (!_db.Set<CategoryModel>().Any(p => p.Alias == alias && !p.IsRemoved)) 
+                return -1;
+
+            return _db.Set<CategoryModel>().First(p => p.Alias == alias).ID;
+        }
+
+        public CategoryViewModel GetByAlias(string alias)
+        {
+            var element = _db.Set<CategoryModel>().FirstOrDefault(p => p.Alias == alias);
+
+            if (element == null)
+                return null;
+
+            var viewModel = ConvertModel(element);
+
+            return viewModel;
         }
     }
 }

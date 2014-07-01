@@ -16,5 +16,6 @@ namespace Blog.Services
         List<int> GetArticlesIDByTagName(String tag);
         List<TagsModuleViewModel> GetMostPopularTags(int count);
         List<TagViewModel> GetAll();
+        List<TagViewModel> GetAllWithoutDuplicates();
     }
 }

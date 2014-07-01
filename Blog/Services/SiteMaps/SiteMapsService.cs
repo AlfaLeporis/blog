@@ -85,11 +85,13 @@ namespace Blog.Services
 
             for (int i = 0; i < categories.Count; i++)
             {
-                var articles = _articlesService.GetByCategoryName(categories[i].Title, false, ref pagination);
+                var articles = _articlesService.GetByCategoryAlias(categories[i].Alias, false, ref pagination);
 
                 var url = document.CreateElement("url");
-                url.AppendChild(CreateNode(document, "loc", GetBaseUrl() + "Category/" + categories[i].Title));
-                url.AppendChild(CreateNode(document, "lastmod", articles.Max(p => p.LastUpdateDate).ToShortDateString()));
+                url.AppendChild(CreateNode(document, "loc", GetBaseUrl() + "Category/" + categories[i].Alias));
+                url.AppendChild(CreateNode(document, "lastmod", 
+                    articles.Count != 0 ? articles.Max(p => p.LastUpdateDate).ToShortDateString() : DateTime.MinValue.ToShortDateString()
+                    ));
                 url.AppendChild(CreateNode(document, "changefreq", "always"));
                 url.AppendChild(CreateNode(document, "priority", "1.0"));
 
@@ -100,15 +102,17 @@ namespace Blog.Services
         private void AddTagsToNode(XmlDocument document, XmlElement urlSet)
         {
             PaginationSettings pagination = null;
-            var tags = _tagsService.GetAll();
+            var tags = _tagsService.GetAllWithoutDuplicates();
 
             for (int i = 0; i < tags.Count; i++)
             {
                 var articles = _articlesService.GetByTagName(tags[i].Name, false, ref pagination);
 
                 var url = document.CreateElement("url");
-                url.AppendChild(CreateNode(document, "loc", GetBaseUrl() + "Category/" + tags[i].Name));
-                url.AppendChild(CreateNode(document, "lastmod", articles.Max(p => p.LastUpdateDate).ToShortDateString()));
+                url.AppendChild(CreateNode(document, "loc", GetBaseUrl() + "Tag/" + tags[i].Name));
+                url.AppendChild(CreateNode(document, "lastmod", 
+                    articles.Count != 0 ? articles.Max(p => p.LastUpdateDate).ToShortDateString() : DateTime.MinValue.ToShortDateString()
+                    ));
                 url.AppendChild(CreateNode(document, "changefreq", "always"));
                 url.AppendChild(CreateNode(document, "priority", "1.0"));
 

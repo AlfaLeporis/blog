@@ -51,7 +51,7 @@ namespace Blog.Services
 
             for (int i = 0; i < articlesIDs.Count(); i++)
             {
-                var article = _articlesService.Get(articlesIDs[i], false);
+                var article = _articlesService.Get(articlesIDs[i], true);
                 if (article == null)
                     throw new Exception("Artykuł o podanym id (" + articlesIDs[i] + ") nie istnieje");
 
