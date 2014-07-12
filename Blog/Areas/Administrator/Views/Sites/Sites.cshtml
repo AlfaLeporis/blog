@@ -5,6 +5,8 @@
     Layout = "~/Areas/Administrator/Views/Shared/_Layout.cshtml";
 }
 
+<label>@Html.CheckBox("showRemoved", false, new { onclick = "removedStatusRefreshPage(this)" }) Pokaż usunięte elementy</label>
+
 <table class="table table-bordered">
     <tbody>
         <tr>
@@ -21,19 +23,29 @@
                 <td style="width: 30%;">@Model[i].Title</td>
                 <td style="width: 30%;">@Model[i].Description</td>
                 <td style="width: 10%;">
-                    @if (Model[i].IsPublished)
+                    @if (!Model[i].IsRemoved)
                     {
-                        @Html.ActionLink("Opublikowany", "InvertSiteStatus", "Sites", new { area = "Administrator", id = Model[i].ID }, new { @class = "btn btn-success table-button" })
+                        if (Model[i].IsPublished)
+                        {
+                            @Html.ActionLink("Opublikowany", "InvertSiteStatus", "Sites", new { area = "Administrator", id = Model[i].ID }, new { @class = "btn btn-success table-button" })
+                        }
+                        else
+                        {
+                            @Html.ActionLink("Nieopublikowany", "InvertSiteStatus", "Sites", new { area = "Administrator", id = Model[i].ID }, new { @class = "btn btn-danger table-button" })
+                        }
                     }
                     else
                     {
-                        @Html.ActionLink("Nieopublikowany", "InvertSiteStatus", "Sites", new { area = "Administrator", id = Model[i].ID }, new { @class = "btn btn-danger table-button" })
+                        @Html.ActionLink("Przywróć", "RestoreSite", "Sites", new { area = "Administrator", id = Model[i].ID }, new { @class = "btn btn-success table-button" })
                     }
                 </td>
 
                 <td style="width: 20%;">
-                    @Html.ActionLink("Edytuj", "EditSite", "Sites", new { area = "Administrator", id = Model[i].ID }, new { @class = "btn btn-primary table-button" })
-                    @Html.ActionLink("Usuń", "RemoveSite", "Sites", new { area = "Administrator", id = Model[i].ID }, new { @class = "btn btn-danger table-button" })
+                    @if (!Model[i].IsRemoved)
+                    {
+                        @Html.ActionLink("Edytuj", "EditSite", "Sites", new { area = "Administrator", id = Model[i].ID }, new { @class = "btn btn-primary table-button" })
+                        @Html.ActionLink("Usuń", "RemoveSite", "Sites", new { area = "Administrator", id = Model[i].ID }, new { @class = "btn btn-danger table-button", onclick = "return confirmOperation()" })
+                    }            
                 </td>
             </tr>
         }

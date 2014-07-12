@@ -12,6 +12,7 @@ using System.IO;
 
 namespace Blog.Areas.Administrator.Controllers
 {
+    [Authorize(Roles = "Administrator")]
     public class BackupsController : Controller
     {
         private DatabaseContext _db = null;

@@ -11,9 +11,11 @@ namespace Blog.Services
     public interface IArticlesService
     {
         bool Add(ArticleViewModel viewModel);
+        bool Add(ArticleViewModel viewModel, int version, int? parent);
         ArticleViewModel Get(int id, bool shortVersion);
         ArticleViewModel GetByAlias(String alias, bool shortVersion);
-        List<ArticleViewModel> GetAll(bool shortVersion, ref PaginationSettings pagination);
+        List<ArticleViewModel> GetAll(bool shortVersion, ArticleSiteAccessSettings settings, ref PaginationSettings pagination);
+        List<ArticleViewModel> GetVersionsByID(int articleID);
         bool Remove(int id);
         bool Edit(ArticleViewModel viewModel);
         bool SetArticleStatus(int id, bool status);

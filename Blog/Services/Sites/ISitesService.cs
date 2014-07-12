@@ -11,10 +11,12 @@ namespace Blog.Services
     public interface ISitesService
     {
         bool Add(SiteViewModel viewModel);
+        bool Add(SiteViewModel viewModel, int version, int? parent);
         bool Edit(SiteViewModel viewModel);
         bool Remove(int id);
         SiteViewModel Get(int id, bool shortVersion);
-        List<SiteViewModel> GetAll(ref PaginationSettings pagination);
+        List<SiteViewModel> GetAll(ArticleSiteAccessSettings settings, ref PaginationSettings pagination);
+        List<SiteViewModel> GetVersionsByID(int articleID);
         bool SetSiteStatus(int id, bool status);
         SiteViewModel GetByAlias(String id);
     }

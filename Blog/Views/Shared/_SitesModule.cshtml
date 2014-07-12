@@ -1,9 +1,9 @@
 ﻿@model List<Blog.ViewModels.SitesModuleViewModel>
 
 <ul>
-    <li><a href="/" class="btn btn-primary">Strona główna</a></li>
+    <li><a href="/">Strona główna</a></li>
     @for(int i=0; i<Model.Count; i++)
     {
-        <li>@Html.ActionLink(Model[i].Title, "Site", "Sites", new{id = Model[i].Alias}, new{@class = "btn btn-primary"})</li>
+        <li>@Html.ActionLink(Model[i].Title, "Site", "Sites", new{id = Model[i].Alias}, null)</li>
     }
 </ul>

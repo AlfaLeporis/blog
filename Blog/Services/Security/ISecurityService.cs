@@ -19,5 +19,6 @@ namespace Blog.Services
         UserViewModel Get(int id);
         bool Edit(UserViewModel viewModel);
         bool Remove(int id);
+        bool IsLogged();
     }
 }

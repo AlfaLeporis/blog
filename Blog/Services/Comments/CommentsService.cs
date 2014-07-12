@@ -32,6 +32,12 @@ namespace Blog.Services
             model.IsRemoved = false;
             model.InjectFrom<CustomInjection>(viewModel);
 
+            if(viewModel.AuthorName == null)
+            {
+                var user = _securityService.Get(_securityService.GetCurrentID());
+                model.AuthorName = user.Name;
+            }
+
             _db.Set<CommentModel>().Add(model);
             _db.SaveChanges();
 
@@ -91,13 +97,11 @@ namespace Blog.Services
             {
                 viewModel.AvatarSource = GetAvatarSourceByEMail(_securityService.GetEMailByID(viewModel.AuthorID));
                 viewModel.AuthorSite = user.WebSite;
-                viewModel.AuthorName = _securityService.GetUserNameByID(viewModel.AuthorID);
             }
             else
             {
                 viewModel.AvatarSource = "http://www.gravatar.com/avatar/undefined";
                 viewModel.AuthorSite = "undefined";
-                viewModel.AuthorName = "Anonim";
             }
 
             return viewModel;
@@ -117,7 +121,7 @@ namespace Blog.Services
         }
 
 
-        public List<CommentViewModel> GetByTargetID(int id, CommentTarget target)
+        public List<CommentViewModel> GetByTargetID(int id, TargetType target)
         {
             var viewModels = new List<CommentViewModel>();
             var comments = _db.Set<CommentModel>().Where(p => p.ArticleID == id && p.Target == target).Where(p => !p.IsRemoved).ToList();
@@ -174,6 +178,12 @@ namespace Blog.Services
             }
 
             return viewModel.OrderByDescending(p => p.PublishDate).ToList();
+        }
+
+        public int GetCommentsCountByTargetID(int id, TargetType target)
+        {
+            var count = _db.Set<CommentModel>().Where(p => p.ArticleID == id && p.Target == target && !p.IsRemoved).Count();
+            return count;
         }
     }
 }

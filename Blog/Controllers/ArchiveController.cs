@@ -6,6 +6,7 @@ using System.Web.Mvc;
 using Blog.Services;
 using Blog.ViewModels;
 using Blog.Infrastructure;
+using Blog.Filters;
 
 namespace Blog.Controllers
 {
@@ -35,13 +36,21 @@ namespace Blog.Controllers
 
             int pageSize = _settingsService.GetSettings().ItemsPerPage;
             PaginationSettings pagination = new PaginationSettings(page.Value, pageSize);
-            viewModel.Articles = _articlesService.GetByDate(id, false, ref pagination).Where(p => p.IsPublished).ToList();
+            viewModel.Articles = _articlesService.GetByDate(id, false, ref pagination).ToList();
+
+            if (viewModel.Articles.Count == 0)
+                throw new Exception("Dane archiwum nie istnieje.");
 
             viewModel.FirstDate = viewModel.Articles.Min(p => p.PublishDate).ToShortDateString();
             viewModel.LastDate = viewModel.Articles.Max(p => p.PublishDate).ToShortDateString();
 
+            int totalItems = PaginationSystem.GetPagesCount(pagination.TotalItems, pageSize);
+
             ViewBag.PaginationCurrent = page.Value;
-            ViewBag.PaginationTotal = PaginationSystem.GetPagesCount(pagination.TotalItems, pageSize);
+            ViewBag.PaginationTotal = totalItems;
+
+            if (page.Value > totalItems)
+                throw new Exception("Podany numer strony nie istnieje.");
 
             return View(viewModel);
         }

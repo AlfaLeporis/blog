@@ -11,11 +11,14 @@ namespace Blog.Services
     public class FeedsService : IFeedsService
     {
         private ISettingsService _settingsService = null;
-        private const String _articleUrl = "Article/";
+        private ICommentsService _commentsService = null;
+        private const String _articleUrl = "Artykuł/";
 
-        public FeedsService(ISettingsService settingsService)
+        public FeedsService(ISettingsService settingsService,
+                            ICommentsService commentsService)
         {
             _settingsService = settingsService;
+            _commentsService = commentsService;
         }
 
         public XmlDocument GenerateArticlesATOMFeed(List<ArticleViewModel> articles, int count)
@@ -53,25 +56,26 @@ namespace Blog.Services
         public XmlDocument GenerateCommentsATOMFeed(ArticleViewModel article)
         {
             var document = new XmlDocument();
+            var comments = _commentsService.GetByTargetID(article.ID.Value, Models.TargetType.Article);
 
-            var lastUpdate = article.Comments.Count != 0 ? article.Comments.Max(p => p.PublishDate) : article.LastUpdateDate;
+            var lastUpdate = comments.Count != 0 ? comments.Max(p => p.PublishDate) : article.LastUpdateDate;
             var header = GetHeader(document, article.Title, lastUpdate, _articleUrl + article.Alias);
 
-            for (int i = 0; i < article.Comments.Count; i++)
+            for (int i = 0; i < comments.Count; i++)
             {
                 var entry = document.CreateElement("entry");
-                var articleUrl = GetBaseUrl() + _articleUrl + article.Alias + "#" + article.Comments[i].ID;
+                var articleUrl = GetBaseUrl() + _articleUrl + article.Alias + "#" + comments[i].ID;
 
                 entry.AppendChild(CreateNode(document, "id", articleUrl));
-                entry.AppendChild(CreateNode(document, "title", "Komentarz użytkownika " + article.Comments[i].AuthorName));
-                entry.AppendChild(CreateNode(document, "updated", XmlConvert.ToString(article.Comments[i].PublishDate, XmlDateTimeSerializationMode.Utc)));
+                entry.AppendChild(CreateNode(document, "title", "Komentarz użytkownika " + comments[i].AuthorName));
+                entry.AppendChild(CreateNode(document, "updated", XmlConvert.ToString(comments[i].PublishDate, XmlDateTimeSerializationMode.Utc)));
 
                 var link = CreateNode(document, "link", "");
                 link.SetAttribute("href", articleUrl);
                 entry.AppendChild(link);
 
                 var authorNode = CreateNode(document, "author", "");
-                authorNode.AppendChild(CreateNode(document, "name", article.Comments[i].AuthorName));
+                authorNode.AppendChild(CreateNode(document, "name", comments[i].AuthorName));
                 entry.AppendChild(authorNode);
 
                 header.AppendChild(entry);

@@ -7,6 +7,7 @@ using Microsoft.Practices.Unity;
 using Blog.ViewModels;
 using Blog.Services;
 using Blog.Infrastructure;
+using Blog.Filters;
 
 namespace Blog.Controllers
 {
@@ -36,11 +37,16 @@ namespace Blog.Controllers
 
             var pageSize = _settingsService.GetSettings().ItemsPerPage;
             var pagination = new PaginationSettings(page.Value, pageSize);
-            var articles = _articlesService.GetAll(true, ref pagination).Where(p => p.IsPublished).ToList();
+            var articles = _articlesService.GetAll(true, new ArticleSiteAccessSettings(false, true, false), ref pagination).ToList();
             articles.ForEach(p => p.CommentsView = false);
             
+            int totalItems = PaginationSystem.GetPagesCount(pagination.TotalItems, pageSize);
+
             ViewBag.PaginationCurrent = page.Value;
-            ViewBag.PaginationTotal = PaginationSystem.GetPagesCount(pagination.TotalItems, pageSize);
+            ViewBag.PaginationTotal = totalItems;
+
+            if (page.Value > totalItems && totalItems != 0)
+                throw new Exception("Podany numer strony nie istnieje.");
 
             var viewModel = new ClientViewModel();
             viewModel.Articles = articles;
@@ -48,15 +54,10 @@ namespace Blog.Controllers
             return View(viewModel);
         }
 
-        public ActionResult Error()
-        {
-            return View("Error");
-        }
-
         public ActionResult GetArticlesATOM()
         {
             PaginationSettings pagination = null;
-            var articles = _articlesService.GetAll(false, ref pagination);
+            var articles = _articlesService.GetAll(false, new ArticleSiteAccessSettings(false, true, false), ref pagination);
             var result = _feedsService.GenerateArticlesATOMFeed(articles, 10);
 
             return Content(result.OuterXml, "text/xml");

@@ -1,6 +1,40 @@
 ﻿@model Blog.ViewModels.ArticleViewModel
 
-<div class="article">
+<div class="post">
+    <h2>@Html.ActionLink(Model.Title, "Article", "Articles", new { id = Model.Alias }, null)</h2>
+    <p class="postmeta">Kategoria: @Html.ActionLink(Model.CategoryName, "Category", "Categories", new { id = Model.CategoryAlias }, null)
+                                 | @Model.PublishDate | @Html.ActionLink(Model.CommentsCount + " komentarzy", "Article", "Articles", null, null, "comments", new { id = Model.Alias }, null) | Tagi:
+        @for (int x = 0; x < Model.Tags.Count; x++)
+        {
+            if(x != 0)
+            {
+@:,
+            }
+            @Html.ActionLink(Model.Tags[x], "Tag", "Tags", new { id = Model.Tags[x] }, new { @class = "single-tag" })
+        }
+    </p>
+
+    <div class="entry">
+        @Html.Raw(Model.Content)
+        
+        
+        @if (Model.IsReadMode)
+        {
+            <p>@Html.ActionLink("Czytaj dalej...", "Article", "Articles", new { id = Model.Alias }, new{ @class="btn btn-primary", style="float:right;"})</p>
+        }
+        else if (!Model.CommentsView)
+        {
+            <p>@Html.ActionLink("Skomentuj wpis", "Article", "Articles", null, null, "comments", new { id = Model.Alias }, new { @class = "btn btn-primary", style = "float:right;" })</p>
+        }
+    </div>
+</div>
+
+@if(Model.CommentsView)
+{
+    @Html.Action("Comments", "Modules", new { id = Model.ID, target = Blog.Models.TargetType.Article})
+}
+
+@*<div class="article">
     <h3>@Html.ActionLink(Model.Title, "Article", "Articles", new { id = Model.Alias }, null)</h3>
     <div class="article-info">
         <div class="info-left">
@@ -17,7 +51,7 @@
             </span>
         </div>
         <div style="position: absolute; color: white; top: 0; left: 0; width: 35px; height: 25px; text-align: center; padding: 3px; font-size: 1.2em;">
-            @Model.Comments.Count
+            @Model.CommentsCount
         </div>
     </div>
 
@@ -29,7 +63,7 @@
         <div class="tags">
             @for (int x = 0; x < Model.Tags.Count; x++)
             {
-                <div class="single-tag">@Html.ActionLink("#" + Model.Tags[x], "Tag", "Tags", new { id =Model.Tags[x]}, new { @class = "single-tag" })</div>
+                <div class="single-tag">@Html.ActionLink("#" + Model.Tags[x], "Tag", "Tags", new { id = Model.Tags[x] }, new { @class = "single-tag" })</div>
             }
         </div>
         <div class="read-more">
@@ -37,7 +71,7 @@
             {
                 @Html.ActionLink("Czytaj dalej...", "Article", "Articles", new { id = Model.Alias }, null)
             }
-            else if(!Model.CommentsView)
+            else if (!Model.CommentsView)
             {
                 @Html.ActionLink("Skomentuj wpis", "Article", "Articles", null, null, "comments", new { id = Model.Alias }, null)
             }
@@ -45,53 +79,7 @@
     </div>
 </div>
 
-@if(Model.CommentsView)
+@if (Model.CommentsView)
 {
-    <div class="comments-area" id="comments">
-
-        @for (int i = 0; i < Model.Comments.Count; i++)
-        {
-        <div class="single-comment-area" id="@Model.Comments[i].ID">
-            <div class="comment-header">
-                <div class="comment-author">
-                    @if (Model.Comments[i].AuthorSite == null || Model.Comments[i].AuthorSite == "undefined")
-                    {
-                         @Model.Comments[i].AuthorName
-                    }
-                    else
-                    {
-                         <a href="@Model.Comments[i].AuthorSite">@Model.Comments[i].AuthorName</a>
-                    }
-                   
-                </div>
-                <div class="comment-date">  
-                    @Model.Comments[i].PublishDate
-                    @if(Model.Comments[i].AuthorID == WebSecurity.CurrentUserId && WebSecurity.IsAuthenticated)
-                    {
-                        @Html.ActionLink("[Usuń]", "RemoveComment", "Comments", new { id = Model.Comments[i].ID, articleID = Model.ID }, new { onclick = "return confirmOperation()" })
-                    }
-                </div>
-            </div>
-            <div class="comment-avatar">
-                <img src="@Model.Comments[i].AvatarSource" alt="avatar"/>
-            </div>
-            <div class="comment-content">
-                @Model.Comments[i].Content
-            </div>
-        </div>
-        }
-        
-    </div>
-
-    <div class="single-comment-area">
-        <div class="comments-reply-area">
-            @using (Html.BeginForm("AddComment", "Comments", new { returnUrl = ViewBag.ReturnUrl, target = Blog.Models.CommentTarget.Article }))
-            {
-                <input type="hidden" name="ArticleID" value="@Model.ID" />
-                <textarea class="form-control" name="CommentContent"></textarea>
-                <input type="submit" value="Dodaj komentarz" class="btn btn-default left"/>
-                @Html.ActionLink("Pobierz w formacie ATOM", "GetCommentsATOM", "Home", new { id = Model.ID }, new { @class = "btn btn-default right" })
-            }
-        </div>
-    </div>
-}
+    @Html.Action("Comments", "Modules", new { id = Model.ID, target = Blog.Models.TargetType.Article })
+}*@

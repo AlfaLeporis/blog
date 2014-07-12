@@ -11,8 +11,16 @@
     @Styles.Render("~/Content/syntax")
 }
 
+@if (Model.Parent != null)
+{
+    <div class="sub-header">Podgląd wersji nr <strong>@Model.Version</strong></div>
+}
+
 @using (Html.BeginForm("EditSite", "Sites", new { area = "Administrator" }))
 {
+    @Html.HiddenFor(p => p.Parent)
+    @Html.HiddenFor(p => p.Version)
+
     <div class="left-col">
         <fieldset class="settings-fieldset">
             <legend>Dane strony</legend>
@@ -47,10 +55,10 @@
                 <span class="settings-label">Status publikacji:</span>
                 <div class="btn-group" data-toggle="buttons">
                     <label class="btn btn-success radio-button">
-                        @Html.RadioButtonFor(Model => Model.IsPublished, true) Opublikowana
+                        @Html.RadioButtonFor(p => p.IsPublished, true) Opublikowana
                     </label>
                     <label class="btn btn-danger radio-button">
-                        @Html.RadioButtonFor(Model => Model.IsPublished, false) Nieopublikowana
+                        @Html.RadioButtonFor(p => p.IsPublished, false) Nieopublikowana
                     </label>
                 </div>
                 @Html.ValidationMessageFor(p => p.IsPublished, null, new { @class = "validation-message" })
@@ -60,7 +68,8 @@
 
     <div class="clearfix"></div>
 
-    <div class="settings-group">@Html.TextBoxFor(p => p.Title, new { @class = "form-control", placeholder = "Tytuł artykułu", id = "tb-title" })</div>
+    <div class="settings-group">
+    @Html.TextBoxFor(p => p.Title, new { @class = "form-control", placeholder = "Tytuł artykułu", id = "tb-title" })</div>
     @Html.ValidationMessageFor(p => p.Title, null, new { @class = "validation-message" })
 
     <div style="height: 630px;">@Html.TextAreaFor(p => p.Content, new { id = "editor" })</div>
@@ -72,5 +81,11 @@
 
     <div class="clearfix"></div>
 
-    <input type="submit" class="btn btn-primary btn-settings" value="Zapisz stronę" />
+    <input type="submit" class="btn btn-primary btn-settings left" name="save-without-exit" value="Zapisz" />
+    <input type="submit" class="btn btn-primary btn-settings right" name="save-and-exit" value="Zapisz i wyjdź" />
+}
+
+@if (Model.ID.HasValue)
+{
+    @Html.Action("SitesVersionsList", "Modules", new { id = Model.ID })
 }

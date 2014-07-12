@@ -61,5 +61,18 @@ namespace Blog.ViewModels
         [Required(ErrorMessage = "Pole jest wymagane!")]
         [RegularExpression("^[0-9]+$")]
         public int ItemsPerPage { get; set; }
+
+        [Required(ErrorMessage = "Pole jest wymagane!")]
+        [RegularExpression("^[0-9]+$")]
+        public int VersionsCount { get; set; }
+
+        [Required(ErrorMessage = "Pole jest wymagane!")]
+        public bool UseCaptcha { get; set; }
+
+        [Required(ErrorMessage = "Pole jest wymagane!")]
+        public String CaptchaPublicKey { get; set; }
+
+        [Required(ErrorMessage = "Pole jest wymagane!")]
+        public String CaptchaPrivateKey { get; set; }
     }
 }

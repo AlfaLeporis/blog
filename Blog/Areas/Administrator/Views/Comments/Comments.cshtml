@@ -23,7 +23,7 @@
                 <td style="width: 30%;">@Model[i].Content</td>
                 <td style="width: 20%;">
                     @Html.ActionLink("Edytuj", "EditComment", "Comments", new { area = "Administrator", id = Model[i].ID }, new { @class = "btn btn-primary table-button" })
-                    @Html.ActionLink("Usuń", "RemoveArticle", "Comments", new { area = "Administrator", id = Model[i].ID }, new { @class = "btn btn-danger table-button" })
+                    @Html.ActionLink("Usuń", "RemoveArticle", "Comments", new { area = "Administrator", id = Model[i].ID }, new { @class = "btn btn-danger table-button", onclick = "return confirmOperation()" })
                 </td>
             </tr>
         }

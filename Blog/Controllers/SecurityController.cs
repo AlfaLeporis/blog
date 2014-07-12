@@ -6,6 +6,7 @@ using System.Web.Mvc;
 using Microsoft.Practices.Unity;
 using Blog.ViewModels;
 using Blog.Services;
+using Blog.Filters;
 
 namespace Blog.Controllers
 {
@@ -13,12 +14,15 @@ namespace Blog.Controllers
     {
         private ISecurityService _securityService = null;
         private ISettingsService _settingsService = null;
+        private ICaptchaService _captchaService = null;
 
         public SecurityController(ISecurityService securityService,
-                                  ISettingsService settingsService)
+                                  ISettingsService settingsService,
+                                  ICaptchaService captchaService)
         {
             _securityService = securityService;
             _settingsService = settingsService;
+            _captchaService = captchaService;
         }
 
         public ActionResult Login(FormCollection viewModel)
@@ -61,16 +65,24 @@ namespace Blog.Controllers
         [HttpPost]
         public ActionResult Register(RegisterViewModel viewModel)
         {
+            if (!_securityService.IsLogged())
+            {
+                var recaptcha_challenge_field = Request.Form["recaptcha_challenge_field"];
+                var recaptcha_response_field = Request.Form["recaptcha_response_field"];
+                var captchaResult = _captchaService.ValidateCode(recaptcha_response_field, recaptcha_challenge_field);
+                if (!captchaResult)
+                    return Content("Podany kod nie jest poprawny!");
+            }
+
             var result = _securityService.Register(viewModel, _settingsService.GetSettings());
             if (result)
             {
-                TempData.Add("SuccessMsg", "Rejestracja przebiegła pomyślnie!");
-                return RedirectToAction("Index", "Home");
+                TempData.Add("ErrorMsg", "test");
+                return JavaScript("location.href = \"/\"");
             }
             else
             {
-                TempData.Add("ErrorMsg", "Rejestracja nieudana! Prawdopodobnie wpisana nazwa użytkownika lub EMail są już zarejestrowane. Spróbuj ponownie.");
-                return View(viewModel);
+                return Content("Rejestracja nieudana! Prawdopodobnie wpisana nazwa użytkownika lub EMail są już zarejestrowane. Spróbuj ponownie.");
             }
         }
 

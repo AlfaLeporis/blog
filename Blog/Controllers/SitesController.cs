@@ -6,6 +6,7 @@ using System.Web.Mvc;
 using Blog.ViewModels;
 using Blog.Services;
 using Microsoft.Practices.Unity;
+using Blog.Filters;
 
 namespace Blog.Controllers
 {

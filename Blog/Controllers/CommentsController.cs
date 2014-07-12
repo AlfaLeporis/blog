@@ -15,29 +15,54 @@ namespace Blog.Controllers
     {
         private ICommentsService _commentsService = null;
         private ISecurityService _securityService = null;
+        private ICaptchaService _captchaService = null;
 
         public CommentsController(ICommentsService commentsService,
-                                  ISecurityService securityService)
+                                  ISecurityService securityService,
+                                  ICaptchaService captchaService)
         {
             _commentsService = commentsService;
             _securityService = securityService;
+            _captchaService = captchaService;
         }
 
         [HttpPost]
-        public ActionResult AddComment(FormCollection viewModel, CommentTarget target)
+        public ActionResult AddComment(FormCollection viewModel, TargetType target)
         {
             int articleID = Convert.ToInt32(viewModel["ArticleID"]);
             String content = viewModel["CommentContent"];
 
+            if(!_securityService.IsLogged())
+            {
+                var recaptcha_challenge_field = viewModel["recaptcha_challenge_field"];
+                var recaptcha_response_field = viewModel["recaptcha_response_field"];
+                var result = _captchaService.ValidateCode(recaptcha_response_field, recaptcha_challenge_field);
+                if (!result)
+                    return Content("Podany kod nie jest poprawny!");
+            }
+
             if (content != String.Empty)
             {
+               
+                var authorName = String.Empty;
+                if (viewModel.AllKeys.Contains("AuthorName"))
+                {
+                    authorName = viewModel["AuthorName"];
+                }
+                else
+                {
+                    var authorViewModel = _securityService.Get(_securityService.GetCurrentID());
+                    authorName = authorViewModel.Name;
+                }
+
                 var commentVM = new CommentViewModel()
                 {
                     ArticleID = articleID,
                     Content = content,
                     PublishDate = DateTime.Now,
                     AuthorID = _securityService.GetCurrentID(),
-                    Target = target
+                    Target = target,
+                    AuthorName = authorName
                 };
 
                 bool result = _commentsService.Add(commentVM);
@@ -47,16 +72,17 @@ namespace Blog.Controllers
             }
             else
             {
-                TempData.Add("ErrorMsg", "Komentarz nie może być pusty!");
+                return Content("Pole komentarza musi mieć zawartość!");
             }
 
-            return Redirect(HttpContext.Request.UrlReferrer.ToString());
+            return JavaScript("location.reload(true);");
         }
 
         [HttpGet]
         public ActionResult RemoveComment(int id, int articleID)
         {
-            if (id != _securityService.GetCurrentID())
+            var comment = _commentsService.Get(id);
+            if (comment.AuthorID != _securityService.GetCurrentID())
                 throw new Exception("Brak uprawnień.");
 
             var result = _commentsService.Remove(id);

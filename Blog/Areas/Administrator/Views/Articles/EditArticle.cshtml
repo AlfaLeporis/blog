@@ -12,13 +12,21 @@
     @Styles.Render("~/Content/syntax")
 }
 
+@if (Model.Parent != null)
+{
+    <div class="sub-header">Podgląd wersji nr <strong>@Model.Version</strong></div>
+}
+
 @using (Html.BeginForm("EditArticle", "Articles", new { area = "Administrator"}))
 {
+    @Html.HiddenFor(p => p.Parent)
+    @Html.HiddenFor(p => p.Version)
+    
     <div class="left-col">
         <fieldset class="settings-fieldset">
             <legend>Dane artykułu</legend>
             <div><span class="settings-label" style="width: 100%">Kategoria:</span> 
-              @Html.Action("PartialCategoriesList", "Categories", new { selectedCategory = 0 })
+              @Html.Action("PartialCategoriesList", "Modules", new { selectedCategory = 0 })
             </div>
 
             <div>
@@ -61,10 +69,10 @@
                 <span class="settings-label">Status publikacji:</span>
                 <div class="btn-group" data-toggle="buttons">
                     <label class="btn btn-success radio-button">
-                        @Html.RadioButtonFor(Model => Model.IsPublished, true) Opublikowana
+                        @Html.RadioButtonFor(p => p.IsPublished, true) Opublikowana
                     </label>
                     <label class="btn btn-danger radio-button">
-                        @Html.RadioButtonFor(Model => Model.IsPublished, false) Nieopublikowana
+                        @Html.RadioButtonFor(p => p.IsPublished, false) Nieopublikowana
                     </label>
                 </div>
                 @Html.ValidationMessageFor(p => p.IsPublished, null, new { @class = "validation-message" })
@@ -86,6 +94,12 @@
     </script>
 
     <div class="clearfix"></div>
+    
+    <input type="submit" class="btn btn-primary btn-settings left" name="save-without-exit" value="Zapisz" />
+    <input type="submit" class="btn btn-primary btn-settings right" name="save-and-exit" value="Zapisz i wyjdź" />
+}
 
-    <input type="submit" class="btn btn-primary btn-settings" value="Zapisz artykuł" />
+@if(Model.ID.HasValue)
+{
+    @Html.Action("ArticleVersionsList", "Modules", new { id = Model.ID })
 }

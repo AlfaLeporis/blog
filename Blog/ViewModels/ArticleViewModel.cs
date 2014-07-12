@@ -16,10 +16,13 @@ namespace Blog.ViewModels
         public String CategoryName { get; set; }
         public String CategoryAlias { get; set; }
         public List<String> Tags { get; set; }
-        public List<CommentViewModel> Comments { get; set; }
         public bool CommentsView { get; set; }
         public DateTime LastUpdateDate { get; set; }
         public List<CategoryViewModel> Categories { get; set; }
+        public int Version { get; set; }
+        public int? Parent { get; set; }
+        public bool IsRemoved { get; set; }
+        public int CommentsCount { get; set; }
 
         [Required(ErrorMessage="Pole jest wymagane!")]
         [RegularExpression("^[a-z0-9\\-]+$", ErrorMessage="Pole nie ma odpowiedniego formatu")]
@@ -36,11 +39,11 @@ namespace Blog.ViewModels
         public String Content { get; set; }
 
         [Required(ErrorMessage = "Pole jest wymagane!")]
-        [DataType(DataType.DateTime, ErrorMessage="Pole nei ma odpowiedniego formatu")]
+        [DataType(DataType.DateTime, ErrorMessage="Pole nie ma odpowiedniego formatu")]
         public DateTime CreationDate { get; set; }
 
         [Required(ErrorMessage = "Pole jest wymagane!")]
-        [DataType(DataType.DateTime, ErrorMessage="Pole nei ma odpowiedniego formatu")]
+        [DataType(DataType.DateTime, ErrorMessage="Pole nie ma odpowiedniego formatu")]
         public DateTime PublishDate { get; set; }
 
         [Required(ErrorMessage = "Pole jest wymagane!")]

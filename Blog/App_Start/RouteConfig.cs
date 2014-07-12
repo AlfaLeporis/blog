@@ -14,20 +14,21 @@ namespace Blog
             routes.IgnoreRoute("{resource}.axd/{*pathInfo}");
             routes.IgnoreRoute("favicon.ico");
 
-            var namesDic = new Dictionary<String, String>();
-            namesDic.Add("Articles", "Article");
-            namesDic.Add("Sites", "Site");
-            namesDic.Add("Categories", "Category");
-            namesDic.Add("Tags", "Tag");
-            namesDic.Add("Archive", "Archive");
-            namesDic.Add("Modules", "Search");
+            var namesDic = new List<String[]>();
+            namesDic.Add(new[]{"Articles", "Article", "Artykuł"});
+            namesDic.Add(new[]{"Sites", "Site", "Strona"});
+            namesDic.Add(new[]{"Categories", "Category", "Kategoria"});
+            namesDic.Add(new[]{"Tags", "Tag", "Tag"});
+            namesDic.Add(new[]{"Archive", "Archive", "Archiwum"});
+            namesDic.Add(new[]{"Security", "Register", "Rejestracja" });
+            namesDic.Add(new[]{"Modules", "Search", "Szukaj"});
 
             for (int i = 0; i < namesDic.Count; i++)
             {
                 routes.MapRoute(
-                    name: namesDic.ElementAt(i).Key,
-                    url: namesDic.ElementAt(i).Value + "/{id}",
-                    defaults: new { controller = namesDic.ElementAt(i).Key, action = namesDic.ElementAt(i).Value, id = UrlParameter.Optional },
+                    name: namesDic[i][0],
+                    url: namesDic[i][2] + "/{id}",
+                    defaults: new { controller = namesDic[i][0], action = namesDic[i][1], id = UrlParameter.Optional },
                     namespaces: new[] { "Blog.Controllers" }
                 );
             }

@@ -14,6 +14,7 @@ using System.Web.Optimization;
 using System.Web.Routing;
 using System.Web.Http;
 using System.Data.Entity.Migrations;
+using System.Net;
 
 namespace Blog.App_Start
 {
@@ -28,6 +29,8 @@ namespace Blog.App_Start
             FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters, unityContainer);
             RouteConfig.RegisterRoutes(RouteTable.Routes);
             BundleConfig.RegisterBundles(BundleTable.Bundles);
+
+            System.Net.ServicePointManager.Expect100Continue = false;
 
             InitDatabase();
             InitFiles();
@@ -48,6 +51,7 @@ namespace Blog.App_Start
             unityContainer.RegisterType<IFeedsService, FeedsService>();
             unityContainer.RegisterType<IBackupsService, BackupsService>();
             unityContainer.RegisterType<ISiteMapsService, SiteMapsService>();
+            unityContainer.RegisterType<ICaptchaService, CaptchaService>();
             unityContainer.RegisterInstance<ISettingsService>(new SettingsService());
             unityContainer.RegisterInstance<DbContext>(new DatabaseContext());
 

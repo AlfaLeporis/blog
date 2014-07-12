@@ -58,3 +58,4 @@ C:\Users\Paweł\Desktop\Blog\Blog\bin\Ionic.Zip.dll
 C:\Users\Paweł\Desktop\Blog\Blog\bin\Ionic.Zip.xml
 C:\Users\Paweł\Desktop\Blog\Blog\obj\Debug\Blog.Migrations.InitialCreate.resources
 C:\Users\Paweł\Desktop\Blog\Blog\obj\Debug\Blog.csproj.GenerateResource.Cache
+C:\Users\Paweł\Desktop\Blog\Blog\obj\Debug\Blog.csprojResolveAssemblyReference.cache

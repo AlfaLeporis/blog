@@ -170,5 +170,11 @@ namespace Blog.Services
             bool result = System.Web.Security.Membership.DeleteUser(user.Name);
             return result;
         }
+
+
+        public bool IsLogged()
+        {
+            return WebSecurity.IsAuthenticated;
+        }
     }
 }

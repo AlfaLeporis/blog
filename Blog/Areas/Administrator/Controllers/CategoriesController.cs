@@ -70,12 +70,5 @@ namespace Blog.Areas.Administrator.Controllers
 
             return RedirectToAction("Categories");
         }
-
-        public ActionResult PartialCategoriesList(int? selectedCategory)
-        {
-            var categories = _categoriesService.GetAll();
-            ViewBag.SelectedCategoryID = selectedCategory;
-            return PartialView("_CategoriesList", categories);
-        }
 	}
 }

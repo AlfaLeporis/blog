@@ -4,15 +4,23 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width" />
     <title>@ViewBag.SiteName :: @ViewBag.Title</title>
-    <meta name="description" content="@ViewBag.SiteDescription" />
+    @if(ViewBag.Description != null)
+    {
+        <meta name="description" content="@ViewBag.Description" />
+    }
+    else
+    {
+        <meta name="description" content="@ViewBag.SiteDescription" />
+    }
+    
     <meta name="author" content="@ViewBag.SiteAuthor" />
     <meta name="keywords" content="@ViewBag.SiteTags" />
     <meta name="generator" content="@ViewBag.CMSTitle">
     @Scripts.Render("~/bundles/jquery")
     @Scripts.Render("~/bundles/jqueryval")
     @Scripts.Render("~/bundles/custom-scripts")
-    @Styles.Render("~/Content/css")
     @Styles.Render("~/Content/bootstrap")
+    @Styles.Render("~/Content/css")
     @Scripts.Render("~/bundles/syntax")
     @Styles.Render("~/Content/syntax")
 
@@ -38,29 +46,37 @@
         <div class="alert alert-success custom-alert">@TempData.First(p => p.Key == "SuccessMsg").Value</div>
     }
 
-    <div id="site">
-        <div id="header-area">
-            @Html.Action("HeaderModule", "Modules")
-            <div id="menu-area">
-                @Html.Action("SitesModule", "Modules")
+    <div id="header">
+        <div id="header2">
+            <div id="logo">
+                @Html.Action("HeaderModule", "Modules")
             </div>
+            @Html.Action("SearchModule", "Modules")
         </div>
-        <div id="wrapper">
-            <div id="content">
-                @RenderBody()
-            </div>
-            <div id="right-col">
-                <div id="right-col-container">
-                    @Html.Action("SearchModule", "Modules")
+    </div>
 
-                    <div class="module">
-                        <div class="module-header">
-                            Menu
-                        </div>
+    <div id="menu">
+        <div id="menu2">
+            @Html.Action("SitesModule", "Modules")
+        </div>
+    </div>
 
+    <div id="main">
+        <div id="main2">
+            <div id="main3">
+                <div id="breadcrumbs">
+                    @Html.ActionLink("Home", "Index", "Home") >> <a href="@Request.Url.AbsoluteUri">@ViewBag.Title</a>
+                </div>
+                <div id="content">
+                    @RenderBody()
+                </div>
+
+                <div id="sidebar">
+                    <div class="box">
+                        <h2>Menu</h2>
                         <ul>
-                            <li class="btn btn-default"><span class="glyphicon glyphicon-search" style="margin: 0 10px 0 0;"></span>@Html.ActionLink("Pobierz w formacie ATOM", "GetArticlesATOM", "Home", null, null)</li>
-                            <li class="btn btn-default"><span class="glyphicon glyphicon glyphicon-book" style="margin: 0 10px 0 0;"></span>@Html.ActionLink("Mapa witryny XML", "GetSiteMap", "Home", null, null)</li>
+                            <li><span class="glyphicon glyphicon-search" style="margin: 0 10px 0 0;"></span>@Html.ActionLink("Pobierz w formacie ATOM", "GetArticlesATOM", "Home", null, null)</li>
+                            <li><span class="glyphicon glyphicon glyphicon-book" style="margin: 0 10px 0 0;"></span>@Html.ActionLink("Mapa witryny XML", "GetSiteMap", "Home", null, null)</li>
                         </ul>
                     </div>
 
@@ -69,44 +85,114 @@
                     @Html.Action("ArchiveModule", "Modules")
                     @Html.Action("CategoriesModule", "Modules")
 
-                    <div class="module">
-                        <div class="module-header">
-                            Strefa użytkownika
-                        </div>
-                        <div class="module-content">
-                            @if (!WebSecurity.IsAuthenticated)
+                    <div class="box">
+                        <h2>Strefa użytkownika</h2>
+                        @if (!WebSecurity.IsAuthenticated)
+                        {
+                            using (Html.BeginForm("Login", "Security", new { returnUrl = ViewBag.ReturnUrl }))
                             {
-                                using (Html.BeginForm("Login", "Security", new { returnUrl = ViewBag.ReturnUrl }))
-                                {
-                                    <p><input name="login" type="text" class="form-control" placeholder="nazwa użytkownika"></p>
-                                    <p><input name="password" type="password" class="form-control" placeholder="hasło"></p>
+                                <p><input name="login" type="text" class="form-control" style="width: 293px;" placeholder="nazwa użytkownika"></p>
+                                <p><input name="password" type="password" class="form-control" style="width: 293px;" placeholder="hasło"></p>
 
-                                    <p>
-                                        <input type="submit" value="Zaloguj" class="btn btn-primary btn-login" />
-                                        @Html.ActionLink("Zarejestruj", "Register", "Security", null, new { @class = "btn btn-primary btn-register" })
-                                    </p>
+                                <p>
+                                    <input type="submit" value="Zaloguj" class="btn btn-primary btn-login" />
+                                    @Html.ActionLink("Zarejestruj", "Register", "Security", null, new { @class = "btn btn-primary btn-register" })
+                                </p>
+                            }
+                        }
+                        else
+                        {
+                            <ul>
+                                @if(Roles.IsUserInRole("Administrator"))
+                                {
+                                    <li><span class="glyphicon glyphicon-briefcase" style="margin: 0 10px 0 0;"></span>@Html.ActionLink("Panel administratora", "Settings", "Settings", new { area = "Administrator" }, null)</li>
                                 }
-                            }
-                            else
-                            {
-                                <ul>
-                                    <li><a href="@Url.Action("EditAccount", "Security")" class="btn btn-default form-control"><span class="glyphicon glyphicon glyphicon-wrench" style="margin: 0 10px 0 0;"></span> Edycja konta</a></li>
-                                    <li><a href="@Url.Action("Logout", "Security")" class="btn btn-default form-control"><span class="glyphicon glyphicon glyphicon-new-window" style="margin: 0 10px 0 0;"></span> Wyloguj</a></li>
-                                </ul>
-                            }
-                        </div>
+                                <li><span class="glyphicon glyphicon glyphicon-wrench" style="margin: 0 10px 0 0;"></span>@Html.ActionLink("Edycja konta", "EditAccount", "Security")</li>
+                                <li><span class="glyphicon glyphicon glyphicon-new-window" style="margin: 0 10px 0 0;"></span>@Html.ActionLink("Wyloguj", "Logout", "Security")</li>
+                            </ul>
+                        }
                     </div>
                 </div>
+                <div class="clearing">&nbsp;</div>
             </div>
-
-            <div id="footer">
-                @ViewBag.CMSTitle v@{@ViewBag.CMSVersion} - @ViewBag.Copyright
-            </div>
-
-            <div style="clear:both;"></div>
+        </div>
+    </div>
+    <div id="footer">
+        <div id="footer2">
+            <p>@ViewBag.CMSTitle v@{@ViewBag.CMSVersion} - @ViewBag.Copyright | Zmodyfikowany szablon "probablity" autorstwa <a href="http://www.alphastudio.pl/">Alpha Studio</a></p>
         </div>
     </div>
 
-    <script>SyntaxHighlighter.all()</script>
+                    @*<div id="site">
+                <div id="header-area">
+
+                    <div id="menu-area">
+                        @Html.Action("SitesModule", "Modules")
+                    </div>
+                </div>
+                <div id="wrapper">
+                    <div id="content">
+                        @RenderBody()
+                    </div>
+                    <div id="right-col">
+                        <div id="right-col-container">
+
+
+                            <div class="module">
+                                <div class="module-header">
+                                    Menu
+                                </div>
+
+                                <ul>
+                                    
+                                </ul>
+                            </div>
+
+                            @Html.Action("RecentCommentsModule", "Modules")
+                            @Html.Action("TagsModule", "Modules")
+                            @Html.Action("ArchiveModule", "Modules")
+                            @Html.Action("CategoriesModule", "Modules")
+
+                            <div class="module">
+                                <div class="module-header">
+                                    Strefa użytkownika
+                                </div>
+                                <div class="module-content">
+                                    @if (!WebSecurity.IsAuthenticated)
+                                    {
+                                        using (Html.BeginForm("Login", "Security", new { returnUrl = ViewBag.ReturnUrl }))
+                                        {
+                                            <p><input name="login" type="text" class="form-control" placeholder="nazwa użytkownika"></p>
+                                            <p><input name="password" type="password" class="form-control" placeholder="hasło"></p>
+
+                                            <p>
+                                                <input type="submit" value="Zaloguj" class="btn btn-primary btn-login" />
+                                                @Html.ActionLink("Zarejestruj", "Register", "Security", null, new { @class = "btn btn-primary btn-register" })
+                                            </p>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <ul>
+                                            <li><a href="@Url.Action("EditAccount", "Security")" class="btn btn-default form-control"><span class="glyphicon glyphicon glyphicon-wrench" style="margin: 0 10px 0 0;"></span> Edycja konta</a></li>
+                                            <li><a href="@Url.Action("Logout", "Security")" class="btn btn-default form-control"><span class="glyphicon glyphicon glyphicon-new-window" style="margin: 0 10px 0 0;"></span> Wyloguj</a></li>
+                                        </ul>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="footer">
+                        
+                    </div>
+
+                    <div style="clear:both;"></div>
+                </div>
+            </div>
+
+            <script>SyntaxHighlighter.all()</script>*@
+<script>SyntaxHighlighter.all()</script>
+
 </body>
 </html>

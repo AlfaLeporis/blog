@@ -21,6 +21,6 @@ namespace Blog.ViewModels
 
         public String AuthorName { get; set; }
 
-        public CommentTarget Target { get; set; }
+        public TargetType Target { get; set; }
     }
 }

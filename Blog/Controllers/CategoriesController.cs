@@ -7,6 +7,7 @@ using Microsoft.Practices.Unity;
 using Blog.ViewModels;
 using Blog.Services;
 using Blog.Infrastructure;
+using Blog.Filters;
 
 namespace Blog.Controllers
 {
@@ -35,8 +36,13 @@ namespace Blog.Controllers
             if (articles == null)
                 throw new Exception("Podana kategoria (" + id + ") nie istnieje.");
 
+            int totalItems = PaginationSystem.GetPagesCount(pagination.TotalItems, pageSize);
+
             ViewBag.PaginationCurrent = page.Value;
-            ViewBag.PaginationTotal = PaginationSystem.GetPagesCount(pagination.TotalItems, pageSize);
+            ViewBag.PaginationTotal = totalItems;
+
+            if (page.Value > totalItems)
+                throw new Exception("Podany numer strony nie istnieje.");
 
             var viewModel = new CategoriesSiteViewModel()
             {

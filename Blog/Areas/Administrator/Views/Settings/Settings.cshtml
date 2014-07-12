@@ -49,6 +49,9 @@
             
             <div class="settings-group"><span class="settings-label">Elementów na stronę:</span> @Html.TextBoxFor(p => p.Settings.ItemsPerPage, new { @class = "form-control settings-control" })</div>
             @Html.ValidationMessageFor(p => p.Settings.ItemsPerPage, null, new { @class = "validation-message" })
+
+            <div class="settings-group"><span class="settings-label">Maks. liczba wersji:</span> @Html.TextBoxFor(p => p.Settings.VersionsCount, new { @class = "form-control settings-control" })</div>
+            @Html.ValidationMessageFor(p => p.Settings.VersionsCount, null, new { @class = "validation-message" })
         
          </fieldset>
     </div>
@@ -84,7 +87,32 @@
 
         </fieldset>
     </div>
-    
+
+    <div class="right-col">
+        <fieldset class="settings-fieldset">
+            <legend>CAPTCHA</legend>
+
+            <div class="settings-group">
+                <span class="settings-label">Użyj SSL:</span>
+                <div class="btn-group" data-toggle="buttons">
+                    <label class="btn btn-success radio-button">
+                        @Html.RadioButtonFor(Model => Model.Settings.UseCaptcha, true) Opublikowana
+                    </label>
+                    <label class="btn btn-danger radio-button">
+                        @Html.RadioButtonFor(Model => Model.Settings.UseCaptcha, false) Prywatna
+                    </label>
+                </div>
+            </div>
+            @Html.ValidationMessageFor(p => p.Settings.UseCaptcha, null, new { @class = "validation-message" })
+
+            <div class="settings-group"><span class="settings-label">Klucz publiczny:</span> @Html.TextBoxFor(p => p.Settings.CaptchaPublicKey, new { @class = "form-control settings-control" })</div>
+            @Html.ValidationMessageFor(p => p.Settings.CaptchaPublicKey, null, new { @class = "validation-message" })
+
+            <div class="settings-group"><span class="settings-label">Klucz prywatny:</span> @Html.TextBoxFor(p => p.Settings.CaptchaPrivateKey, new { @class = "form-control settings-control" })</div>
+            @Html.ValidationMessageFor(p => p.Settings.CaptchaPrivateKey, null, new { @class = "validation-message" })
+        </fieldset>
+    </div>
+
     <div class="clearfix"></div>
 
     <input type="submit" class="btn btn-primary btn-settings" value="Zapisz" />

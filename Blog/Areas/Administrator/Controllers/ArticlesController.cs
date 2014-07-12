@@ -25,10 +25,11 @@ namespace Blog.Areas.Administrator.Controllers
         }
 
         [HttpGet]
-        public ActionResult Articles()
+        public ActionResult Articles(bool? showRemoved)
         {
             PaginationSettings pagination = null;
-            var articles = _articlesService.GetAll(false, ref pagination);
+            var settings = new ArticleSiteAccessSettings(showRemoved.HasValue ? showRemoved.Value : false, false, false);
+            var articles = _articlesService.GetAll(false, settings, ref pagination);
             return View(articles);
         }
 
@@ -70,7 +71,13 @@ namespace Blog.Areas.Administrator.Controllers
 
             if (result)
             {
-                return RedirectToAction("Articles");
+                if (Request.Form.AllKeys.Any(p => p == "save-and-exit"))
+                    return RedirectToAction("Articles");
+                else
+                {
+                    var articleID = viewModel.Parent == null ? viewModel.ID : viewModel.Parent;
+                    return RedirectToAction("EditArticle", new { id = articleID });
+                }
             }
             else
             {
@@ -100,6 +107,16 @@ namespace Blog.Areas.Administrator.Controllers
                 throw new Exception("Błąd w czasie próby zmiany statusu artykułu (" + id + ")");
 
             return RedirectToAction("Articles");
+        }
+
+        [HttpGet]
+        public ActionResult RestoreArticle(int id)
+        {
+            var article = _articlesService.Get(id, false);
+            article.IsRemoved = false;
+            _articlesService.Edit(article);
+
+            return RedirectToAction("Articles", new { showRemoved = "true" });
         }
 	}
 }

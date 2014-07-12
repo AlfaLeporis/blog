@@ -18,5 +18,7 @@ namespace Blog.Models
         public DateTime LastUpdateDate { get; set; }
         public bool IsPublished { get; set; }
         public bool IsRemoved { get; set; }
+        public int Version { get; set; }
+        public int? Parent { get; set; }
     }
 }

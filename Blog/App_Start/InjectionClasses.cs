@@ -19,4 +19,19 @@ namespace Blog.App_Start
                    || snt == tnt;
         }
     }
+
+    public class IgnoreProperties : LoopValueInjection
+    {
+        private string[] ignoreProperties;
+       
+        public IgnoreProperties(params string[] ignore)
+        {
+            ignoreProperties = ignore;
+        }
+
+        protected override bool UseSourceProp(string sourcePropName)
+        {
+            return !ignoreProperties.Contains(sourcePropName);
+        }
+    }
 }

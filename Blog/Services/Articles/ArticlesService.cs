@@ -17,6 +17,7 @@ namespace Blog.Services
         private ITagsService _tagsService = null;
         private ICategoriesService _categoriesService = null;
         private ICommentsService _commentsService = null;
+        private ISettingsService _settingsService = null;
         private DbContext _db = null;
 
         private const String _readMoreTag = "<!--more-->";
@@ -24,17 +25,24 @@ namespace Blog.Services
         public ArticlesService(ITagsService tagsService,
                                ICategoriesService categoriesService,
                                ICommentsService commentsService,
+                               ISettingsService settingsService,
                                DbContext databaseContext)
         {
             _tagsService = tagsService;
             _categoriesService = categoriesService;
             _commentsService = commentsService;
+            _settingsService = settingsService;
             _db = databaseContext;
         }
 
         public bool Add(ViewModels.ArticleViewModel viewModel)
         {
-            if (_db.Set<ArticleModel>().Any(p => p.Alias == viewModel.Alias && !p.IsRemoved))
+            return Add(viewModel, 1, null);
+        }
+
+        public bool Add(ViewModels.ArticleViewModel viewModel, int version, int? parent)
+        {
+            if (parent == null && _db.Set<ArticleModel>().Any(p => p.Alias == viewModel.Alias && !p.IsRemoved))
                 return false;
 
             var model = new ArticleModel();
@@ -42,8 +50,13 @@ namespace Blog.Services
             model.LastUpdateDate = DateTime.Now;
             model.IsRemoved = false;
 
+            model.Version = version;
+            model.Parent = parent;
+
             _db.Set<ArticleModel>().Add(model);
             _db.SaveChanges();
+
+            viewModel.ID = model.ID;
 
             _tagsService.Parse(viewModel.TagsString, model.ID);
 
@@ -73,8 +86,8 @@ namespace Blog.Services
             viewModel.CategoryName = category.Title;
             viewModel.CategoryAlias = category.Alias;
             viewModel.IsReadMode = shortVersion;
-            viewModel.Comments = _commentsService.GetByTargetID(model.ID, Models.CommentTarget.Article);
             viewModel.CommentsView = !shortVersion;
+            viewModel.CommentsCount = _commentsService.GetCommentsCountByTargetID(model.ID, TargetType.Article);
 
             if (shortVersion)
             {
@@ -102,14 +115,21 @@ namespace Blog.Services
             return viewModel;
         }
 
-        public List<ViewModels.ArticleViewModel> GetAll(bool shortVersion, ref PaginationSettings pagination)
+        public List<ViewModels.ArticleViewModel> GetAll(bool shortVersion, ArticleSiteAccessSettings settings, ref PaginationSettings pagination)
         {
-            if (pagination != null)
-                pagination.TotalItems = _db.Set<ArticleModel>().Where(p => !p.IsRemoved).Count();
+            IQueryable<ArticleModel> queryable = _db.Set<ArticleModel>();
+            if (settings.Published)
+                queryable = queryable.Where(p => p.IsPublished);
+            if (!settings.Removed)
+                queryable = queryable.Where(p => !p.IsRemoved);
+            if (!settings.WithParent)
+                queryable = queryable.Where(p => p.Parent == null);
 
-            var models = _db.Set<ArticleModel>()
-                .Where(p => !p.IsRemoved)
-                .OrderBy(p => p.ID)
+            if (pagination != null)
+                pagination.TotalItems = queryable.Count();
+
+            var models = queryable
+                .OrderByDescending(p => p.PublishDate)
                 .Paginate(pagination)
                 .ToList();
             var viewModels = new List<ArticleViewModel>();
@@ -119,7 +139,7 @@ namespace Blog.Services
                 viewModels.Add(ConvertModel(models[i], shortVersion));
             }
 
-            return viewModels.OrderByDescending(p => p.PublishDate).ToList();
+            return viewModels.ToList();
         }
 
         public List<ViewModels.ArticleViewModel> GetByTagName(String tag, bool shortVersion, ref PaginationSettings pagination)
@@ -155,12 +175,38 @@ namespace Blog.Services
 
         public bool Edit(ViewModels.ArticleViewModel viewModel)
         {
-            var model = _db.Set<ArticleModel>().FirstOrDefault(p => p.ID == viewModel.ID);
-
+            var model = _db.Set<ArticleModel>().FirstOrDefault(p => (p.ID == viewModel.ID || p.ID == viewModel.Parent) 
+                                                                                          && p.Parent == null);
+            var lastVersion = _db.Set<ArticleModel>().Where(p => p.Parent == model.ID)
+                                                     .OrderByDescending(p => p.Version)
+                                                     .FirstOrDefault();
             if (model == null)
                 return false;
 
-            model.InjectFrom<CustomInjection>(viewModel);
+            int version = 0;
+            if (lastVersion != null)
+                version = lastVersion.Version + 1;
+            else
+                version = 1;
+
+            var parentViewModel = ConvertModel(model, false);
+            Add(parentViewModel, version, model.ID);
+
+            var maxVersions = _settingsService.GetSettings().VersionsCount;
+            var versionsList = _db.Set<ArticleModel>().Where(p => p.Parent == model.ID).OrderBy(p => p.Version);
+            var versionsCount = versionsList.Count();
+
+            if(versionsCount > maxVersions)
+            {
+                var versionsToRemove = versionsList.Take(versionsCount - maxVersions).ToList();
+                for(int i=0; i<versionsToRemove.Count(); i++)
+                {
+                    versionsToRemove[i].Content = "";
+                    versionsToRemove[i].IsRemoved = true;
+                }
+            }
+
+            model.InjectFrom(new IgnoreProperties("ID", "Version", "Parent"), viewModel);
             model.LastUpdateDate = DateTime.Now;
 
             _db.SaveChanges();
@@ -190,13 +236,14 @@ namespace Blog.Services
             if (categoryID == -1)
                 return null;
 
+            var queryable = _db.Set<ArticleModel>().Where(p => p.CategoryID == categoryID && p.IsPublished && !p.IsRemoved && p.Parent == null);
+
             if (pagination != null)
-                pagination.TotalItems = _db.Set<ArticleModel>().Where(p => p.CategoryID == categoryID).Where(p => !p.IsRemoved).Count();
+                pagination.TotalItems = queryable.Count();
 
             var articleViewModels = new List<ArticleViewModel>();
-            var articlesID = _db.Set<ArticleModel>()
-                .Where(p => p.CategoryID == categoryID && !p.IsRemoved)
-                .OrderBy(p => p.ID)
+            var articlesID = queryable
+                .OrderByDescending(p => p.PublishDate)
                 .Paginate(pagination).ToList();
 
             for (int i = 0; i < articlesID.Count; i++)
@@ -204,7 +251,7 @@ namespace Blog.Services
                 articleViewModels.Add(ConvertModel(articlesID[i], shortVersion));
             }
 
-            return articleViewModels.OrderByDescending(p => p.PublishDate).ToList();
+            return articleViewModels.ToList();
         }
 
 
@@ -213,30 +260,40 @@ namespace Blog.Services
             int year = Convert.ToInt32(date.Substring(0, 4));
             int month = Convert.ToInt32(date.Substring(4, 2));
 
-            if (pagination != null)
-                pagination.TotalItems = _db.Set<ArticleModel>().Where(
-                    p => !p.IsRemoved && 
-                    p.PublishDate.Month == month && 
-                    p.PublishDate.Year == year)
-                    .Count();
+            var queryable = _db.Set<ArticleModel>().Where(p => !p.IsRemoved && p.IsPublished && 
+                                                          p.PublishDate.Month == month && p.PublishDate.Year == year &&
+                                                          p.Parent == null);
 
-            var articles = _db.Set<ArticleModel>()
-                .Where(p => 
-                    !p.IsRemoved && 
-                    p.PublishDate.Month == month && 
-                    p.PublishDate.Year == year)
-                .OrderBy(p => p.ID)
+            if (pagination != null)
+                pagination.TotalItems = queryable.Count();
+
+            var articles = queryable
+                .OrderByDescending(p => p.PublishDate)
                 .Paginate(pagination)
                 .ToList();
+
             var viewModel = new List<ArticleViewModel>();
-            
             for (int i = 0; i < articles.Count; i++)
             {
                 var simpleArticle = ConvertModel(articles[i], true);
                 viewModel.Add(simpleArticle);
             }
 
-            return viewModel.OrderByDescending(p => p.PublishDate).ToList();
+            return viewModel.ToList();
+        }
+
+
+        public List<ArticleViewModel> GetVersionsByID(int articleID)
+        {
+            var viewModel = new List<ArticleViewModel>();
+            var articleVersions = _db.Set<ArticleModel>().Where(p => p.Parent == articleID && !p.IsRemoved).ToList();
+
+            for(int i=0; i<articleVersions.Count; i++)
+            {
+                viewModel.Add(ConvertModel(articleVersions[i], false));
+            }
+
+            return viewModel;
         }
     }
 }

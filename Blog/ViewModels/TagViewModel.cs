@@ -9,6 +9,7 @@ namespace Blog.ViewModels
     {
         public int? ID { get; set; }
         public int ArticleID { get; set; }
+
         public String Name { get; set; }
     }
 }

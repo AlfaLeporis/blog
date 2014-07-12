@@ -6,7 +6,7 @@
 }
 
 <div class="article">
-    @using (Html.BeginForm("Register", "Security", new { returnUrl = ViewBag.ReturnUrl }))
+    @using (Ajax.BeginForm("Register", "Security", new { returnUrl = ViewBag.ReturnUrl }, new AjaxOptions() { UpdateTargetId = "validation-message" }))
     {
         <div class="form-group">
             <label for="inputEmail">Nazwa użytkownika</label>
@@ -45,5 +45,7 @@
         </div>
 
         <button type="submit" class="btn btn-primary register-button">Zarejestruj!</button>
+        <div style="float: right;">@Html.Action("Captcha", "Modules")</div>
+        <div id="validation-message"></div>
     }
 </div>

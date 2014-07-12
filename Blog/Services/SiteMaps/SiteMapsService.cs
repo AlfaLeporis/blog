@@ -47,12 +47,12 @@ namespace Blog.Services
         private void AddArticlesToNode(XmlDocument document, XmlElement urlSet)
         {
             PaginationSettings pagination = null;
-            var articles = _articlesService.GetAll(false, ref pagination);
+            var articles = _articlesService.GetAll(false, new ArticleSiteAccessSettings(false, true, false), ref pagination);
           
             for(int i=0; i<articles.Count; i++)
             {
                 var url = document.CreateElement("url");
-                url.AppendChild(CreateNode(document, "loc", GetBaseUrl() + "Article/" + articles[i].Alias));
+                url.AppendChild(CreateNode(document, "loc", GetBaseUrl() + "Artykuł/" + articles[i].Alias));
                 url.AppendChild(CreateNode(document, "lastmod", articles[i].LastUpdateDate.ToShortDateString()));
                 url.AppendChild(CreateNode(document, "changefreq", "always"));
                 url.AppendChild(CreateNode(document, "priority", "1.0"));
@@ -64,12 +64,12 @@ namespace Blog.Services
         private void AddSitesToNode(XmlDocument document, XmlElement urlSet)
         {
             PaginationSettings pagination = null;
-            var sites = _sitesService.GetAll(ref pagination);
+            var sites = _sitesService.GetAll(new ArticleSiteAccessSettings(false, true, false), ref pagination);
 
             for (int i = 0; i < sites.Count; i++)
             {
                 var url = document.CreateElement("url");
-                url.AppendChild(CreateNode(document, "loc", GetBaseUrl() + "Site/" + sites[i].Alias));
+                url.AppendChild(CreateNode(document, "loc", GetBaseUrl() + "Strona/" + sites[i].Alias));
                 url.AppendChild(CreateNode(document, "lastmod", sites[i].LastUpdateDate.ToShortDateString()));
                 url.AppendChild(CreateNode(document, "changefreq", "always"));
                 url.AppendChild(CreateNode(document, "priority", "1.0"));
@@ -88,7 +88,7 @@ namespace Blog.Services
                 var articles = _articlesService.GetByCategoryAlias(categories[i].Alias, false, ref pagination);
 
                 var url = document.CreateElement("url");
-                url.AppendChild(CreateNode(document, "loc", GetBaseUrl() + "Category/" + categories[i].Alias));
+                url.AppendChild(CreateNode(document, "loc", GetBaseUrl() + "Kategoria/" + categories[i].Alias));
                 url.AppendChild(CreateNode(document, "lastmod", 
                     articles.Count != 0 ? articles.Max(p => p.LastUpdateDate).ToShortDateString() : DateTime.MinValue.ToShortDateString()
                     ));

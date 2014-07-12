@@ -30,28 +30,64 @@ namespace Blog.Services
 
         public bool Add(SiteViewModel viewModel)
         {
-            if (_db.Set<SiteModel>().Any(p => p.Alias == viewModel.Alias && !p.IsRemoved))
+            return Add(viewModel, 1, null);
+        }
+
+        public bool Add(SiteViewModel viewModel, int version, int? parent)
+        {
+            if (parent == null && _db.Set<SiteModel>().Any(p => p.Alias == viewModel.Alias && !p.IsRemoved))
                 return false;
 
             var model = new SiteModel();
             model.InjectFrom<CustomInjection>(viewModel);
             model.LastUpdateDate = DateTime.Now;
 
+            model.Version = version;
+            model.Parent = parent;
+
             _db.Set<SiteModel>().Add(model);
             _db.SaveChanges();
+
+            viewModel.ID = model.ID;
 
             return true;
         }
 
         public bool Edit(SiteViewModel viewModel)
         {
-            var model = _db.Set<SiteModel>().FirstOrDefault(p => p.ID == viewModel.ID);
-
+            var model = _db.Set<SiteModel>().FirstOrDefault(p => (p.ID == viewModel.ID || p.ID == viewModel.Parent)
+                                                                                          && p.Parent == null);
+            var lastVersion = _db.Set<SiteModel>().Where(p => p.Parent == model.ID)
+                                                     .OrderByDescending(p => p.Version)
+                                                     .FirstOrDefault();
             if (model == null)
                 return false;
 
-            model.LastUpdateDate = DateTime.Now;
-            model.InjectFrom<CustomInjection>(viewModel);
+            int version = 0;
+            if (lastVersion != null)
+                version = lastVersion.Version + 1;
+            else
+                version = 1;
+
+            var parentViewModel = ConvertModel(model);
+            Add(parentViewModel, version, model.ID);
+
+            var maxVersions = _settingsService.GetSettings().VersionsCount;
+            var versionsList = _db.Set<SiteModel>().Where(p => p.Parent == model.ID).OrderBy(p => p.Version);
+            var versionsCount = versionsList.Count();
+
+            if (versionsCount > maxVersions)
+            {
+                var versionsToRemove = versionsList.Take(versionsCount - maxVersions).ToList();
+                for (int i = 0; i < versionsToRemove.Count(); i++)
+                {
+                    versionsToRemove[i].Content = "";
+                    versionsToRemove[i].IsRemoved = true;
+                }
+            }
+
+            model.InjectFrom(new IgnoreProperties("ID", "Version", "Parent"), viewModel);
+            model.LastUpdateDate = DateTime.Now;        
 
             _db.SaveChanges();
 
@@ -102,22 +138,29 @@ namespace Blog.Services
         {
             var viewModel = new SiteViewModel();
             viewModel.InjectFrom<CustomInjection>(model);
-            viewModel.Comments = _commentsService.GetByTargetID(model.ID, CommentTarget.Site);
             viewModel.IsReadMore = false;
 
             return viewModel;
         }
 
-        public List<SiteViewModel> GetAll(ref PaginationSettings pagination)
+        public List<SiteViewModel> GetAll(ArticleSiteAccessSettings settings, ref PaginationSettings pagination)
         {
-            if (pagination != null)
-                pagination.TotalItems = _db.Set<ArticleModel>().Where(p => !p.IsRemoved).Count();
+            IQueryable<SiteModel> queryable = _db.Set<SiteModel>();
+            if (settings.Published)
+                queryable = queryable.Where(p => p.IsPublished);
+            if (!settings.Removed)
+                queryable = queryable.Where(p => !p.IsRemoved);
+            if (!settings.WithParent)
+                queryable = queryable.Where(p => p.Parent == null);
 
-            var sites = _db.Set<SiteModel>()
-                .Where(p => !p.IsRemoved)
+            if (pagination != null)
+                pagination.TotalItems = queryable.Count();
+
+            var sites = queryable
                 .OrderBy(p => p.ID)
                 .Paginate(pagination)
                 .ToList();
+
             var viewModels = new List<SiteViewModel>();
 
             for (int i = 0; i < sites.Count; i++)
@@ -151,6 +194,19 @@ namespace Blog.Services
                 return null;
 
             var viewModel = ConvertModel(site);
+
+            return viewModel;
+        }
+
+        public List<SiteViewModel> GetVersionsByID(int siteID)
+        {
+            var viewModel = new List<SiteViewModel>();
+            var siteVersions = _db.Set<SiteModel>().Where(p => p.Parent == siteID && !p.IsRemoved).ToList();
+
+            for (int i = 0; i < siteVersions.Count; i++)
+            {
+                viewModel.Add(ConvertModel(siteVersions[i]));
+            }
 
             return viewModel;
         }

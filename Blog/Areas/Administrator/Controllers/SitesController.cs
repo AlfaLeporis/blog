@@ -21,10 +21,11 @@ namespace Blog.Areas.Administrator.Controllers
         }
 
         [HttpGet]
-        public ActionResult Sites()
+        public ActionResult Sites(bool? showRemoved)
         {
             PaginationSettings pagination = null;
-            var viewModel = _sitesService.GetAll(ref pagination);
+            var settings = new ArticleSiteAccessSettings(showRemoved.HasValue ? showRemoved.Value : false, false, false);
+            var viewModel = _sitesService.GetAll(settings, ref pagination);
             return View(viewModel);
         }
 
@@ -58,7 +59,13 @@ namespace Blog.Areas.Administrator.Controllers
 
             if (result)
             {
-                return RedirectToAction("Sites");
+                if (Request.Form.AllKeys.Any(p => p == "save-and-exit"))
+                    return RedirectToAction("Sites");
+                else
+                {
+                    var articleID = viewModel.Parent == null ? viewModel.ID : viewModel.Parent;
+                    return RedirectToAction("EditSite", new { id = articleID });
+                }
             }
             else
             {
@@ -88,6 +95,16 @@ namespace Blog.Areas.Administrator.Controllers
                 throw new Exception("Usunięcie komentarza (" + id + ") nie powiodła się.");
 
             return RedirectToAction("Sites");
+        }
+
+        [HttpGet]
+        public ActionResult RestoreSite(int id)
+        {
+            var site = _sitesService.Get(id, false);
+            site.IsRemoved = false;
+            _sitesService.Edit(site);
+
+            return RedirectToAction("Sites", new { showRemoved = "true" });
         }
 	}
 }

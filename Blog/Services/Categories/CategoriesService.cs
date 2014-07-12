@@ -114,7 +114,8 @@ namespace Blog.Services
 
                 var categoryID = categories[i].ID;
                     
-                var count = _db.Set<ArticleModel>().Count(p => p.CategoryID == categoryID);
+                var count = _db.Set<ArticleModel>().Count(p => p.CategoryID == categoryID && 
+                                                          p.IsPublished && !p.IsRemoved && p.Parent == null);
                 vm.Count = count;
 
                 viewModel.Add(vm);

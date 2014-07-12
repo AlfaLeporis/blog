@@ -257,9 +257,9 @@ th {
   }
 }
 * {
-  -webkit-box-sizing: border-box;
+  /*-webkit-box-sizing: border-box;
      -moz-box-sizing: border-box;
-          box-sizing: border-box;
+          box-sizing: border-box;*/
 }
 *:before,
 *:after {
@@ -4144,9 +4144,9 @@ select[multiple].input-group-sm > .input-group-btn > .btn {
   padding: 6px 12px;
   margin-left: -1px;
   line-height: 1.42857143;
-  color: #428bca;
+  color: green;
   text-decoration: none;
-  background-color: #fff;
+  background-color: none;
   border: 1px solid #ddd;
 }
 .pagination > li:first-child > a,
@@ -4177,7 +4177,7 @@ select[multiple].input-group-sm > .input-group-btn > .btn {
   z-index: 2;
   color: #fff;
   cursor: default;
-  background-color: #428bca;
+  background-color: rgb(111, 141, 51);
   border-color: #428bca;
 }
 .pagination > .disabled > span,
@@ -4188,7 +4188,7 @@ select[multiple].input-group-sm > .input-group-btn > .btn {
 .pagination > .disabled > a:focus {
   color: #999;
   cursor: not-allowed;
-  background-color: #fff;
+  background-color: none;
   border-color: #ddd;
 }
 .pagination-lg > li > a,

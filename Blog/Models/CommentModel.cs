@@ -5,7 +5,7 @@ using System.Web;
 
 namespace Blog.Models
 {
-    public enum CommentTarget
+    public enum TargetType
     {
         Article = 1,
         Site = 2
@@ -18,7 +18,8 @@ namespace Blog.Models
         public int ArticleID { get; set; }
         public DateTime PublishDate { get; set; }
         public String Content { get; set; }
-        public CommentTarget Target { get; set; }
+        public TargetType Target { get; set; }
         public bool IsRemoved { get; set; }
+        public String AuthorName { get; set; }
     }
 }

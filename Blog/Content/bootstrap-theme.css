@@ -56,31 +56,16 @@
   border-color: #dbdbdb;
 }
 .btn-primary {
-    border-color: black!important;
-    background: rgb(0,33,78); /* Old browsers */
-    background: -moz-linear-gradient(top, rgba(0,33,78,1) 0%, rgba(0,50,132,1) 50%, rgba(0,33,78,1) 100%); /* FF3.6+ */
-    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(0,33,78,1)), color-stop(50%,rgba(0,50,132,1)), color-stop(100%,rgba(0,33,78,1))); /* Chrome,Safari4+ */
-    background: -webkit-linear-gradient(top, rgba(0,33,78,1) 0%,rgba(0,50,132,1) 50%,rgba(0,33,78,1) 100%); /* Chrome10+,Safari5.1+ */
-    background: -o-linear-gradient(top, rgba(0,33,78,1) 0%,rgba(0,50,132,1) 50%,rgba(0,33,78,1) 100%); /* Opera 11.10+ */
-    background: -ms-linear-gradient(top, rgba(0,33,78,1) 0%,rgba(0,50,132,1) 50%,rgba(0,33,78,1) 100%); /* IE10+ */
-    background: linear-gradient(to bottom, rgba(0,33,78,1) 0%,rgba(0,50,132,1) 50%,rgba(0,33,78,1) 100%); /* W3C */
-    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#00214e', endColorstr='#00214e',GradientType=0 ); /* IE6-9 */
+    border: none!important;
+    background: rgb(131, 157, 79);
 }
 .btn-primary:hover,
 .btn-primary:focus {
-    background: rgb(0,110,201); /* Old browsers */
-    background: -moz-linear-gradient(top, rgba(0,110,201,1) 41%, rgba(0,88,160,1) 97%); /* FF3.6+ */
-    background: -webkit-gradient(linear, left top, left bottom, color-stop(41%,rgba(0,110,201,1)), color-stop(97%,rgba(0,88,160,1))); /* Chrome,Safari4+ */
-    background: -webkit-linear-gradient(top, rgba(0,110,201,1) 41%,rgba(0,88,160,1) 97%); /* Chrome10+,Safari5.1+ */
-    background: -o-linear-gradient(top, rgba(0,110,201,1) 41%,rgba(0,88,160,1) 97%); /* Opera 11.10+ */
-    background: -ms-linear-gradient(top, rgba(0,110,201,1) 41%,rgba(0,88,160,1) 97%); /* IE10+ */
-    background: linear-gradient(to bottom, rgba(0,110,201,1) 41%,rgba(0,88,160,1) 97%); /* W3C */
-    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#006ec9', endColorstr='#0058a0',GradientType=0 ); /* IE6-9 */
+    background: rgb(111, 137, 59);
 }
 .btn-primary:active,
 .btn-primary.active {
-  background-color: #2d6ca2;
-  border-color: #2b669a;
+  background: rgb(91, 117, 39);
 }
 .btn-success {
   background-image: -webkit-linear-gradient(top, #5cb85c 0%, #419641 100%);

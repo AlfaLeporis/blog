@@ -47,21 +47,21 @@ namespace Blog.Controllers
 
         public ActionResult TagsModule()
         {
-var viewModel = _tagsService.GetMostPopularTags(_settingsService.GetSettings().TagsCount);
+            var viewModel = _tagsService.GetMostPopularTags(_settingsService.GetSettings().TagsCount);
 
-float delta = _maxTagSize - _minTagSize;
-int maxCount = viewModel.Count == 0 ? 0 : viewModel.Max(p => p.Count);
-int minCount = viewModel.Count == 0 ? 0 : viewModel.Min(p => p.Count);
+            float delta = _maxTagSize - _minTagSize;
+            int maxCount = viewModel.Count == 0 ? 0 : viewModel.Max(p => p.Count);
+            int minCount = viewModel.Count == 0 ? 0 : viewModel.Min(p => p.Count);
 
-for (int i = 0; i < viewModel.Count; i++)
-{
-    float deltaSize = (100 * viewModel[i].Count) / maxCount;
-    deltaSize *= delta / 100;
+            for (int i = 0; i < viewModel.Count; i++)
+            {
+                float deltaSize = (100 * viewModel[i].Count) / maxCount;
+                deltaSize *= delta / 100;
 
-    viewModel[i].Size = _minTagSize + deltaSize;
-}
+                viewModel[i].Size = _minTagSize + deltaSize;
+            }
 
-return PartialView("_TagsModule", viewModel);
+            return PartialView("_TagsModule", viewModel);
         }
 
         public ActionResult CategoriesModule()
@@ -72,7 +72,7 @@ return PartialView("_TagsModule", viewModel);
         public ActionResult SitesModule()
         {
             PaginationSettings pagination = null;
-            var viewModel = _sitesService.GetAll(ref pagination).
+            var viewModel = _sitesService.GetAll(new ArticleSiteAccessSettings(false, true, false), ref pagination).
                 Select(p => new SitesModuleViewModel() { Title = p.Title, Alias = p.Alias }).
                 ToList();
             return PartialView("_SitesModule", viewModel);
@@ -132,7 +132,7 @@ return PartialView("_TagsModule", viewModel);
         public ActionResult ArchiveModule()
         {
             PaginationSettings pagination = null;
-            var articles = _articlesService.GetAll(false, ref pagination);
+            var articles = _articlesService.GetAll(false, new ArticleSiteAccessSettings(false, true, false), ref pagination).Where(p => p.IsPublished).ToList();
             var viewModel = new List<ArchiveModuleViewModel>();
 
             for (int i = 0; i < articles.Count; i++)
@@ -155,6 +155,28 @@ return PartialView("_TagsModule", viewModel);
             }
 
             return PartialView("_ArchiveModule", viewModel);
+        }
+
+        public ActionResult Captcha()
+        {
+            var useCaptcha = _settingsService.GetSettings().UseCaptcha;
+            if (!useCaptcha)
+                return PartialView("_Captcha", String.Empty);
+
+            var publicKey = _settingsService.GetSettings().CaptchaPublicKey;
+            return PartialView("_Captcha", publicKey);
+        }
+
+        public ActionResult Comments(int id, Models.TargetType target)
+        {
+            var viewModel = new CommentsModuleViewModel();
+            viewModel.Target = target;
+            viewModel.TargetID = id;
+
+            var comments = _commentsService.GetByTargetID(id, target);
+            viewModel.Comments = comments;
+
+            return PartialView("_Comments", viewModel);
         }
 	}
 }

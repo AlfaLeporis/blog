@@ -31,14 +31,14 @@ namespace Blog.Services
 
             PaginationSettings pagination = null;
 
-            var sitesIDs = _sitesService.GetAll(ref pagination).Where(p => 
+            var sitesIDs = _sitesService.GetAll(new ArticleSiteAccessSettings(false, true, false), ref pagination).Where(p => 
                 p.Content.Contains(phrase) || 
                 p.Title.Contains(phrase) || 
                 p.Alias.Contains(phrase))
                 .Select(p => p.ID.Value)
                 .ToList();
 
-            var articlesIDs = _articlesService.GetAll(true, ref pagination).Where(p =>
+            var articlesIDs = _articlesService.GetAll(true, new ArticleSiteAccessSettings(false, true, false), ref pagination).Where(p =>
                 p.Content.Contains(phrase) ||
                 p.Title.Contains(phrase) ||
                 p.TagsString.Contains(phrase) ||
