@@ -66,7 +66,7 @@ namespace Blog.Areas.Administrator.Controllers
             bool result = _categoriesService.Remove(id);
 
             if (!result)
-                throw new Exception("Usunięcie katogorii (" + id + ") nie powiodło się.");
+                throw new Exception("Usunięcie katogorii (" + id + ") nie powiodło się. Być może jest ona używana w jednym z artykułów.");
 
             return RedirectToAction("Categories");
         }

@@ -62,7 +62,7 @@ namespace Blog.Services
         {
             var element = _db.Set<CategoryModel>().FirstOrDefault(p => p.ID == id);
 
-            if (element == null)
+            if (element == null || _db.Set<ArticleModel>().Any(p => p.CategoryID == id))
                 return false;
 
             element.IsRemoved = true;

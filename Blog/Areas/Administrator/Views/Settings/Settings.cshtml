@@ -93,13 +93,13 @@
             <legend>CAPTCHA</legend>
 
             <div class="settings-group">
-                <span class="settings-label">Użyj SSL:</span>
+                <span class="settings-label">Użyj CAPTCHA:</span>
                 <div class="btn-group" data-toggle="buttons">
                     <label class="btn btn-success radio-button">
-                        @Html.RadioButtonFor(Model => Model.Settings.UseCaptcha, true) Opublikowana
+                        @Html.RadioButtonFor(Model => Model.Settings.UseCaptcha, true) Tak
                     </label>
                     <label class="btn btn-danger radio-button">
-                        @Html.RadioButtonFor(Model => Model.Settings.UseCaptcha, false) Prywatna
+                        @Html.RadioButtonFor(Model => Model.Settings.UseCaptcha, false) Nie
                     </label>
                 </div>
             </div>

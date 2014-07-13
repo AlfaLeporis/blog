@@ -16,14 +16,17 @@ namespace Blog.Controllers
         private ICommentsService _commentsService = null;
         private ISecurityService _securityService = null;
         private ICaptchaService _captchaService = null;
+        private ISettingsService _settingsService = null;
 
         public CommentsController(ICommentsService commentsService,
                                   ISecurityService securityService,
-                                  ICaptchaService captchaService)
+                                  ICaptchaService captchaService,
+                                  ISettingsService settingsService)
         {
             _commentsService = commentsService;
             _securityService = securityService;
             _captchaService = captchaService;
+            _settingsService = settingsService;
         }
 
         [HttpPost]
@@ -32,7 +35,7 @@ namespace Blog.Controllers
             int articleID = Convert.ToInt32(viewModel["ArticleID"]);
             String content = viewModel["CommentContent"];
 
-            if(!_securityService.IsLogged())
+            if(!_securityService.IsLogged() && _settingsService.GetSettings().UseCaptcha)
             {
                 var recaptcha_challenge_field = viewModel["recaptcha_challenge_field"];
                 var recaptcha_response_field = viewModel["recaptcha_response_field"];

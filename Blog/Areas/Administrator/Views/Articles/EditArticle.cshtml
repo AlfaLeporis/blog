@@ -32,20 +32,20 @@
             <div>
                 <span class="settings-label" style="width: 100%">Alias:</span>
                     <div class="input-group">
-                        @Html.TextBoxFor(p => p.Alias, new { @class = "form-control", placeholder = "Alias", id="tb-alias" })
+                        @Html.TextBoxFor(p => p.Alias, new { @class = "form-control input-fix", placeholder = "Alias", id = "tb-alias" })
                         <div class="input-group-btn"><div class="btn btn-primary" onclick="generateAlias();">Wygeneruj</div></div>
                     </div>
                     @Html.ValidationMessageFor(p => p.Alias, null, new { @class = "validation-message" })
                 </div>
             <div>
                 <span class="settings-label" style="width: 100%">Opis:</span>
-                @Html.TextBoxFor(p => p.Description, new { @class = "form-control", placeholder = "Opis" })
+                @Html.TextBoxFor(p => p.Description, new { @class = "form-control input-fix", placeholder = "Opis" })
                 @Html.ValidationMessageFor(p => p.Description, null, new { @class = "validation-message" })
             </div>
 
             <div>
                 <span class="settings-label" style="width: 100%">Tagi:</span>
-                @Html.TextBoxFor(p => p.TagsString, new { @class = "form-control", placeholder = "Tagi" })
+                @Html.TextBoxFor(p => p.TagsString, new { @class = "form-control input-fix", placeholder = "Tagi" })
                 @Html.ValidationMessageFor(p => p.TagsString, null, new { @class = "validation-message" })
             </div>
         </fieldset>
@@ -55,13 +55,13 @@
             <legend>Opcje publikacji</legend>
             <div>
                 <span class="settings-label" style="width: 100%">Data utworzenia:</span>
-                @Html.TextBoxFor(p => p.CreationDate, new { @class = "form-control", placeholder = "Data utworzenia artykułu" })
+                @Html.TextBoxFor(p => p.CreationDate, new { @class = "form-control input-fix", placeholder = "Data utworzenia artykułu" })
                 @Html.ValidationMessageFor(p => p.CreationDate, null, new { @class = "validation-message" })
             </div>
 
             <div>
                 <span class="settings-label" style="width: 100%">Data publikacji:</span>
-                @Html.TextBoxFor(p => p.PublishDate, new { @class = "form-control", placeholder = "Data publikacji artykułu" })
+                @Html.TextBoxFor(p => p.PublishDate, new { @class = "form-control input-fix", placeholder = "Data publikacji artykułu" })
                 @Html.ValidationMessageFor(p => p.PublishDate, null, new { @class = "validation-message" })
             </div>
 
@@ -82,7 +82,7 @@
 
     <div class="clearfix"></div>
 
-    <div class="settings-group">@Html.TextBoxFor(p => p.Title, new { @class = "form-control", placeholder="Tytuł artykułu", id="tb-title" })</div>
+    <div class="settings-group">@Html.TextBoxFor(p => p.Title, new { @class = "form-control input-fix", placeholder = "Tytuł artykułu", id = "tb-title" })</div>
     @Html.ValidationMessageFor(p => p.Title, null, new { @class = "validation-message" })
     
     <div style="height: 630px;">@Html.TextAreaFor(p => p.Content, new { id = "editor"})</div>

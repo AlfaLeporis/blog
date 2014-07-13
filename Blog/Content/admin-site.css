@@ -186,3 +186,7 @@ fieldset{
     margin-bottom: 20px;
     text-align: center;
 }
+
+.input-fix{
+    width: 96%!important;
+}
